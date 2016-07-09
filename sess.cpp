@@ -7,6 +7,7 @@
 #include <sys/fcntl.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include <string.h>
 
 
@@ -41,13 +42,25 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     return sess;
 }
 
-void UDPSession::Update() {
-    // pool socket
+void
+UDPSession::Update() {
     while(1) {
+        ssize_t ret = recv(m_sockfd, m_buf, m_bufsiz, 0);
+        if (ret > 0) {
+            ikcp_input(m_kcp, static_cast<const char*>(m_buf), ret);
+        } else {
+            break;
+        }
     }
     ikcp_update(m_kcp, iclock());
 }
 
+void
+UDPSession::Close() {
+    close(m_sockfd);
+    free(m_buf);
+    ikcp_release(m_kcp);
+}
 
 void
 UDPSession::itimeofday(long *sec, long *usec)
@@ -77,7 +90,8 @@ UDPSession::itimeofday(long *sec, long *usec)
 #endif
 }
 
-IUINT64 UDPSession::iclock64(void) {
+IUINT64
+UDPSession::iclock64(void) {
     long s, u;
     IUINT64 value;
     itimeofday(&s, &u);
@@ -85,7 +99,8 @@ IUINT64 UDPSession::iclock64(void) {
     return value;
 }
 
-IUINT32 UDPSession::iclock() {
+IUINT32
+UDPSession::iclock() {
     return (IUINT32)(iclock64() & 0xfffffffful);
 }
 
