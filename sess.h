@@ -43,10 +43,10 @@ public:
     }
 
 private:
-    UDPSession(){};
-    ~UDPSession(){};
-    UDPSession( const UDPSession& ){};
-    UDPSession& operator=(const UDPSession& ){};
+    UDPSession() { };
+    ~UDPSession() { };
+    UDPSession(const UDPSession &);
+    UDPSession &operator=(const UDPSession &);
 
     void itimeofday(long *sec, long *usec);
 
