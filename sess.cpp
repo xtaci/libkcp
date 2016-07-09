@@ -14,7 +14,7 @@ UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
     int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
     if (sockfd == -1) {
-        return 0;
+        return nullptr;
     }
     int flags = fcntl(sockfd, F_GETFL, 0);
     fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
@@ -26,12 +26,12 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     memset(&saddr.sin_zero, 0, 8);
 
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
-        return 0;
+        return nullptr;
     }
 
     void *buf = malloc(UDPSession::mtuLimit);
     if (buf == 0) {
-        return 0;
+        return nullptr;
     }
 
     UDPSession *sess = new(UDPSession);
@@ -40,7 +40,6 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     sess->m_kcp->output = sess->out_wrapper;
     sess->m_buf = buf;
     sess->m_bufsiz = UDPSession::mtuLimit;
-    ikcp_wndsize(sess->m_kcp, 128,128);
     return sess;
 }
 
@@ -66,7 +65,8 @@ UDPSession::Close() {
 }
 
 int
-UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user) {
+UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
+    assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
     return sess->output(buf, len);
 }
