@@ -31,7 +31,7 @@ public:
     // Close release all resource related.
     void Close();
 
-    // PeekSize() returns the buffer size need to read.
+    // PeekSize returns the buffer size needed for reading.
     inline size_t PeekSize() { return (size_t) ikcp_peeksize(m_kcp); }
 
     // Read reads from kcp with buffer size sz.
@@ -43,7 +43,18 @@ public:
     }
 
 private:
+    UDPSession(){};
+    ~UDPSession(){};
+    UDPSession( const UDPSession& ){};
+    UDPSession& operator=(const UDPSession& ){};
+
     void itimeofday(long *sec, long *usec);
+
+    // out_wrapper
+    static int out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user);
+
+    // output udp packet
+    ssize_t output(const void *buffer, size_t length);
 
     /* get clock in millisecond 64 */
     IUINT64 iclock64();
