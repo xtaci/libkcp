@@ -39,15 +39,17 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_kcp->output = sess->out_wrapper;
     sess->m_buf = buf;
+    sess->m_bufsiz = UDPSession::mtuLimit;
+    ikcp_wndsize(sess->m_kcp, 128,128);
     return sess;
 }
 
 void
 UDPSession::Update() {
     while (1) {
-        ssize_t ret = recv(m_sockfd, m_buf, m_bufsiz, 0);
-        if (ret > 0) {
-            ikcp_input(m_kcp, static_cast<const char *>(m_buf), ret);
+        ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
+        if (n > 0) {
+            ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);
         } else {
             break;
         }
@@ -71,7 +73,8 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user
 
 ssize_t
 UDPSession::output(const void *buffer, size_t length) {
-    return ::send(m_sockfd, buffer, length, 0);
+    ssize_t n = send(m_sockfd, buffer, length, 0);
+    return n;
 }
 
 void
