@@ -25,12 +25,29 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     saddr.sin_addr.s_addr = inet_addr(ip);
     memset(&saddr.sin_zero, 0, 8);
 
+    if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
+        return 0;
+    }
+
+    void *buf = malloc(UDPSession::mtuLimit);
+    if (buf ==0) {
+        return 0;
+    }
+
     UDPSession *sess = new(UDPSession);
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
-
+    sess->m_buf = buf;
     return sess;
 }
+
+void UDPSession::Update() {
+    // pool socket
+    while(1) {
+    }
+    ikcp_update(m_kcp, iclock());
+}
+
 
 void
 UDPSession::itimeofday(long *sec, long *usec)
