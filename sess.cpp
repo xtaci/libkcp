@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <string.h>
 
-
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
     int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
@@ -31,23 +30,24 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     void *buf = malloc(UDPSession::mtuLimit);
-    if (buf ==0) {
+    if (buf == 0) {
         return 0;
     }
 
     UDPSession *sess = new(UDPSession);
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    sess->m_kcp->output = sess->out_wrapper;
     sess->m_buf = buf;
     return sess;
 }
 
 void
 UDPSession::Update() {
-    while(1) {
+    while (1) {
         ssize_t ret = recv(m_sockfd, m_buf, m_bufsiz, 0);
         if (ret > 0) {
-            ikcp_input(m_kcp, static_cast<const char*>(m_buf), ret);
+            ikcp_input(m_kcp, static_cast<const char *>(m_buf), ret);
         } else {
             break;
         }
@@ -62,9 +62,19 @@ UDPSession::Close() {
     ikcp_release(m_kcp);
 }
 
+int
+UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user) {
+    UDPSession *sess = static_cast<UDPSession *>(user);
+    return sess->output(buf, len);
+}
+
+ssize_t
+UDPSession::output(const void *buffer, size_t length) {
+    return ::send(m_sockfd, buffer, length, 0);
+}
+
 void
-UDPSession::itimeofday(long *sec, long *usec)
-{
+UDPSession::itimeofday(long *sec, long *usec) {
 #if defined(__unix)
     struct timeval time;
     gettimeofday(&time, NULL);
@@ -101,7 +111,7 @@ UDPSession::iclock64(void) {
 
 IUINT32
 UDPSession::iclock() {
-    return (IUINT32)(iclock64() & 0xfffffffful);
+    return (IUINT32) (iclock64() & 0xfffffffful);
 }
 
 
