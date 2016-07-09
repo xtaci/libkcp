@@ -22,8 +22,8 @@ private:
     void *m_buf;
     size_t m_bufsiz;
 public:
-    UDPSession(const UDPSession &) =delete;
-    UDPSession &operator=(const UDPSession &) =delete;
+    UDPSession(const UDPSession &) = delete;
+    UDPSession &operator=(const UDPSession &) = delete;
 
     // Dial connects to the remote server and returns UDPSession.
     static UDPSession *Dial(const char *ip, uint16_t port);
@@ -44,6 +44,7 @@ public:
     inline ssize_t Write(const char *buf, size_t sz) {
         return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
     }
+
 private:
     UDPSession() = default;
     ~UDPSession() = default;
