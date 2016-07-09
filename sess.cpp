@@ -57,9 +57,10 @@ UDPSession::Update() {
 
 void
 UDPSession::Close() {
-    close(m_sockfd);
-    free(m_buf);
-    ikcp_release(m_kcp);
+    if (m_sockfd != 0) { close(m_sockfd); }
+    if (m_buf != 0) { free(m_buf); }
+    if (m_kcp != 0) { ikcp_release(m_kcp); }
+    delete this;
 }
 
 int
