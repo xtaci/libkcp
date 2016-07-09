@@ -6,6 +6,7 @@
 #define KCP_SESS_H
 
 #include "ikcp.h"
+#include <sys/types.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
 #include <windows.h>
@@ -18,29 +19,40 @@ class UDPSession {
 private:
     int m_sockfd;
     ikcpcb *m_kcp;
+    void *m_buf;
+    size_t m_bufsiz;
 public:
+    // Dial connects to the remote server and returns UDPSession.
     static UDPSession *Dial(const char *ip, uint16_t port);
 
-    // Call Update() periodically for sending/receiving.
-    inline void Update() { ikcp_update(m_kcp, iclock()); }
+    // Update will try reading/writing udp packet.
+    void Update();
 
-    // PeekSize() returns the buffer size need to allocate for Read()
-    inline size_t PeekSize() { return (size_t) ikcp_peeksize(this->m_kcp); }
+    // Close release all resource related.
+    void Close();
 
-    // Read reads from kcp with buffer size sz
-    inline int Read(char *buf, size_t sz) { return ikcp_recv(this->m_kcp, buf, int(sz)); }
+    // PeekSize() returns the buffer size need to read.
+    inline size_t PeekSize() { return (size_t) ikcp_peeksize(m_kcp); }
 
-    // Write writes into kcp with buffer size sz
-    inline int Write(const char *buf, size_t sz) { return ikcp_send(this->m_kcp, const_cast<char *>(buf), int(sz)); }
+    // Read reads from kcp with buffer size sz.
+    inline ssize_t Read(char *buf, size_t sz) { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
+
+    // Write writes into kcp with buffer size sz.
+    inline ssize_t Write(const char *buf, size_t sz) {
+        return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
+    }
 
 private:
     void itimeofday(long *sec, long *usec);
 
     /* get clock in millisecond 64 */
-    int64_t iclock64();
+    IUINT64 iclock64();
 
     /* get clock in millisecond 32 */
-    int32_t iclock();
+    IUINT32 iclock();
+
+private:
+    static const size_t mtuLimit = 4096;
 };
 
 #endif //KCP_SESS_H
