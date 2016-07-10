@@ -1014,6 +1014,13 @@ void ikcp_flush(ikcpcb *kcp)
 			segment->resendts = current + segment->rto;
 			change++;
 		}
+		else if (segment->fastack > 0 && kcp->nsnd_que == 0) {
+			needsend = 1;
+			segment->xmit++;
+			segment->fastack = 0;
+			segment->resendts = current + segment->rto;
+			change++;
+		}
 
 		if (needsend) {
 			int size, need;

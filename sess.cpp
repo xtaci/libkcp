@@ -23,14 +23,19 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     memset(&saddr.sin_zero, 0, 8);
 
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
+        close(sockfd);
         return nullptr;
     }
 
     int flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) <0 ) {
+        close(sockfd);
+        return nullptr;
+    }
 
     void *buf = malloc(UDPSession::mtuLimit);
     if (buf == nullptr) {
+        close(sockfd);
         return nullptr;
     }
 
