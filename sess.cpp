@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
@@ -30,11 +31,11 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     void *buf = malloc(UDPSession::mtuLimit);
-    if (buf == 0) {
+    if (buf == nullptr) {
         return nullptr;
     }
 
-    UDPSession *sess = new(UDPSession);
+    UDPSession *sess = new UDPSession;
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_kcp->output = sess->out_wrapper;
