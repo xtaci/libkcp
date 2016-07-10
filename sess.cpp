@@ -16,9 +16,6 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     if (sockfd == -1) {
         return nullptr;
     }
-    int flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-
     struct sockaddr_in saddr;
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
@@ -29,6 +26,9 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+    
     void *buf = malloc(UDPSession::mtuLimit);
     if (buf == nullptr) {
         return nullptr;

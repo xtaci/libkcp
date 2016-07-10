@@ -23,6 +23,7 @@ private:
     size_t m_bufsiz;
 public:
     UDPSession(const UDPSession &) = delete;
+
     UDPSession &operator=(const UDPSession &) = delete;
 
     // Dial connects to the remote server and returns UDPSession.
@@ -35,7 +36,7 @@ public:
     void Close();
 
     // PeekSize returns the buffer size needed for reading.
-    inline size_t PeekSize() { return (size_t) ikcp_peeksize(m_kcp); }
+    inline size_t PeekSize() noexcept { return (size_t) ikcp_peeksize(m_kcp); }
 
     // Read reads from kcp with buffer size sz.
     inline ssize_t Read(char *buf, size_t sz) { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
@@ -46,7 +47,7 @@ public:
     }
 
 private:
-    UDPSession() = default;
+    UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_bufsiz(0) { };
     ~UDPSession() = default;
 
     void itimeofday(long *sec, long *usec);
