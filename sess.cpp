@@ -9,7 +9,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
-#include <stdio.h>
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
