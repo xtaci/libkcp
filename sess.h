@@ -8,13 +8,6 @@
 #include "ikcp.h"
 #include <sys/types.h>
 
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-#include <windows.h>
-#elif !defined(__unix)
-#define __unix
-#endif
-
-
 class UDPSession {
 private:
     int m_sockfd;
@@ -32,8 +25,8 @@ public:
     // DialIPv6 is the ipv6 version of Dial.
     static UDPSession *DialIPv6(const char *ip, uint16_t port);
 
-    // Update will try reading/writing udp packet.
-    void Update();
+    // Update will try reading/writing udp packet, pass current unix millisecond
+    void Update(uint32_t current);
 
     // Close release all resource related.
     void Close();
@@ -53,20 +46,11 @@ private:
     UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_bufsiz(0) { };
     ~UDPSession() = default;
 
-    void itimeofday(long *sec, long *usec);
-
     // out_wrapper
     static int out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user);
 
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
-
-    /* get clock in millisecond 64 */
-    IUINT64 iclock64();
-
-    /* get clock in millisecond 32 */
-    IUINT32 iclock();
-
 private:
     static const size_t mtuLimit = 4096;
 };

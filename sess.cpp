@@ -6,7 +6,6 @@
 #include <sys/socket.h>
 #include <sys/fcntl.h>
 #include <arpa/inet.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -28,7 +27,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     int flags = fcntl(sockfd, F_GETFL, 0);
-    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) <0 ) {
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(sockfd);
         return nullptr;
     }
@@ -49,7 +48,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 }
 
 UDPSession *
-UDPSession::DialIPv6(const char *ip, uint16_t port)  {
+UDPSession::DialIPv6(const char *ip, uint16_t port) {
     int sockfd = socket(PF_INET6, SOCK_DGRAM, 0);
     if (sockfd == -1) {
         return nullptr;
@@ -66,7 +65,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port)  {
     }
 
     int flags = fcntl(sockfd, F_GETFL, 0);
-    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) <0 ) {
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(sockfd);
         return nullptr;
     }
@@ -87,7 +86,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port)  {
 }
 
 void
-UDPSession::Update() {
+UDPSession::Update(uint32_t current) {
     while (1) {
         ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
         if (n > 0) {
@@ -96,7 +95,7 @@ UDPSession::Update() {
             break;
         }
     }
-    ikcp_update(m_kcp, iclock());
+    ikcp_update(m_kcp, current);
 }
 
 void
@@ -111,7 +110,7 @@ int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
-    return sess->output(buf, len);
+    return (int)sess->output(buf, static_cast<size_t>(len));
 }
 
 ssize_t
@@ -119,46 +118,3 @@ UDPSession::output(const void *buffer, size_t length) {
     ssize_t n = send(m_sockfd, buffer, length, 0);
     return n;
 }
-
-void
-UDPSession::itimeofday(long *sec, long *usec) {
-#if defined(__unix)
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    if (sec) *sec = time.tv_sec;
-    if (usec) *usec = time.tv_usec;
-#else
-    static long mode = 0, addsec = 0;
-    BOOL retval;
-    static IINT64 freq = 1;
-    IINT64 qpc;
-    if (mode == 0) {
-        retval = QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-        freq = (freq == 0)? 1 : freq;
-        retval = QueryPerformanceCounter((LARGE_INTEGER*)&qpc);
-        addsec = (long)time(NULL);
-        addsec = addsec - (long)((qpc / freq) & 0x7fffffff);
-        mode = 1;
-    }
-    retval = QueryPerformanceCounter((LARGE_INTEGER*)&qpc);
-    retval = retval * 2;
-    if (sec) *sec = (long)(qpc / freq) + addsec;
-    if (usec) *usec = (long)((qpc % freq) * 1000000 / freq);
-#endif
-}
-
-IUINT64
-UDPSession::iclock64(void) {
-    long s, u;
-    IUINT64 value;
-    itimeofday(&s, &u);
-    value = ((IUINT64) s) * 1000 + (u / 1000);
-    return value;
-}
-
-IUINT32
-UDPSession::iclock() {
-    return (IUINT32) (iclock64() & 0xfffffffful);
-}
-
-
