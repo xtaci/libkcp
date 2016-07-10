@@ -28,7 +28,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 
     int flags = fcntl(sockfd, F_GETFL, 0);
     fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-    
+
     void *buf = malloc(UDPSession::mtuLimit);
     if (buf == nullptr) {
         return nullptr;
