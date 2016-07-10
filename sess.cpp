@@ -16,13 +16,51 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     if (sockfd == -1) {
         return nullptr;
     }
+
     struct sockaddr_in saddr;
+    memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
-    saddr.sin_addr.s_addr = inet_addr(ip);
-    memset(&saddr.sin_zero, 0, 8);
-
+    inet_aton(ip, &(saddr.sin_addr));
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
+        close(sockfd);
+        return nullptr;
+    }
+
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) <0 ) {
+        close(sockfd);
+        return nullptr;
+    }
+
+    void *buf = malloc(UDPSession::mtuLimit);
+    if (buf == nullptr) {
+        close(sockfd);
+        return nullptr;
+    }
+
+    UDPSession *sess = new UDPSession;
+    sess->m_sockfd = sockfd;
+    sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    sess->m_kcp->output = sess->out_wrapper;
+    sess->m_buf = buf;
+    sess->m_bufsiz = UDPSession::mtuLimit;
+    return sess;
+}
+
+UDPSession *
+UDPSession::DialIPv6(const char *ip, uint16_t port)  {
+    int sockfd = socket(PF_INET6, SOCK_DGRAM, 0);
+    if (sockfd == -1) {
+        return nullptr;
+    }
+    struct sockaddr_in6 saddr;
+    memset(&saddr, 0, sizeof(saddr));
+    saddr.sin6_family = AF_INET6;
+    saddr.sin6_port = htons(port);
+    inet_pton(AF_INET6, ip, &(saddr.sin6_addr));
+
+    if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr_in6)) < 0) {
         close(sockfd);
         return nullptr;
     }
