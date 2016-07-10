@@ -39,11 +39,16 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     UDPSession *sess = new UDPSession;
+    auto kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_sockfd = sockfd;
-    sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    sess->m_kcp = kcp;
     sess->m_kcp->output = sess->out_wrapper;
     sess->m_buf = buf;
     sess->m_bufsiz = UDPSession::mtuLimit;
+    if (kcp == nullptr) {
+        sess->Close();
+        return nullptr;
+    }
     return sess;
 }
 
@@ -77,11 +82,16 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
     }
 
     UDPSession *sess = new UDPSession;
+    auto kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_sockfd = sockfd;
-    sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    sess->m_kcp = kcp;
     sess->m_kcp->output = sess->out_wrapper;
     sess->m_buf = buf;
     sess->m_bufsiz = UDPSession::mtuLimit;
+    if (kcp == nullptr) {
+        sess->Close();
+        return nullptr;
+    }
     return sess;
 }
 
