@@ -27,6 +27,11 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags < 0) {
+        close(sockfd);
+        return nullptr;
+    }
+
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(sockfd);
         return nullptr;
@@ -70,6 +75,11 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
     }
 
     int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags < 0) {
+        close(sockfd);
+        return nullptr;
+    }
+
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(sockfd);
         return nullptr;
