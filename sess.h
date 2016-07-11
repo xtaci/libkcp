@@ -52,7 +52,8 @@ private:
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
 private:
-    static const size_t mtuLimit = 4096;
+    static const size_t mtuLimit = 2048;
+
 };
 
 #endif //KCP_SESS_H
