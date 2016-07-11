@@ -26,24 +26,32 @@ public:
     static UDPSession *DialIPv6(const char *ip, uint16_t port);
 
     // Update will try reading/writing udp packet, pass current unix millisecond
-    void Update(uint32_t current);
+    void Update(uint32_t current) noexcept;
 
     // Close release all resource related.
     static void Destroy(UDPSession *sess);
 
-    // PeekSize returns the buffer size needed for reading.
-    inline size_t PeekSize() noexcept { return (size_t) ikcp_peeksize(m_kcp); }
-
     // Read reads from kcp with buffer size sz.
-    inline ssize_t Read(char *buf, size_t sz) { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
+    inline ssize_t Read(char *buf, size_t sz) noexcept { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
 
     // Write writes into kcp with buffer size sz.
-    inline ssize_t Write(const char *buf, size_t sz) {
+    inline ssize_t Write(const char *buf, size_t sz)noexcept {
         return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
     }
 
+    // Wrappers for kcp control
+    inline size_t PeekSize() noexcept { return (size_t) ikcp_peeksize(m_kcp); }
+
+    inline int NoDelay(int nodelay, int interval, int resend, int nc) {
+        return ikcp_nodelay(m_kcp, nodelay, interval, resend, nc);
+    }
+
+    inline int WndSize(int sndwnd, int rcvwnd) { return ikcp_wndsize(m_kcp, sndwnd, rcvwnd); }
+
+    inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
 private:
     UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_bufsiz(0) { };
+
     ~UDPSession() = default;
 
     // out_wrapper
@@ -51,6 +59,7 @@ private:
 
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
+
 private:
     static const size_t mtuLimit = 2048;
 
