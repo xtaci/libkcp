@@ -106,7 +106,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
 }
 
 void
-UDPSession::Update(uint32_t current) {
+UDPSession::Update(uint32_t current) noexcept {
     for (; ;) {
         ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
         if (n > 0) {
