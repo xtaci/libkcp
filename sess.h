@@ -29,7 +29,7 @@ public:
     void Update(uint32_t current);
 
     // Close release all resource related.
-    void Close();
+    static void Destroy(UDPSession * sess);
 
     // PeekSize returns the buffer size needed for reading.
     inline size_t PeekSize() noexcept { return (size_t) ikcp_peeksize(m_kcp); }

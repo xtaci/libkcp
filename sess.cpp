@@ -51,7 +51,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     sess->m_buf = buf;
     sess->m_bufsiz = UDPSession::mtuLimit;
     if (kcp == nullptr) {
-        sess->Close();
+        UDPSession::Destroy(sess);
         return nullptr;
     }
     return sess;
@@ -99,7 +99,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
     sess->m_buf = buf;
     sess->m_bufsiz = UDPSession::mtuLimit;
     if (kcp == nullptr) {
-        sess->Close();
+        UDPSession::Destroy(sess);
         return nullptr;
     }
     return sess;
@@ -119,11 +119,11 @@ UDPSession::Update(uint32_t current) {
 }
 
 void
-UDPSession::Close() {
-    if (m_sockfd != 0) { close(m_sockfd); }
-    if (m_buf != 0) { free(m_buf); }
-    if (m_kcp != 0) { ikcp_release(m_kcp); }
-    delete this;
+UDPSession::Destroy(UDPSession * sess){
+    if (sess->m_sockfd != 0) { close(sess->m_sockfd); }
+    if (sess->m_buf != 0) { free(sess->m_buf); }
+    if (sess->m_kcp != 0) { ikcp_release(sess->m_kcp); }
+    delete sess;
 }
 
 int

@@ -28,7 +28,7 @@ int main() {
             break;
         };
     }
-    sess->Close();
+    UDPSession::Destroy(sess);
 }
 
 
