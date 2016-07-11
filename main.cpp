@@ -7,20 +7,20 @@ IUINT32 iclock();
 
 int main() {
     struct timeval time;
-    gettimeofday(&time,NULL);
+    gettimeofday(&time, NULL);
     srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
     UDPSession *sess = UDPSession::DialIPv6("::1", 9999);
-    assert(sess!= nullptr);
+    assert(sess != nullptr);
     int count;
-    char *buf = (char *)malloc(128);
-    for (;;) {
+    char *buf = (char *) malloc(128);
+    for (; ;) {
         sprintf(buf, "%d", count);
-        sess->Write(buf,strlen(buf));
+        sess->Write(buf, strlen(buf));
         sess->Update(iclock());
-        memset(buf,0,128);
-        ssize_t n = sess->Read(buf,128);
-        printf("%s\n",buf);
+        memset(buf, 0, 128);
+        ssize_t n = sess->Read(buf, 128);
+        printf("%s\n", buf);
 
         sleep(1);
         count++;
