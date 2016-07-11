@@ -120,7 +120,7 @@ UDPSession::Update(uint32_t current) {
 
 void
 UDPSession::Destroy(UDPSession *sess) {
-    if (sess == nullptr) return;
+    if (nullptr == sess) return;
     if (sess->m_sockfd != 0) { close(sess->m_sockfd); }
     if (sess->m_buf != 0) { free(sess->m_buf); }
     if (sess->m_kcp != 0) { ikcp_release(sess->m_kcp); }
