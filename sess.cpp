@@ -107,7 +107,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
 
 void
 UDPSession::Update(uint32_t current) {
-    while (1) {
+    for(;;) {
         ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
         if (n > 0) {
             ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);
