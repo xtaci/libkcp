@@ -35,7 +35,7 @@ public:
     inline ssize_t Read(char *buf, size_t sz) noexcept { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
 
     // Write writes into kcp with buffer size sz.
-    inline ssize_t Write(const char *buf, size_t sz)noexcept {
+    inline ssize_t Write(const char *buf, size_t sz) noexcept {
         return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
     }
 
@@ -49,6 +49,7 @@ public:
     inline int WndSize(int sndwnd, int rcvwnd) { return ikcp_wndsize(m_kcp, sndwnd, rcvwnd); }
 
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
+
 private:
     UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_bufsiz(0) { };
 
