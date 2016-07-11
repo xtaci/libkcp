@@ -107,7 +107,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
 
 void
 UDPSession::Update(uint32_t current) {
-    for(;;) {
+    for (; ;) {
         ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
         if (n > 0) {
             ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);
@@ -119,7 +119,8 @@ UDPSession::Update(uint32_t current) {
 }
 
 void
-UDPSession::Destroy(UDPSession * sess){
+UDPSession::Destroy(UDPSession *sess) {
+    if (sess == nullptr) return;
     if (sess->m_sockfd != 0) { close(sess->m_sockfd); }
     if (sess->m_buf != 0) { free(sess->m_buf); }
     if (sess->m_kcp != 0) { ikcp_release(sess->m_kcp); }
@@ -130,7 +131,7 @@ int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
-    return (int)sess->output(buf, static_cast<size_t>(len));
+    return (int) sess->output(buf, static_cast<size_t>(len));
 }
 
 ssize_t

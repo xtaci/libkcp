@@ -15,7 +15,9 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e8f29eef-c100-4215-a4e3-07af97de9a6b" name="Default" comment="" />
+    <list default="true" id="e8f29eef-c100-4215-a4e3-07af97de9a6b" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sess.cpp" afterPath="$PROJECT_DIR$/sess.cpp" />
+    </list>
     <ignored path="kcp.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -35,7 +37,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="390">
@@ -47,11 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sess.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sess.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sess.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="139" column="1" selection-start-line="139" selection-start-column="1" selection-end-line="139" selection-end-column="1" />
+            <state relative-caret-position="183">
+              <caret line="122" column="13" selection-start-line="122" selection-start-column="13" selection-end-line="122" selection-end-column="13" />
               <folding>
                 <element signature="e#36#53#0" expanded="true" />
               </folding>
@@ -74,7 +76,7 @@
       <file leaf-file-name="ikcp.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ikcp.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3480">
+            <state relative-caret-position="211">
               <caret line="232" column="0" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="8" />
               <folding>
                 <element signature="e#417#434#0" expanded="true" />
@@ -94,8 +96,8 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/ikcp.c" />
         <option value="$PROJECT_DIR$/sess.h" />
-        <option value="$PROJECT_DIR$/sess.cpp" />
         <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/sess.cpp" />
       </list>
     </option>
   </component>
@@ -889,9 +891,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ikcp.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3480">
+        <state relative-caret-position="211">
           <caret line="232" column="0" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="8" />
           <folding>
             <element signature="e#417#434#0" expanded="true" />
@@ -911,20 +923,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sess.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="139" column="1" selection-start-line="139" selection-start-column="1" selection-end-line="139" selection-end-column="1" />
+        <state relative-caret-position="183">
+          <caret line="122" column="13" selection-start-line="122" selection-start-column="13" selection-end-line="122" selection-end-column="13" />
           <folding>
             <element signature="e#36#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
