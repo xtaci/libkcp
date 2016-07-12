@@ -1,2 +1,8 @@
 # libkcp
-kcp session library for iOS/Android, compatiable with [kcp-go](https://github.com/xtaci/kcp-go)
+kcp session library for iOS/Android, compatiable with [kcp-go](https://github.com/xtaci/kcp-go).
+(still under development)
+
+## Features
+1. Optimized for RealTime Gaming.
+2. No FEC supported yet.
+3. AES encryption.
