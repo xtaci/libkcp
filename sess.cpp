@@ -26,32 +26,9 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    int flags = fcntl(sockfd, F_GETFL, 0);
-    if (flags < 0) {
-        close(sockfd);
-        return nullptr;
-    }
-
-    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
-        close(sockfd);
-        return nullptr;
-    }
-
-    void *buf = malloc(UDPSession::mtuLimit);
-    if (buf == nullptr) {
-        close(sockfd);
-        return nullptr;
-    }
-
     UDPSession *sess = new UDPSession;
-    auto kcp = ikcp_create(IUINT32(rand()), sess);
-    sess->m_sockfd = sockfd;
-    sess->m_kcp = kcp;
-    sess->m_kcp->output = sess->out_wrapper;
-    sess->m_buf = buf;
-    sess->m_bufsiz = UDPSession::mtuLimit;
-    if (kcp == nullptr) {
-        UDPSession::Destroy(sess);
+    if (!UDPSession::init(sess,sockfd)) {
+        close(sockfd);
         return nullptr;
     }
     return sess;
@@ -74,41 +51,43 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    int flags = fcntl(sockfd, F_GETFL, 0);
-    if (flags < 0) {
-        close(sockfd);
-        return nullptr;
-    }
-
-    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
-        close(sockfd);
-        return nullptr;
-    }
-
-    void *buf = malloc(UDPSession::mtuLimit);
-    if (buf == nullptr) {
-        close(sockfd);
-        return nullptr;
-    }
-
     UDPSession *sess = new UDPSession;
-    auto kcp = ikcp_create(IUINT32(rand()), sess);
-    sess->m_sockfd = sockfd;
-    sess->m_kcp = kcp;
-    sess->m_kcp->output = sess->out_wrapper;
-    sess->m_buf = buf;
-    sess->m_bufsiz = UDPSession::mtuLimit;
-    if (kcp == nullptr) {
-        UDPSession::Destroy(sess);
+    if (!UDPSession::init(sess,sockfd)) {
+        close(sockfd);
         return nullptr;
     }
     return sess;
 }
 
+bool
+UDPSession::init(UDPSession *sess, int sockfd) {
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags < 0) {
+        return false;
+    }
+
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        return false;
+    }
+
+    sess->m_sockfd = sockfd;
+    sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    sess->m_buf = (char*)malloc(UDPSession::mtuLimit);
+    sess->m_streambuf =  (char*)malloc(UDPSession::streamBufferLimit);
+    sess->m_kcp->output = sess->out_wrapper;
+
+    if (sess->m_kcp == nullptr || sess->m_buf == nullptr || sess->m_streambuf == nullptr) {
+        UDPSession::Destroy(sess);
+        return false;
+    }
+    return true;
+}
+
+
 void
 UDPSession::Update(uint32_t current) noexcept {
     for (; ;) {
-        ssize_t n = recv(m_sockfd, m_buf, m_bufsiz, 0);
+        ssize_t n = recv(m_sockfd, m_buf, UDPSession::mtuLimit, 0);
         if (n > 0) {
             ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);
         } else {
@@ -122,10 +101,45 @@ void
 UDPSession::Destroy(UDPSession *sess) {
     if (nullptr == sess) return;
     if (0 != sess->m_sockfd) { close(sess->m_sockfd); }
-    if (0 != sess->m_buf) { free(sess->m_buf); }
     if (0 != sess->m_kcp) { ikcp_release(sess->m_kcp); }
+    if (nullptr != sess->m_buf) { free(sess->m_buf); }
+    if (nullptr != sess->m_streambuf) { free(sess->m_streambuf); }
     delete sess;
 }
+
+ssize_t
+UDPSession::Read(char *buf, size_t sz) noexcept {
+    if (m_streambufsiz > 0) {
+        size_t n = m_streambufsiz;
+        if (n > sz) {
+            n = sz;
+        }
+        memcpy(buf, m_streambuf, n);
+
+
+        m_streambufsiz -= n;
+        if (m_streambufsiz != 0) {
+            memmove(m_streambuf, m_streambuf + n, m_streambufsiz);
+        }
+        return n;
+    }
+
+    int psz = ikcp_peeksize(m_kcp);
+    if (psz<=0) {
+        return 0;
+    }
+
+    if (psz <= sz) {
+        return (ssize_t) ikcp_recv(m_kcp, buf, int(sz));
+    } else {
+        ikcp_recv(m_kcp, m_streambuf, UDPSession::streamBufferLimit);
+        memcpy(buf, m_streambuf, psz);
+        m_streambufsiz = psz-sz;
+        memmove(m_streambuf, m_streambuf + psz, psz-sz);
+        return sz;
+    }
+}
+
 
 int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {

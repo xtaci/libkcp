@@ -13,8 +13,9 @@ class UDPSession :public ReadWriter {
 private:
     int m_sockfd;
     ikcpcb *m_kcp;
-    void *m_buf;
-    size_t m_bufsiz;
+    char *m_buf;
+    char *m_streambuf;
+    size_t m_streambufsiz;
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -33,7 +34,7 @@ public:
     static void Destroy(UDPSession *sess);
 
     // Read reads from kcp with buffer size sz.
-    inline ssize_t Read(char *buf, size_t sz) noexcept { return (ssize_t) ikcp_recv(m_kcp, buf, int(sz)); }
+    ssize_t Read(char *buf, size_t sz) noexcept;
 
     // Write writes into kcp with buffer size sz.
     inline ssize_t Write(const char *buf, size_t sz) noexcept {
@@ -41,8 +42,6 @@ public:
     }
 
     // Wrappers for kcp control
-    inline size_t PeekSize() noexcept { return (size_t) ikcp_peeksize(m_kcp); }
-
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
         return ikcp_nodelay(m_kcp, nodelay, interval, resend, nc);
     }
@@ -52,7 +51,7 @@ public:
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
 
 private:
-    UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_bufsiz(0) { };
+    UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_streambuf(nullptr), m_streambufsiz(0) { };
 
     ~UDPSession() = default;
 
@@ -62,9 +61,11 @@ private:
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
 
+    static bool init(UDPSession *sess, int sockfd);
+
 private:
     static const size_t mtuLimit = 2048;
-
+    static const size_t streamBufferLimit = 65535;
 };
 
 #endif //KCP_SESS_H

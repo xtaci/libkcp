@@ -19,12 +19,12 @@ int main() {
         sess->Write(buf, strlen(buf));
         sess->Update(iclock());
         memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf, 128);
+        ssize_t n = sess->Read(buf, 1);
         printf("%s\n", buf);
 
         sleep(1);
         count++;
-        if (count > 10) {
+        if (count > 20) {
             break;
         };
     }
