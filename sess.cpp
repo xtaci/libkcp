@@ -133,9 +133,9 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
         return (ssize_t) ikcp_recv(m_kcp, buf, int(sz));
     } else {
         ikcp_recv(m_kcp, m_streambuf, UDPSession::streamBufferLimit);
-        memcpy(buf, m_streambuf, psz);
+        memcpy(buf, m_streambuf, sz);
         m_streambufsiz = psz-sz;
-        memmove(m_streambuf, m_streambuf + psz, psz-sz);
+        memmove(m_streambuf, m_streambuf + sz, psz-sz);
         return sz;
     }
 }
