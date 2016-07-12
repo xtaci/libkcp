@@ -41,6 +41,9 @@ public:
         return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
     }
 
+    // PeekSize returns currently readable size.
+    ssize_t PeekSize();
+
     // Wrappers for kcp control
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
         return ikcp_nodelay(m_kcp, nodelay, interval, resend, nc);
