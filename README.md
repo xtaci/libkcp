@@ -1,5 +1,5 @@
 # libkcp
-kcp session library for iOS/Android, compatiable with [kcp-go](https://github.com/xtaci/kcp-go).
+kcp session library for iOS/Android, compatible with [kcp-go](https://github.com/xtaci/kcp-go).
 (still under development)
 
 ## Features
