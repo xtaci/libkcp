@@ -9,7 +9,7 @@ import (
 const port = ":9999"
 
 func ListenTest() (*kcp.Listener, error) {
-	return kcp.ListenWithOptions(port, nil, 1, 0)
+	return kcp.ListenWithOptions(port, nil, 0, 0)
 }
 
 func server() {
