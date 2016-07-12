@@ -4,4 +4,5 @@ kcp session library for iOS/Android, compatiable with [kcp-go](https://github.co
 
 ## Features
 1. Optimized for RealTime Gaming.
-2. No Forward Error Correction(FEC)
+2. No Forward Error Correction(FEC).
+3. No Packet Level Encryption.
