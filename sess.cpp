@@ -26,7 +26,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession * sess = UDPSession::createSession(sockfd);
+    UDPSession *sess = UDPSession::createSession(sockfd);
     if (sess == nullptr) {
         close(sockfd);
         return nullptr;
@@ -51,7 +51,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession * sess = UDPSession::createSession(sockfd);
+    UDPSession *sess = UDPSession::createSession(sockfd);
     if (sess == nullptr) {
         close(sockfd);
         return nullptr;
@@ -139,6 +139,14 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
         m_streambufsiz = psz - sz;
         memmove(m_streambuf, m_streambuf + sz, psz - sz);
         return sz;
+    }
+}
+
+ssize_t UDPSession::PeekSize() {
+    if (m_streambufsiz > 0) {
+        return m_streambufsiz;
+    } else {
+        return ikcp_peeksize(m_kcp);
     }
 }
 
