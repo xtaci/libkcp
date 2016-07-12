@@ -61,7 +61,7 @@ private:
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
 
-    static bool init(UDPSession *sess, int sockfd);
+    static UDPSession * createSession(int sockfd);
 
 private:
     static const size_t mtuLimit = 2048;

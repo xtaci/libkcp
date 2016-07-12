@@ -26,8 +26,8 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession *sess = new UDPSession;
-    if (!UDPSession::init(sess, sockfd)) {
+    UDPSession * sess = UDPSession::createSession(sockfd);
+    if (sess == nullptr) {
         close(sockfd);
         return nullptr;
     }
@@ -51,25 +51,26 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession *sess = new UDPSession;
-    if (!UDPSession::init(sess, sockfd)) {
+    UDPSession * sess = UDPSession::createSession(sockfd);
+    if (sess == nullptr) {
         close(sockfd);
         return nullptr;
     }
     return sess;
 }
 
-bool
-UDPSession::init(UDPSession *sess, int sockfd) {
+UDPSession *
+UDPSession::createSession(int sockfd) {
     int flags = fcntl(sockfd, F_GETFL, 0);
     if (flags < 0) {
-        return false;
+        return nullptr;
     }
 
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
-        return false;
+        return nullptr;
     }
 
+    UDPSession *sess = new(UDPSession);
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_buf = (char *) malloc(UDPSession::mtuLimit);
@@ -77,10 +78,12 @@ UDPSession::init(UDPSession *sess, int sockfd) {
     sess->m_kcp->output = sess->out_wrapper;
 
     if (sess->m_kcp == nullptr || sess->m_buf == nullptr || sess->m_streambuf == nullptr) {
-        UDPSession::Destroy(sess);
-        return false;
+        if (nullptr != sess->m_kcp) { ikcp_release(sess->m_kcp); }
+        if (nullptr != sess->m_buf) { free(sess->m_buf); }
+        if (nullptr != sess->m_streambuf) { free(sess->m_streambuf); }
+        return nullptr;
     }
-    return true;
+    return sess;
 }
 
 
@@ -101,7 +104,7 @@ void
 UDPSession::Destroy(UDPSession *sess) {
     if (nullptr == sess) return;
     if (0 != sess->m_sockfd) { close(sess->m_sockfd); }
-    if (0 != sess->m_kcp) { ikcp_release(sess->m_kcp); }
+    if (nullptr != sess->m_kcp) { ikcp_release(sess->m_kcp); }
     if (nullptr != sess->m_buf) { free(sess->m_buf); }
     if (nullptr != sess->m_streambuf) { free(sess->m_streambuf); }
     delete sess;
