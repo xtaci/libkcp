@@ -20,14 +20,14 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
-    inet_aton(ip, &(saddr.sin_addr));
+    inet_pton(AF_INET, ip, &(saddr.sin_addr));
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
         close(sockfd);
         return nullptr;
     }
 
     UDPSession *sess = new UDPSession;
-    if (!UDPSession::init(sess,sockfd)) {
+    if (!UDPSession::init(sess, sockfd)) {
         close(sockfd);
         return nullptr;
     }
@@ -52,7 +52,7 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
     }
 
     UDPSession *sess = new UDPSession;
-    if (!UDPSession::init(sess,sockfd)) {
+    if (!UDPSession::init(sess, sockfd)) {
         close(sockfd);
         return nullptr;
     }
@@ -72,8 +72,8 @@ UDPSession::init(UDPSession *sess, int sockfd) {
 
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
-    sess->m_buf = (char*)malloc(UDPSession::mtuLimit);
-    sess->m_streambuf =  (char*)malloc(UDPSession::streamBufferLimit);
+    sess->m_buf = (char *) malloc(UDPSession::mtuLimit);
+    sess->m_streambuf = (char *) malloc(UDPSession::streamBufferLimit);
     sess->m_kcp->output = sess->out_wrapper;
 
     if (sess->m_kcp == nullptr || sess->m_buf == nullptr || sess->m_streambuf == nullptr) {
@@ -116,7 +116,6 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
         }
         memcpy(buf, m_streambuf, n);
 
-
         m_streambufsiz -= n;
         if (m_streambufsiz != 0) {
             memmove(m_streambuf, m_streambuf + n, m_streambufsiz);
@@ -125,7 +124,7 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     }
 
     int psz = ikcp_peeksize(m_kcp);
-    if (psz<=0) {
+    if (psz <= 0) {
         return 0;
     }
 
@@ -134,8 +133,8 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     } else {
         ikcp_recv(m_kcp, m_streambuf, UDPSession::streamBufferLimit);
         memcpy(buf, m_streambuf, sz);
-        m_streambufsiz = psz-sz;
-        memmove(m_streambuf, m_streambuf + sz, psz-sz);
+        m_streambufsiz = psz - sz;
+        memmove(m_streambuf, m_streambuf + sz, psz - sz);
         return sz;
     }
 }

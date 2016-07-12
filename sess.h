@@ -9,7 +9,7 @@
 #include "io.h"
 #include <sys/types.h>
 
-class UDPSession :public ReadWriter {
+class UDPSession : public ReadWriter {
 private:
     int m_sockfd;
     ikcpcb *m_kcp;
