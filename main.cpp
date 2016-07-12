@@ -15,16 +15,16 @@ int main() {
     int count;
     char *buf = (char *) malloc(128);
     for (; ;) {
-        sprintf(buf, "%d", count);
+        sprintf(buf, "message:%d", count);
         sess->Write(buf, strlen(buf));
         sess->Update(iclock());
         memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf, 1);
-        printf("%s\n", buf);
+        ssize_t n = sess->Read(buf, 5);
+        if (n > 0){printf("%s\n", buf);}
 
         sleep(1);
         count++;
-        if (count > 20) {
+        if (count > 40) {
             break;
         };
     }
