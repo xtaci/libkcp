@@ -16,7 +16,7 @@ public:
     virtual ssize_t Write(const char *buf, size_t sz) = 0;
 
     // PeekSize returns readable size.
-    virtual ssize_t PeekSize() = 0;
+    virtual size_t PeekSize() = 0;
 };
 
 #endif //KCP_IO_H

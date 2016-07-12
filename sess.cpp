@@ -142,7 +142,7 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     }
 }
 
-ssize_t UDPSession::PeekSize() {
+size_t UDPSession::PeekSize() {
     if (m_streambufsiz > 0) {
         return m_streambufsiz;
     } else {

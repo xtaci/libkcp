@@ -42,7 +42,7 @@ public:
     }
 
     // PeekSize returns currently readable size.
-    ssize_t PeekSize();
+    size_t PeekSize();
 
     // Wrappers for kcp control
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
