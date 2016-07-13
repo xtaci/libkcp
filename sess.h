@@ -30,7 +30,7 @@ public:
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
 
-    // Close release all resource related.
+    // Destroy release all resource related.
     static void Destroy(UDPSession *sess);
 
     // Read reads from kcp with buffer size sz.
