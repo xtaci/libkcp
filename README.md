@@ -1,4 +1,7 @@
 # libkcp
+[![Powered][1]][2]
+[1]: https://img.shields.io/badge/KCP-Powered-blue.svg
+[2]: https://github.com/skywind3000/kcp
 kcp session library for iOS/Android, compatible with [kcp-go](https://github.com/xtaci/kcp-go).
 
 ## Features
