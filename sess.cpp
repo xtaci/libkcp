@@ -23,7 +23,8 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     inet_pton(AF_INET, ip, &(saddr.sin_addr));
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
         close(sockfd);
-        return nullptr; }
+        return nullptr;
+    }
 
 
     UDPSession *sess = UDPSession::createSession(sockfd);
