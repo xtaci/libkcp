@@ -145,15 +145,6 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     }
 }
 
-size_t UDPSession::PeekSize() {
-    if (m_streambufsiz > 0) {
-        return m_streambufsiz;
-    } else {
-        return ikcp_peeksize(m_kcp);
-    }
-}
-
-
 int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
