@@ -69,9 +69,6 @@ UDPSession::createSession(int sockfd) {
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         return nullptr;
     }
-    
-    int value = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 
     UDPSession *sess = new(UDPSession);
     sess->m_sockfd = sockfd;
