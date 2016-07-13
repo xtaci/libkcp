@@ -37,9 +37,7 @@ public:
     ssize_t Read(char *buf, size_t sz) noexcept;
 
     // Write writes into kcp with buffer size sz.
-    inline ssize_t Write(const char *buf, size_t sz) noexcept {
-        return (ssize_t) ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
-    }
+    ssize_t Write(const char *buf, size_t sz) noexcept;
 
     // Wrappers for kcp control
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
@@ -61,7 +59,7 @@ private:
     // output udp packet
     ssize_t output(const void *buffer, size_t length);
 
-    static UDPSession * createSession(int sockfd);
+    static UDPSession *createSession(int sockfd);
 
 private:
     static const size_t mtuLimit = 2048;
