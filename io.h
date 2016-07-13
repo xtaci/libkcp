@@ -7,7 +7,7 @@
 
 #include <sys/types.h>
 
-// ReadWriter has non-blocking semantics no stream
+// ReadWriter has non-blocking semantics on stream.
 class ReadWriter {
 public:
     // Read into buf with size sz, return > 0 for number of bytes read, < 0 for error
