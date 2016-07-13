@@ -145,6 +145,14 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     }
 }
 
+ssize_t
+UDPSession::Write(const char *buf, size_t sz) noexcept {
+    int n = ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
+    if (n == 0) {
+        return sz;
+    } else return n;
+}
+
 int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
