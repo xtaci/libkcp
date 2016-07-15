@@ -11,11 +11,11 @@
 
 class UDPSession : public ReadWriter {
 private:
-    int m_sockfd;
-    ikcpcb *m_kcp;
-    char *m_buf;
-    char *m_streambuf;
-    size_t m_streambufsiz;
+    int m_sockfd{0};
+    ikcpcb *m_kcp{nullptr};
+    char *m_buf{nullptr};
+    char *m_streambuf{nullptr};
+    size_t m_streambufsiz{0};
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -49,7 +49,7 @@ public:
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
 
 private:
-    UDPSession() : m_sockfd(0), m_kcp(nullptr), m_buf(nullptr), m_streambuf(nullptr), m_streambufsiz(0) { };
+    UDPSession() = default;
 
     ~UDPSession() = default;
 
@@ -62,8 +62,8 @@ private:
     static UDPSession *createSession(int sockfd);
 
 private:
-    static const size_t mtuLimit = 2048;
-    static const size_t streamBufferLimit = 65535;
+    static const size_t mtuLimit{2048};
+    static const size_t streamBufferLimit{65535};
 };
 
 #endif //KCP_SESS_H
