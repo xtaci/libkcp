@@ -13,6 +13,20 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 4. Abstraction on Stream(```ReadWriter``` interface).
 5. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.
 
+## Usage
+libkcp was designed as a Frame-Driven library, the main loop was supposed as:
+```
+foreach (frame)          // e.g:  A 30FPS Game
+       UDPSession.Read()
+       UDPSession.Write()
+       UDPSession.Update()
+}
+```
+
+```Read/Write/Update``` are guaranteed to be non-blocking.
+
+please read main.go for library usage.
+
 ## Troubleshooting
 1. C++11 is required for compiling.
 2. Make sure you are using ```Listen()``` function in kcp-go.
