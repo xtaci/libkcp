@@ -32,7 +32,7 @@ The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-bloc
 ```Read/Write/Update``` 函数保证是```非阻塞```的调用。       
 
 Please read ```main.cpp``` for library usage.        
-阅读```main.cpp``` 学习使用例子。      
+阅读```main.cpp``` 学习使用方法。      
 
 ## Troubleshooting
 1. C++11 is required for compiling.  需要C++11进行编译。       
