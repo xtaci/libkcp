@@ -10,7 +10,7 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 1. Optimized for Real-Time Strategy Game.
 2. No Forward Error Correction(FEC).
 3. No Packet Level Encryption.
-4. Abstraction on Stream(```ReadWriter``` interface).
+4. Stream based interface, you can easily switch from your TCP based protocol to libkcp.
 5. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.
 
 ## Usage
