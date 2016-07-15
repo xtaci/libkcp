@@ -10,7 +10,7 @@ kcp 客户端库，可用于iOS/Android, 与[kcp-go](https://github.com/xtaci/kc
 ## Features
 1. Optimized for Real-Time Strategy Game.    针对实时游戏优化设计。
 2. Stream based interface, you can easily switch from your TCP based protocol to libkcp.    流接口，方便切换现有TCP协议。
-3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.    极简设计，拷贝即用。
+3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.    极简设计，拷走即用。
 
 ## Usage
 libkcp was designed as a Frame-Driven library, the main loop was supposed as:       
