@@ -20,8 +20,8 @@ WHILE(NOT GAMEOVER) DO      // e.g:  A 30FPS Game
        Network.Read()
        Network.Write()
        Network.Update()
-       GameLogic()
-       GameRender()
+       Game.Logic()
+       Game.Render()
        Wait(33ms)   // frame ticker
 END
 ```
