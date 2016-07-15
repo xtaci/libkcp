@@ -16,6 +16,8 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 ## Usage
 libkcp was designed as a Frame-Driven library, the main loop was supposed as:
 ```
+GameInit()
+NetworkInit()
 WHILE(NOT GAMEOVER) DO      // e.g:  A 30FPS Game
        Network.Read()
        Network.Write()
@@ -26,10 +28,10 @@ WHILE(NOT GAMEOVER) DO      // e.g:  A 30FPS Game
 END
 ```
 
-```Read/Write/Update``` are guaranteed to be non-blocking.
+The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-blocking***.
 
 Please read ```main.cpp``` for library usage.
 
 ## Troubleshooting
 1. C++11 is required for compiling.
-2. Make sure you are using ```Listen()``` function in kcp-go.
+2. Make sure you are using ```Listen()``` function in kcp-go as server listener.
