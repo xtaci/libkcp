@@ -8,9 +8,9 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 kcp 客户端库，可用于iOS/Android, 与[kcp-go](https://github.com/xtaci/kcp-go)兼容。        
 
 ## Features
-1. Optimized for Real-Time Strategy Game. 针对实时游戏优化设计。
-2. Stream based interface, you can easily switch from your TCP based protocol to libkcp. 流接口，方便切换现有TCP协议。
-3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play. 极简设计，拷贝即用。
+1. Optimized for Real-Time Strategy Game.    针对实时游戏优化设计。
+2. Stream based interface, you can easily switch from your TCP based protocol to libkcp.    流接口，方便切换现有TCP协议。
+3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.    极简设计，拷贝即用。
 
 ## Usage
 libkcp was designed as a Frame-Driven library, the main loop was supposed as:       
@@ -35,5 +35,5 @@ Please read ```main.cpp``` for library usage.
 阅读```main.cpp``` 学习使用方法。      
 
 ## Troubleshooting
-1. C++11 is required for compiling.  需要C++11进行编译。       
+1. C++11 is required for compiling.    需要C++11进行编译。       
 2. Make sure you are using ```Listen()``` function in kcp-go as server listener.   兼容服务器端默认参数，请确保使用标准Listen()函数在服务器端监听。
