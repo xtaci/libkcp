@@ -13,8 +13,8 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.    *极简设计，拷走即用。*
 
 ## ***Usage***
-libkcp has designed as a Frame-Driven library, the main loop was supposed as:       
-*libkcp 被设计为帧驱动的库，主循环如：*     
+libkcp has designed as a ***Frame-Driven*** library, the main loop was supposed as:       
+*libkcp 被设计为***帧驱动***的库，主循环如：*     
 ```
 GameInit()
 NetworkInit()
