@@ -14,7 +14,7 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 
 ## ***Usage***
 libkcp has designed as a ***Frame-Driven*** library, the main loop was supposed as:       
-*libkcp 被设计为***帧驱动***的库，主循环如：*     
+*libkcp 被设计为* ***帧驱动*** *的库，主循环如：*     
 ```
 GameInit()
 NetworkInit()
@@ -29,7 +29,7 @@ End
 ```
 
 The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-blocking***.       
-*```Read/Write/Update``` 函数保证是***非阻塞***的调用。*       
+*```Read/Write/Update``` 函数保证是* ***非阻塞*** *的调用。*       
 
 Please read ```main.cpp``` for library usage.        
 *阅读```main.cpp``` 学习使用方法。*      
