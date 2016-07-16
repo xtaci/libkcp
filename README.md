@@ -29,7 +29,7 @@ END
 ```
 
 The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-blocking***.       
-```Read/Write/Update``` 函数保证是```非阻塞```的调用。       
+```Read/Write/Update``` 函数保证是***非阻塞***的调用。       
 
 Please read ```main.cpp``` for library usage.        
 阅读```main.cpp``` 学习使用方法。      
