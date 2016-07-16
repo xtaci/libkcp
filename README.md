@@ -18,14 +18,14 @@ libkcp 被设计为帧驱动的库，主循环如：
 ```
 GameInit()
 NetworkInit()
-WHILE(NOT GAMEOVER) DO      // e.g:  A 30FPS Game
+While(not gameover) Do      // e.g:  A 30FPS Game
        Network.Read()
        Network.Write()
        Network.Update()
        Game.Logic()
        Game.Render()
        Wait(33ms)   // frame ticker
-END
+End
 ```
 
 The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-blocking***.       
