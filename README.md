@@ -24,7 +24,7 @@ While(not gameover) Do      // e.g:  A 30FPS Game
        Network.Update()
        Game.Logic()
        Game.Render()
-       Wait(33ms)   // frame ticker
+       Wait(33ms)   // clock
 End
 ```
 
