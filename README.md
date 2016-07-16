@@ -36,12 +36,18 @@ Please read ```main.cpp``` for library usage.
 
 ## ***Demo***
 start echo server(golang)       
-```go run kcpserver.go```   
-compile and run libkcp, and watch echo running.      
+```
+$go get github.com/xtaci/kcp-go
+$go run kcpserver.go
+```   
+compile and run libkcp, and watch output.      
 
 *启动echo服务器(golang)*       
-```go run kcpserver.go```      
-*编译并运行项目，观察echo输出。*        
+```
+$go get github.com/xtaci/kcp-go
+$go run kcpserver.go
+```   
+*编译并运行项目，观察输出。*        
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.    *需要C++11进行编译。*       
