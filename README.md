@@ -32,8 +32,17 @@ The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-bloc
 *```Read/Write/Update``` 函数保证是* ***非阻塞*** *的调用。*       
 
 Please read ```main.cpp``` for library usage.        
-*阅读```main.cpp``` 学习使用方法。*      
+*阅读```main.cpp``` 学习使用方法。*   
 
+## ***Demo***
+start echo server(golang)       
+```go run kcpserver.go```   
+compile and run libkcp, and watch echo running.      
+
+*启动echo服务器(golang)*       
+```go run kcpserver.go```      
+*编译并运行项目，观察echo输出。*        
+   
 ## ***Troubleshooting***
 1. C++11 is required for compiling.    *需要C++11进行编译。*       
 2. Make sure you are using ```Listen()``` function in kcp-go as server listener.   *兼容服务器端默认参数，请确保使用标准```Listen()```函数在服务器端监听。*
