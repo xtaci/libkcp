@@ -50,8 +50,8 @@ $go run kcpserver.go
 *编译并运行项目，观察输出。*        
 
 ## ***Caveats***
-1. FEC is not implemented yet.
-2. Packet level encryption is not implemented yet.
+1. FEC has not implemented yet.
+2. Packet level encryption has not implemented yet.
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.    *需要C++11进行编译。*       
