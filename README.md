@@ -10,7 +10,7 @@ kcp client session library for iOS/Android, compatible with [kcp-go](https://git
 ## ***Features***
 1. Optimized for Real-Time Strategy Game.    *针对实时游戏优化设计。*
 2. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.   *流接口，方便切换现有TCP协议，或实现双栈通信。*
-3. Less than 300 LOC, just copy ```sess.cpp sess.h``` to your projects and play.    *极简设计，拷走即用。*
+3. Less than 300 LOC, just copy source codes to your projects and play.    *极简设计，拷走即用。*
 
 ## ***Usage***
 libkcp has designed as a ***Frame-Driven*** library, the main loop was supposed as:       
@@ -48,6 +48,10 @@ $go get github.com/xtaci/kcp-go
 $go run kcpserver.go
 ```   
 *编译并运行项目，观察输出。*        
+
+## ***Caveats***
+1. FEC has not implemented yet.
+2. Packet level encryption has not implemented yet.
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.    *需要C++11进行编译。*       
