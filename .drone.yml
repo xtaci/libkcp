@@ -1,0 +1,11 @@
+cache:
+  mount:
+    - .git
+    - docker/image.tar
+
+build:
+  image: 192.168.1.220:5000/cmake
+  commands:
+    - cmake
+
+
