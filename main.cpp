@@ -12,21 +12,25 @@ int main() {
 
     UDPSession *sess = UDPSession::Dial("127.0.0.1", 9999);
     assert(sess != nullptr);
-    int count;
+    ssize_t nsent = {0};
+    ssize_t nrecv = {0};
     char *buf = (char *) malloc(128);
-    for (; ;) {
-        sprintf(buf, "message:%d", count);
+
+    for (int i=0;i<10;i++) {
+        sprintf(buf, "message:%d", i);
         sess->Write(buf, strlen(buf));
+        nsent += strlen(buf);
+    }
+
+    for(;;) {
         sess->Update(iclock());
         memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf, 5);
+        ssize_t n = sess->Read(buf,128);
         if (n > 0){printf("%s\n", buf);}
+        nrecv += n;
 
-        sleep(1);
-        count++;
-        if (count > 40) {
-            break;
-        };
+        usleep(33);
+        if (nsent == nrecv) break;
     }
     UDPSession::Destroy(sess);
 }
