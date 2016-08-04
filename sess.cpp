@@ -3,12 +3,12 @@
 //
 
 #include "sess.h"
+#include <iostream>
 #include <sys/socket.h>
 #include <sys/fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
-#include <stdio.h>
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
@@ -21,7 +21,16 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
-    inet_pton(AF_INET, ip, &(saddr.sin_addr));
+    int ret = inet_pton(AF_INET, ip, &(saddr.sin_addr));
+    if (ret == 1) { // do nothing
+    } else if (ret == 0) { // try ipv6
+        close(sockfd);
+        return UDPSession::dialIPv6(ip, port);
+    } else if (ret == -1) {
+        close(sockfd);
+        return nullptr;
+    }
+
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
         close(sockfd);
         return nullptr;
@@ -37,7 +46,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 }
 
 UDPSession *
-UDPSession::DialIPv6(const char *ip, uint16_t port) {
+UDPSession::dialIPv6(const char *ip, uint16_t port) {
     int sockfd = socket(PF_INET6, SOCK_DGRAM, 0);
     if (sockfd == -1) {
         return nullptr;
@@ -46,7 +55,10 @@ UDPSession::DialIPv6(const char *ip, uint16_t port) {
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin6_family = AF_INET6;
     saddr.sin6_port = htons(port);
-    inet_pton(AF_INET6, ip, &(saddr.sin6_addr));
+    if (inet_pton(AF_INET6, ip, &(saddr.sin6_addr)) != 1) {
+        close(sockfd);
+        return nullptr;
+    }
 
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr_in6)) < 0) {
         close(sockfd);
@@ -91,7 +103,7 @@ UDPSession::createSession(int sockfd) {
 
 void
 UDPSession::Update(uint32_t current) noexcept {
-    for (; ;) {
+    for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, UDPSession::mtuLimit, 0);
         if (n > 0) {
             ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);

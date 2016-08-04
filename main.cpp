@@ -10,7 +10,7 @@ int main() {
     gettimeofday(&time, NULL);
     srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
-    UDPSession *sess = UDPSession::Dial("127.0.0.1", 9999);
+    UDPSession *sess = UDPSession::Dial("::1", 9999);
     assert(sess != nullptr);
     ssize_t nsent = {0};
     ssize_t nrecv = {0};
