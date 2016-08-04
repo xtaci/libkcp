@@ -24,9 +24,6 @@ public:
     // Dial connects to the remote server and returns UDPSession.
     static UDPSession *Dial(const char *ip, uint16_t port);
 
-    // DialIPv6 is the ipv6 version of Dial.
-    static UDPSession *dialIPv6(const char *ip, uint16_t port);
-
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
 
@@ -52,6 +49,9 @@ private:
     UDPSession() = default;
 
     ~UDPSession() = default;
+
+    // DialIPv6 is the ipv6 version of Dial.
+    static UDPSession *dialIPv6(const char *ip, uint16_t port);
 
     // out_wrapper
     static int out_wrapper(const char *buf, int len, struct IKCPCB *kcp, void *user);

@@ -8,7 +8,6 @@
 #include <sys/fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <string.h>
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
