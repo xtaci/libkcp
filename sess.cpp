@@ -11,30 +11,27 @@
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
-    int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
-    if (sockfd == -1) {
-        return nullptr;
-    }
-
     struct sockaddr_in saddr;
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
     int ret = inet_pton(AF_INET, ip, &(saddr.sin_addr));
+
     if (ret == 1) { // do nothing
     } else if (ret == 0) { // try ipv6
-        close(sockfd);
         return UDPSession::dialIPv6(ip, port);
     } else if (ret == -1) {
-        close(sockfd);
         return nullptr;
     }
 
+    int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+    if (sockfd == -1) {
+        return nullptr;
+    }
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
         close(sockfd);
         return nullptr;
     }
-
 
     UDPSession *sess = UDPSession::createSession(sockfd);
     if (sess == nullptr) {
@@ -46,19 +43,18 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 
 UDPSession *
 UDPSession::dialIPv6(const char *ip, uint16_t port) {
-    int sockfd = socket(PF_INET6, SOCK_DGRAM, 0);
-    if (sockfd == -1) {
-        return nullptr;
-    }
     struct sockaddr_in6 saddr;
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin6_family = AF_INET6;
     saddr.sin6_port = htons(port);
     if (inet_pton(AF_INET6, ip, &(saddr.sin6_addr)) != 1) {
-        close(sockfd);
         return nullptr;
     }
 
+    int sockfd = socket(PF_INET6, SOCK_DGRAM, 0);
+    if (sockfd == -1) {
+        return nullptr;
+    }
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr_in6)) < 0) {
         close(sockfd);
         return nullptr;
