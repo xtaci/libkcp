@@ -2,12 +2,13 @@ language: cpp
 
 compiler: 
     - clang
-    - gcc 
+
+sudo: required
 
 script:
     - cmake .
     - make
-    - apt-get install golang
+    - sudo apt-get install golang
     - export GOPATH=$PWD
     - go get -t -v ./...
     - go run kcpserver.go &

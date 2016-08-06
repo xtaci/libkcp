@@ -15,12 +15,7 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e8f29eef-c100-4215-a4e3-07af97de9a6b" name="Default" comment="update">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
-    </list>
+    <list default="true" id="e8f29eef-c100-4215-a4e3-07af97de9a6b" name="Default" comment="update" />
     <ignored path="kcp.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -446,7 +441,7 @@
       <workItem from="1470046984034" duration="1596000" />
       <workItem from="1470062627949" duration="831000" />
       <workItem from="1470303146102" duration="3171000" />
-      <workItem from="1470474820790" duration="584000" />
+      <workItem from="1470474820790" duration="648000" />
     </task>
     <task id="LOCAL-00001" summary="update">
       <created>1468040340025</created>
@@ -676,7 +671,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6751000" />
+    <option name="totallyTimeSpent" value="6815000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="735" extended-state="6" />
