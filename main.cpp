@@ -11,22 +11,25 @@ int main() {
     srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
     UDPSession *sess = UDPSession::Dial("::1", 9999);
+    sess->NoDelay(1, 20, 2, 1);
+    sess->WndSize(128, 128);
+    sess->SetMtu(1400);
     assert(sess != nullptr);
     ssize_t nsent = {0};
     ssize_t nrecv = {0};
     char *buf = (char *) malloc(128);
 
-    for (int i=0;i<10;i++) {
+    for (int i = 0; i < 10; i++) {
         sprintf(buf, "message:%d", i);
         sess->Write(buf, strlen(buf));
         nsent += strlen(buf);
     }
 
-    for(;;) {
+    for (;;) {
         sess->Update(iclock());
         memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf,128);
-        if (n > 0){printf("%s\n", buf);}
+        ssize_t n = sess->Read(buf, 128);
+        if (n > 0) { printf("%s\n", buf); }
         nrecv += n;
 
         usleep(33);
