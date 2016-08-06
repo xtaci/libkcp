@@ -5,4 +5,4 @@ compiler:
     - clang
 
 script:
-    -  cmake --build . --target kcp
+    - cmake .
