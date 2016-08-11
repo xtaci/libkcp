@@ -1,7 +1,3 @@
-//
-// Created by 理 傅 on 16/7/9.
-//
-
 #ifndef KCP_SESS_H
 #define KCP_SESS_H
 

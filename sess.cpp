@@ -1,7 +1,3 @@
-//
-// Created by 理 傅 on 16/7/9.
-//
-
 #include "sess.h"
 #include <iostream>
 #include <sys/socket.h>

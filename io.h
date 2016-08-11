@@ -1,7 +1,3 @@
-//
-// Created by 理 傅 on 16/7/11.
-//
-
 #ifndef KCP_IO_H
 #define KCP_IO_H
 
