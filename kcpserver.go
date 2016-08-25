@@ -18,7 +18,7 @@ func server() {
 		panic(err)
 	}
 	for {
-		s, err := l.Accept()
+		s, err := l.AcceptKCP()
 		if err != nil {
 			panic(err)
 		}
