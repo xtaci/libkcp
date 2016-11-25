@@ -32,7 +32,7 @@ int main() {
         if (n > 0) { printf("%s\n", buf); }
         nrecv += n;
 
-        usleep(33);
+        usleep(33000);
         if (nsent == nrecv) break;
     }
     UDPSession::Destroy(sess);
