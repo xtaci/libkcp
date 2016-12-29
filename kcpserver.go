@@ -17,6 +17,7 @@ func server() {
 	if err != nil {
 		panic(err)
 	}
+	l.SetDSCP(46)
 	for {
 		s, err := l.AcceptKCP()
 		if err != nil {
