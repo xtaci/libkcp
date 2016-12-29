@@ -156,6 +156,12 @@ UDPSession::Write(const char *buf, size_t sz) noexcept {
 }
 
 int
+UDPSession::SetDSCP(int iptos) noexcept {
+    iptos = (iptos << 2) & 0xFF;
+    return setsockopt(this->m_sockfd, IPPROTO_IP, IP_TOS,  &iptos, sizeof(iptos));
+}
+
+int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);

@@ -32,6 +32,9 @@ public:
     // Write writes into kcp with buffer size sz.
     ssize_t Write(const char *buf, size_t sz) noexcept;
 
+    // Set DSCP value
+    int SetDSCP(int dscp) noexcept;
+
     // Wrappers for kcp control
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
         return ikcp_nodelay(m_kcp, nodelay, interval, resend, nc);
