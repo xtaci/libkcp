@@ -5,10 +5,7 @@
 #ifndef KCP_GALOIS_H
 #define KCP_GALOIS_H
 
-#ifndef _UINT8_T
-#define _UINT8_T
-typedef unsigned char uint8_t;
-#endif /* _UINT8_T */
+#include <stdint.h>
 
 // The number of elements in the field.
 const int fieldSize = 256;
