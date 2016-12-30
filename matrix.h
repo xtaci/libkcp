@@ -20,6 +20,12 @@ public:
     // IdentityMatrix returns an identity matrix of the given size.
     static matrix *identityMatrix(int size);
 
+    // Create a Vandermonde matrix, which is guaranteed to have the
+    // property that any subset of rows that forms a square matrix
+    // is invertible.
+    static matrix * vandermonde(int rows, int cols);
+
+
     static void free(matrix *m);
 
     // Multiply multiplies this matrix (the one on the left) by another
@@ -35,8 +41,13 @@ public:
     // IsSquare will return true if the matrix is square
     bool IsSquare();
 
-    //
+    // SwapRows Exchanges two rows in the matrix.
+    int SwapRows(int r1, int r2);
+
+    //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
+
+
 private:
     uint8_t **m;
     int rows,cols;
