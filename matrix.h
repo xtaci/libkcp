@@ -8,8 +8,7 @@
 #include <stdint.h>
 
 class matrix {
-private:
-    uint8_t **data;
+
 public:
     matrix(const matrix &) = delete;
 
@@ -27,7 +26,19 @@ public:
     // matrix (the one on the right) and returns a new matrix with the result.
     matrix *Multiply(matrix *right);
 
+    // Augment returns the concatenation of this matrix and the matrix on the right.
+    matrix *Augment(matrix *right);
+
+    // Returns a part of this matrix. Data is copied.
+    matrix *SubMatrix(int rmin, int cmin, int rmax, int cmax);
+
+    // IsSquare will return true if the matrix is square
+    bool IsSquare();
+
+    //
+    int gaussianElimination();
 private:
+    uint8_t **m;
     int rows,cols;
     matrix() = default;
 
