@@ -28,6 +28,7 @@ public:
     matrix *Multiply(matrix *right);
 
 private:
+    int rows,cols;
     matrix() = default;
 
     ~matrix() = default;
