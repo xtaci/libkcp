@@ -2,7 +2,6 @@
 #include <sys/time.h>
 #include "sess.h"
 #include <iostream>
-#include "galois.h"
 
 IUINT32 iclock();
 
