@@ -8,12 +8,7 @@
 #include <stdint.h>
 
 class matrix {
-
 public:
-    matrix(const matrix &) = delete;
-
-    matrix &operator=(const matrix &) = delete;
-
     // newMatrix returns a matrix of zeros.
     static matrix *newMatrix(int rows, int cols);
 
@@ -44,16 +39,16 @@ public:
     // SwapRows Exchanges two rows in the matrix.
     int SwapRows(int r1, int r2);
 
+    // Invert returns the inverse of this matrix.
+    // Returns ErrSingular when the matrix is singular and doesn't have an inverse.
+    // The matrix must be square, otherwise ErrNotSquare is returned.
+    matrix * Invert();
+
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-
-private:
     uint8_t **m;
     int rows,cols;
-    matrix() = default;
-
-    ~matrix() = default;
 };
 
 

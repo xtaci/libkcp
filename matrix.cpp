@@ -104,6 +104,22 @@ matrix::IsSquare() {
     return this->rows == this->cols;
 }
 
+matrix *
+matrix::Invert() {
+    if (!IsSquare()) {
+        return nullptr;
+    }
+    auto work = matrix::identityMatrix(rows);
+    work = matrix::Augment(work);
+
+    auto ret = work->gaussianElimination();
+    if (ret != 0 ){
+        return nullptr;
+    }
+
+    return work->SubMatrix(0, rows, rows,rows*2);
+}
+
 int
 matrix::gaussianElimination() {
 
