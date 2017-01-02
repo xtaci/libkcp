@@ -73,6 +73,7 @@ extern "C" {
 #endif
 
 uint8_t galAdd(uint8_t a, uint8_t b);
+
 uint8_t galSub(uint8_t a, uint8_t b);
 
 // galMultiply multiplies to elements of the field.
@@ -86,6 +87,7 @@ uint8_t galDivide(uint8_t a, uint8_t b);
 //
 // The result will be the same as multiplying a times itself n times.
 uint8_t galExp(uint8_t a, uint8_t b);
+
 #ifdef __cplusplus
 }
 #endif

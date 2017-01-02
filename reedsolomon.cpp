@@ -3,10 +3,8 @@
 //
 
 #include <cstdlib>
-#include <stddef.h>
 #include <vector>
 #include "reedsolomon.h"
-#include "matrix.h"
 #include "galois_noasm.h"
 
 ReedSolomon *
