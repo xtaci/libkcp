@@ -20,7 +20,6 @@ public:
     // is invertible.
     static matrix * vandermonde(int rows, int cols);
 
-
     static void free(matrix *m);
 
     // Multiply multiplies this matrix (the one on the left) by another

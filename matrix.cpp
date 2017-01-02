@@ -16,7 +16,7 @@ matrix::newMatrix(int rows, int cols) {
     matrix *m = new(matrix);
     m->rows = rows;
     m->cols = cols;
-    m->m = (uint8_t **) malloc(sizeof(uintptr_t) * rows);
+    m->m = (uint8_t **) malloc(sizeof(uint8_t *) * rows);
     for (int i = 0; i < rows; i++) {
         m->m[i] = (uint8_t *) malloc(sizeof(uint8_t) * cols);
         memset(m->m[i], 0, sizeof(uint8_t) * cols);

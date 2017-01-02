@@ -4,8 +4,10 @@
 
 #include <cstdlib>
 #include <stddef.h>
+#include <vector>
 #include "reedsolomon.h"
 #include "matrix.h"
+#include "galois_noasm.h"
 
 ReedSolomon *
 ReedSolomon::New(int dataShards, int parityShards) {
@@ -51,4 +53,160 @@ ReedSolomon::New(int dataShards, int parityShards) {
     }
     return r;
 }
+
+int
+ReedSolomon::Encode(uint8_t**shards, int dataShards, size_t shardSize) {
+    if (dataShards != this->DataShards) {
+        return -1;
+    }
+
+    // Get the slice of output buffers.
+    uint8_t **output = &shards[DataShards];
+
+    // Do the coding.
+    this->codeSomeShards(parity, shards, output, ParityShards, shardSize);
+    return 0;
+};
+
+
+void
+ReedSolomon::codeSomeShards(uint8_t **matrixRows, uint8_t ** inputs, uint8_t **outputs, int outputCount, size_t byteCount) {
+    for (int c = 0; c < DataShards; c++) {
+        auto in = inputs[c];
+        for (int iRow = 0; iRow < outputCount; iRow++) {
+            if (c == 0) {
+                galMulSlice(matrixRows[iRow][c], in, outputs[iRow], byteCount);
+            } else {
+                galMulSliceXor(matrixRows[iRow][c], in, outputs[iRow], byteCount);
+            }
+        }
+    }
+}
+
+int
+ReedSolomon::Reconstruct(uint8_t ** shards, size_t numShards, int shardSize) {
+    // Quick check: are all of the shards present?  If so, there's
+    // nothing to do.
+    int numberPresent = 0;
+    for (int i = 0; i < Shards; i++) {
+        if (shards[i] != nullptr) {
+            numberPresent++;
+        }
+    }
+
+    if (numberPresent == Shards) {
+        // Cool.  All of the shards data data.  We don't
+        // need to do anything.
+        return 0;
+    }
+
+    // More complete sanity check
+    if (numberPresent < DataShards) {
+        return -1;
+    }
+
+    // Pull out an array holding just the shards that
+    // correspond to the rows of the submatrix.  These shards
+    // will be the input to the decoding process that re-creates
+    // the missing data shards.
+    //
+    // Also, create an array of indices of the valid rows we do have
+    // and the invalid rows we don't have up until we have enough valid rows.
+    uint8_t ** subShards = (uint8_t **) malloc(sizeof(uint8_t *) * DataShards);
+    memset(subShards, 0, sizeof(uint8_t *) * DataShards);
+
+    std::vector<int> validIndices(DataShards, 0);
+    std::vector<int> invalidIndices;
+    int subMatrixRow = 0;
+
+    for (int matrixRow = 0; matrixRow < Shards && subMatrixRow < DataShards; matrixRow++) {
+        if (shards[matrixRow] != nullptr) {
+            subShards[subMatrixRow] = shards[matrixRow];
+            validIndices[subMatrixRow] = matrixRow;
+            subMatrixRow++;
+        } else {
+            invalidIndices.push_back(matrixRow);
+        }
+    }
+
+    // Attempt to get the cached inverted matrix out of the tree
+    // based on the indices of the invalid rows.
+    auto dataDecodeMatrix = tree->GetInvertedMatrix(invalidIndices.data(), invalidIndices.size());
+
+    // If the inverted matrix isn't cached in the tree yet we must
+    // construct it ourselves and insert it into the tree for the
+    // future.  In this way the inversion tree is lazily loaded.
+    if (dataDecodeMatrix == nullptr) {
+        // Pull out the rows of the matrix that correspond to the
+        // shards that we have and build a square matrix.  This
+        // matrix could be used to generate the shards that we have
+        // from the original data.
+        auto subMatrix = matrix::newMatrix(DataShards, DataShards);
+        for (int subMatrixRow = 0; subMatrixRow < validIndices.size(); subMatrixRow++) {
+            for (int c = 0; c < DataShards; c++) {
+                subMatrix->m[subMatrixRow][c] = m->m[validIndices[subMatrixRow]][c];
+            };
+        }
+
+        // Invert the matrix, so we can go from the encoded shards
+        // back to the original data.  Then pull out the row that
+        // generates the shard that we want to decode.  Note that
+        // since this matrix maps back to the original data, it can
+        // be used to create a data shard, but not a parity shard.
+        auto dataDecodeMatrix = subMatrix->Invert();
+        if (dataDecodeMatrix == nullptr) {
+            return -2;
+        }
+
+        // Cache the inverted matrix in the tree for future use keyed on the
+        // indices of the invalid rows.
+        if (int ret = tree->InsertInvertedMatrix(invalidIndices.data(), invalidIndices.size(), dataDecodeMatrix, Shards) && ret != 0) {
+            return -3;
+        }
+    }
+
+    // Re-create any data shards that were missing.
+    //
+    // The input to the coding is all of the shards we actually
+    // have, and the output is the missing data shards.  The computation
+    // is done using the special decode matrix we just built.
+    uint8_t ** outputs = (uint8_t **) malloc(sizeof(uint8_t *) * ParityShards);
+    memset(outputs, 0, sizeof(uint8_t *) * ParityShards);
+
+    uint8_t ** matrixRows = (uint8_t **) malloc(sizeof(uint8_t *) * ParityShards);
+    memset(matrixRows, 0, sizeof(uint8_t *) * ParityShards);
+
+    int outputCount = 0;
+
+    for (int iShard = 0;iShard < DataShards; iShard++) {
+        if (shards[iShard] == nullptr) {
+            shards[iShard] = (uint8_t *) malloc(sizeof(uint8_t) * shardSize);
+            outputs[outputCount] = shards[iShard];
+            matrixRows[outputCount] = dataDecodeMatrix->m[iShard];
+            outputCount++;
+        }
+    }
+    codeSomeShards(matrixRows, subShards, outputs+outputCount, outputCount, shardSize);
+
+    // Now that we have all of the data shards intact, we can
+    // compute any of the parity that is missing.
+    //
+    // The input to the coding is ALL of the data shards, including
+    // any that we just calculated.  The output is whichever of the
+    // data shards were missing.
+    outputCount = 0;
+    for (int iShard = 0;iShard < DataShards; iShard++) {
+        if (shards[iShard] == nullptr) {
+            shards[iShard] = (uint8_t *) malloc(sizeof(uint8_t) * shardSize);
+            outputs[outputCount] = shards[iShard];
+            matrixRows[outputCount] = parity[iShard-DataShards];
+            outputCount++;
+        }
+    }
+    codeSomeShards(matrixRows, shards + DataShards, outputs+outputCount, outputCount, shardSize);
+
+    return 0;
+}
+
+
 

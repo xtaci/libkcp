@@ -18,13 +18,31 @@ inversionTree *inversionTree::newInversionTree(int dataShards, int parityShards)
     return ret;
 }
 
-matrix *inversionTree::GetInvertedMatrix(int *invalidIndices, size_t sz) {
+matrix *
+inversionTree::GetInvertedMatrix(int *invalidIndices, size_t sz) {
     if (sz == 0) {
         return this->root->m;
     }
 
     return root->getInvertedMatrix(invalidIndices, sz, 0);
 }
+
+int
+inversionTree::InsertInvertedMatrix(int *invalidIndices, size_t sz, matrix * matrix, int shards) {
+    if (sz == 0) {
+        return -1;
+    }
+
+    if(!matrix->IsSquare()) {
+        return -2;
+    }
+
+    // Recursively create nodes for the inverted matrix in the tree until
+    // we reach the node to insert the matrix to.  We start by passing in
+    // 0 as the parent index as we start at the root of the tree.
+    root->insertInvertedMatrix(invalidIndices, sz, matrix, shards, 0);
+}
+
 
 matrix *inversionNode::getInvertedMatrix(int *invalidIndices, size_t sz, int parent) {
     // Get the child node to search next from the list of children.  The

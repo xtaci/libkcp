@@ -33,6 +33,12 @@ public:
     // GetInvertedMatrix returns the cached inverted matrix or nil if it
     // is not found in the tree keyed on the indices of invalid rows.
     matrix * GetInvertedMatrix(int *invalidIndices, size_t sz);
+
+    // InsertInvertedMatrix inserts a new inverted matrix into the tree
+    // keyed by the indices of invalid rows.  The total number of shards
+    // is required for creating the proper length lists of child nodes for
+    // each node.
+    int InsertInvertedMatrix(int *invalidIndices, size_t sz, matrix * matrix, int shards);
 private:
     inversionTree() = default;
     ~inversionTree() = default;
