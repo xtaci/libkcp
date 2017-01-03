@@ -29,6 +29,8 @@ inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
 
 int
 inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards) {
+    // If no invalid indices were given then we are done because the
+    // root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
         return -1;
     }
@@ -41,6 +43,8 @@ inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * 
     // we reach the node to insert the matrix to.  We start by passing in
     // 0 as the parent index as we start at the root of the tree.
     root.insertInvertedMatrix(invalidIndices, matrix, shards, 0);
+
+    return 0;
 }
 
 
