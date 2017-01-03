@@ -11,14 +11,14 @@
 inversionTree *inversionTree::newInversionTree(int dataShards, int parityShards) {
     matrix *identity = matrix::identityMatrix(dataShards);
     inversionNode root{
-            .m = identity,
+            .m = std::shared_ptr<matrix>(identity),
             .children = new inversionNode*[dataShards + parityShards](),
     };
     return new inversionTree(root);
 }
 
 
-matrix *
+std::shared_ptr<matrix>
 inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
     if (invalidIndices.size() == 0) {
         return root.m;
@@ -28,7 +28,7 @@ inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
 }
 
 int
-inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards) {
+inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, std::shared_ptr<matrix> matrix, int shards) {
     // If no invalid indices were given then we are done because the
     // root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
@@ -48,7 +48,8 @@ inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * 
 }
 
 
-matrix *inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) {
+std::shared_ptr<matrix>
+inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) {
     // Get the child node to search next from the list of children.  The
     // list of children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
@@ -81,7 +82,8 @@ matrix *inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int 
     return m;
 }
 
-void inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards, int parent){
+void
+inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices,std::shared_ptr<matrix> matrix, int shards, int parent){
     // As above, get the child node to search next from the list of children.
     // The list of children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
@@ -99,10 +101,11 @@ void inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matr
         // of shards minus the first invalid index because the list of
         // invalid indices is sorted, so only this length of errors
         // are possible in the tree.
-        inversionNode * node = new inversionNode;
-        node->children = (inversionNode **) malloc(sizeof(inversionNode *) * (shards - firstIndex));
-        memset(node->children, 0, sizeof(inversionNode *) * (shards - firstIndex));
-        children[firstIndex- parent] = node;
+        auto node = new inversionNode {
+                .m = nullptr,
+                .children = new inversionNode*[shards - firstIndex](),
+        };
+        children[firstIndex- parent] =node;
     }
 
 

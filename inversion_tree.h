@@ -10,10 +10,10 @@
 #include "matrix.h"
 
 struct inversionNode {
-    matrix * m;
+    std::shared_ptr<matrix> m;
     inversionNode **children;
-    matrix* getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
-    void insertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards, int parent);
+    std::shared_ptr<matrix> getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
+    void insertInvertedMatrix(std::vector<int> & invalidIndices, std::shared_ptr<matrix> matrix, int shards, int parent);
 };
 
 class inversionTree {
@@ -31,13 +31,14 @@ public:
 
     // GetInvertedMatrix returns the cached inverted matrix or nil if it
     // is not found in the tree keyed on the indices of invalid rows.
-    matrix * GetInvertedMatrix(std::vector<int> & invalidIndices);
+    std::shared_ptr<matrix> GetInvertedMatrix(std::vector<int> & invalidIndices);
 
     // InsertInvertedMatrix inserts a new inverted matrix into the tree
     // keyed by the indices of invalid rows.  The total number of shards
     // is required for creating the proper length lists of child nodes for
     // each node.
-    int InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards);
+    int InsertInvertedMatrix(std::vector<int> & invalidIndices, std::shared_ptr<matrix> matrix, int shards);
+
 private:
     inline inversionTree(inversionNode r): root(r) {};
     ~inversionTree() = default;

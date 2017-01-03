@@ -21,8 +21,6 @@ public:
     // is invertible.
     static matrix * vandermonde(int rows, int cols);
 
-    static void free(matrix *m);
-
     // Multiply multiplies this matrix (the one on the left) by another
     // matrix (the one on the right) and returns a new matrix with the result.
     matrix *Multiply(matrix *right);
