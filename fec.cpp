@@ -93,16 +93,16 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
     return fec;
 }
 
-fecPacket
+fecPacket *
 FEC::decode(char* data, size_t sz) {
-    fecPacket pkt;
-    data = decode32u(data, &pkt.seqid);
-    data =decode16u(data, &pkt.flag);
+    fecPacket *pkt = new(fecPacket);
+    data = decode32u(data, &pkt->seqid);
+    data =decode16u(data, &pkt->flag);
     struct timeval time;
     gettimeofday(&time, NULL);
-    pkt.ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
-    pkt.data = (char*)malloc(sizeof(char*) * sz);
-    memcpy(pkt.data, data, sz);
+    pkt->ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
+    pkt->data = (char*)malloc(sizeof(char*) * sz);
+    memcpy(pkt->data, data, sz);
     return pkt;
 }
 
@@ -124,20 +124,47 @@ FEC::markFEC(char *data) {
 }
 
 int
-FEC::input(fecPacket pkt, uint8_t ** shards, size_t *numShards, int *shardSize) {
+FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
     uint32_t now = currentMs();
-    if (now-this->lastCheck >= FEC::fecExpire) {
-        for (auto it = this->rx.begin();it !=this->rx.end();) {
-            if (now-it->ts > FEC::fecExpire) {
-                it = this->rx.erase(it);
+    if (now-lastCheck >= FEC::fecExpire) {
+        for (auto it = rx.begin();it !=rx.end();) {
+            if (now - (*it)->ts > FEC::fecExpire) {
+                it = rx.erase(it);
             } else {
                 it++;
             }
         }
-        this->lastCheck = now;
+        lastCheck = now;
     }
 
     // insertion
+    int n = this->rx.size() -1;
+    int insertIdx = 0;
+    for (int i=n;i>=0;i--) {
+        if (pkt->seqid == rx[i]->seqid) {
+            return 0;
+        } else if (pkt->seqid > rx[i]->seqid) {
+            insertIdx = i + 1;
+            break;
+        }
+    }
+    // insert into ordered rx queue
+    rx.insert(rx.begin()+insertIdx, pkt);
+
+    // shard range for current packet
+    int shardBegin = pkt->seqid - pkt->seqid%shardSize;
+    int shardEnd = shardBegin + shardSize - 1;
+
+    // max search range in ordered queue for current shard
+    int searchBegin = insertIdx - pkt->seqid%shardSize;
+    if (searchBegin < 0) {
+        searchBegin = 0;
+    }
+
+    int searchEnd = searchBegin + shardSize - 1;
+    if (searchEnd >= rx.size()) {
+        searchEnd = rx.size()-1;
+    }
     return 0;
 }
 

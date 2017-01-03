@@ -25,16 +25,16 @@ public:
     FEC(const FEC &) = delete;
     FEC &operator=(const FEC &) = delete;
 
-    fecPacket decode(char* data, size_t sz);
+    fecPacket * decode(char* data, size_t sz);
     void markData(char * data);
     void markFEC(char * data);
 
-    int input(fecPacket pkt, uint8_t ** shards, size_t *numShards, int *shardSize);
+    int input(fecPacket * pkt, uint8_t ** shards, size_t *numShards, int *shardSize);
 private:
     FEC() = default;
     ~FEC() = default;
 
-    std::vector<fecPacket> rx; // ordered receive queue
+    std::vector<fecPacket*> rx; // ordered receive queue
     int rxlimit;  // queue size limit
     int dataShards;
     int parityShards;
