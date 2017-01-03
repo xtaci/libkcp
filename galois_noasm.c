@@ -4,16 +4,17 @@
 
 #include <stddef.h>
 #include "galois_noasm.h"
+#include "galois.h"
 
-extern const uint8_t mulTable[256][256];
+extern const byte mulTable[256][256];
 
-void galMulSlice(char c, char in[], char out[], size_t sz) {
+void galMulSlice(byte c, byte in[], byte out[], size_t sz) {
     for (int i=0;i<sz;i++) {
         out[i] = mulTable[c][in[i]];
     }
 }
 
-void galMulSliceXor(char c, char in[], char out[], size_t sz) {
+void galMulSliceXor(byte c, byte in[], byte out[], size_t sz) {
     for (int i=0;i<sz;i++) {
         out[i] ^= mulTable[c][in[i]];
     }

@@ -45,7 +45,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // with the original data.
     r->tree = inversionTree::newInversionTree(dataShards, parityShards);
 
-    r->parity = (char**)malloc(sizeof(char*) * parityShards);
+    r->parity = (byte**)malloc(sizeof(byte*) * parityShards);
     for (int i=0;i<parityShards;i++) {
         r->parity[i] = r->m->m[dataShards+i];
     }
@@ -53,13 +53,13 @@ ReedSolomon::New(int dataShards, int parityShards) {
 }
 
 int
-ReedSolomon::Encode(char **shards, int count, size_t shardSize) {
+ReedSolomon::Encode(byte **shards, int count, size_t shardSize) {
     if (count != this->DataShards) {
         return -1;
     }
 
     // Get the slice of output buffers.
-    char **output = &shards[DataShards];
+    byte **output = &shards[DataShards];
 
     // Do the coding.
     this->codeSomeShards(parity, shards, output, ParityShards, shardSize);
@@ -68,7 +68,7 @@ ReedSolomon::Encode(char **shards, int count, size_t shardSize) {
 
 
 void
-ReedSolomon::codeSomeShards(char **matrixRows, char ** inputs, char **outputs, int outputCount, size_t byteCount) {
+ReedSolomon::codeSomeShards(byte **matrixRows, byte ** inputs, byte **outputs, int outputCount, size_t byteCount) {
     for (int c = 0; c < DataShards; c++) {
         auto in = inputs[c];
         for (int iRow = 0; iRow < outputCount; iRow++) {
@@ -82,7 +82,7 @@ ReedSolomon::codeSomeShards(char **matrixRows, char ** inputs, char **outputs, i
 }
 
 int
-ReedSolomon::Reconstruct(char ** shards, size_t numShards, size_t shardSize) {
+ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
     // Quick check: are all of the shards present?  If so, there's
     // nothing to do.
     int numberPresent = 0;
@@ -110,8 +110,8 @@ ReedSolomon::Reconstruct(char ** shards, size_t numShards, size_t shardSize) {
     //
     // Also, create an array of indices of the valid rows we do have
     // and the invalid rows we don't have up until we have enough valid rows.
-    char ** subShards = (char **) malloc(sizeof(uint8_t *) * DataShards);
-    memset(subShards, 0, sizeof(char *) * DataShards);
+    byte ** subShards = (byte **) malloc(sizeof(byte *) * DataShards);
+    memset(subShards, 0, sizeof(byte *) * DataShards);
 
     std::vector<int> validIndices(DataShards, 0);
     std::vector<int> invalidIndices;
@@ -168,17 +168,17 @@ ReedSolomon::Reconstruct(char ** shards, size_t numShards, size_t shardSize) {
     // The input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special decode matrix we just built.
-    char ** outputs = (char **) malloc(sizeof(char *) * ParityShards);
+    byte ** outputs = (byte **) malloc(sizeof(byte *) * ParityShards);
     memset(outputs, 0, sizeof(uint8_t *) * ParityShards);
 
-    char ** matrixRows = (char **) malloc(sizeof(char *) * ParityShards);
+    byte ** matrixRows = (byte **) malloc(sizeof(byte *) * ParityShards);
     memset(matrixRows, 0, sizeof(uint8_t *) * ParityShards);
 
     int outputCount = 0;
 
     for (int iShard = 0;iShard < DataShards; iShard++) {
         if (shards[iShard] == nullptr) {
-            shards[iShard] = (char *) malloc(sizeof(char) * shardSize);
+            shards[iShard] = (byte *) malloc(sizeof(byte) * shardSize);
             outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = dataDecodeMatrix->m[iShard];
             outputCount++;
@@ -195,7 +195,7 @@ ReedSolomon::Reconstruct(char ** shards, size_t numShards, size_t shardSize) {
     outputCount = 0;
     for (int iShard = 0;iShard < DataShards; iShard++) {
         if (shards[iShard] == nullptr) {
-            shards[iShard] = (char *) malloc(sizeof(char) * shardSize);
+            shards[iShard] = (byte *) malloc(sizeof(byte) * shardSize);
             outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = parity[iShard-DataShards];
             outputCount++;

@@ -31,8 +31,8 @@ public:
     void markData(char * data);
     void markFEC(char * data);
 
-    int input(fecPacket * pkt, std::vector<char *> *recovered);
-    int calcECC(char ** data, int offset, int dataShard, int shardSize);
+    int input(fecPacket * pkt, std::vector<byte *> *recovered);
+    int calcECC(byte ** data, int offset, int dataShard, int shardSize);
 private:
     FEC() = default;
     ~FEC() = default;
@@ -53,7 +53,7 @@ private:
     static const uint16_t typeFEC = 0xf2;
     static const int fecExpire{30000};
 
-    char **shardBuffer;
+    byte **shardBuffer;
     static const int mtuLimit {2048};
 
     void zerobuffer();

@@ -6,6 +6,7 @@
 #define KCP_MATRIX_H
 
 #include <stdint.h>
+#include "galois.h"
 
 class matrix {
 public:
@@ -46,7 +47,7 @@ public:
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-    char **m;
+    byte **m;
     int rows,cols;
 };
 

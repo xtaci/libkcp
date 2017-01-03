@@ -6,12 +6,13 @@
 #define KCP_GALOIS_NOASM_H
 #include <stddef.h>
 #include <stdint.h>
+#include "galois.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-void galMulSlice(char c, char in[], char out[], size_t sz);
-void galMulSliceXor(char c, char in[], char out[],size_t sz);
+void galMulSlice(byte c, byte in[], byte out[], size_t sz);
+void galMulSliceXor(byte c, byte in[], byte out[],size_t sz);
 
 #ifdef __cplusplus
 }

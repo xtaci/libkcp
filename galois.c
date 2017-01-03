@@ -4,19 +4,24 @@
 
 #include "galois.h"
 
-char galAdd(char a, char b) {
+extern const int fieldSize;
+extern byte mulTable[256][256];
+extern const byte logTable[];
+extern byte expTable[];
+
+byte galAdd(byte a, byte b) {
     return a ^ b;
 }
 
-char galSub(char a, char b) {
+byte galSub(byte a, byte b) {
     return a ^ b;
 }
 
-char galMultiply(char a, char b) {
+byte galMultiply(byte a, byte b) {
     return mulTable[a][b];
 }
 
-char galDivide(char a, char b) {
+byte galDivide(byte a, byte b) {
     if (a == 0) {
         return 0;
     }
@@ -35,7 +40,7 @@ char galDivide(char a, char b) {
     return expTable[logResult];
 }
 
-char galExp(char a, char n) {
+byte galExp(byte a, byte n) {
     if (n == 0) {
         return 1;
     }

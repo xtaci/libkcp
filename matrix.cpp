@@ -16,10 +16,10 @@ matrix::newMatrix(int rows, int cols) {
     matrix *m = new(matrix);
     m->rows = rows;
     m->cols = cols;
-    m->m = (char **) malloc(sizeof(char *) * rows);
+    m->m = (byte **) malloc(sizeof(byte *) * rows);
     for (int i = 0; i < rows; i++) {
-        m->m[i] = (char *) malloc(sizeof(char) * cols);
-        memset(m->m[i], 0, sizeof(char) * cols);
+        m->m[i] = (byte *) malloc(sizeof(byte) * cols);
+        memset(m->m[i], 0, sizeof(byte) * cols);
     }
     return m;
 }
@@ -92,7 +92,7 @@ matrix::SwapRows(int r1, int r2) {
         return -1;
     }
 
-    char *tmp;
+    byte *tmp;
     tmp = m[r2];
     m[r2] = m[r1];
     m[r1] = tmp;

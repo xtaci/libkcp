@@ -89,9 +89,9 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
     fec->paws = (0xffffffff/uint32_t(fec->shardSize) - 1) * uint32_t(fec->shardSize);
     auto enc = ReedSolomon::New(dataShards, parityShards);
     fec->enc = enc;
-    fec->shardBuffer = (char **)malloc(sizeof(char*) * fec->shardSize);
+    fec->shardBuffer = (byte **)malloc(sizeof(byte*) * fec->shardSize);
     for (int i=0;i<fec->shardSize;i++) {
-        fec->shardBuffer[i] = (char*)malloc(sizeof(char) * FEC::mtuLimit);
+        fec->shardBuffer[i] = (byte*)malloc(sizeof(byte) * FEC::mtuLimit);
     }
 
     return fec;
@@ -129,7 +129,7 @@ FEC::markFEC(char *data) {
 }
 
 int
-FEC::input(fecPacket *pkt, std::vector<char *> *recovered) {
+FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
     uint32_t now = currentMs();
     if (now-lastCheck >= FEC::fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
@@ -230,13 +230,13 @@ FEC::input(fecPacket *pkt, std::vector<char *> *recovered) {
 }
 
 int
-FEC::calcECC(char ** data, int offset, int count, int maxlen) {
+FEC::calcECC(byte ** data, int offset, int count, int maxlen) {
     if (count != shardSize) {
         return -1;
     }
 
-    char ** shards = (char**)malloc(sizeof(char*) * shardSize);
-    memset(shards, 0, sizeof(char*) * shardSize);
+    byte ** shards = (byte**)malloc(sizeof(byte*) * shardSize);
+    memset(shards, 0, sizeof(byte*) * shardSize);
     for (int i=0;i<count;i++) {
         shards[i] = data[i] + offset;
     }
