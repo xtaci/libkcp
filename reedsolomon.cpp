@@ -45,7 +45,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // with the original data.
     r->tree = inversionTree::newInversionTree(dataShards, parityShards);
 
-    r->parity = (uint8_t**)malloc(sizeof(uint8_t*) * parityShards);
+    r->parity = (char**)malloc(sizeof(char*) * parityShards);
     for (int i=0;i<parityShards;i++) {
         r->parity[i] = r->m->m[dataShards+i];
     }
@@ -53,13 +53,13 @@ ReedSolomon::New(int dataShards, int parityShards) {
 }
 
 int
-ReedSolomon::Encode(uint8_t**shards, int dataShards, size_t shardSize) {
+ReedSolomon::Encode(char **shards, int dataShards, size_t shardSize) {
     if (dataShards != this->DataShards) {
         return -1;
     }
 
     // Get the slice of output buffers.
-    uint8_t **output = &shards[DataShards];
+    char **output = &shards[DataShards];
 
     // Do the coding.
     this->codeSomeShards(parity, shards, output, ParityShards, shardSize);
@@ -68,7 +68,7 @@ ReedSolomon::Encode(uint8_t**shards, int dataShards, size_t shardSize) {
 
 
 void
-ReedSolomon::codeSomeShards(uint8_t **matrixRows, uint8_t ** inputs, uint8_t **outputs, int outputCount, size_t byteCount) {
+ReedSolomon::codeSomeShards(char **matrixRows, char ** inputs, char **outputs, int outputCount, size_t byteCount) {
     for (int c = 0; c < DataShards; c++) {
         auto in = inputs[c];
         for (int iRow = 0; iRow < outputCount; iRow++) {
@@ -82,7 +82,7 @@ ReedSolomon::codeSomeShards(uint8_t **matrixRows, uint8_t ** inputs, uint8_t **o
 }
 
 int
-ReedSolomon::Reconstruct(uint8_t ** shards, size_t numShards, int shardSize) {
+ReedSolomon::Reconstruct(char ** shards, size_t numShards, size_t shardSize) {
     // Quick check: are all of the shards present?  If so, there's
     // nothing to do.
     int numberPresent = 0;
@@ -110,8 +110,8 @@ ReedSolomon::Reconstruct(uint8_t ** shards, size_t numShards, int shardSize) {
     //
     // Also, create an array of indices of the valid rows we do have
     // and the invalid rows we don't have up until we have enough valid rows.
-    uint8_t ** subShards = (uint8_t **) malloc(sizeof(uint8_t *) * DataShards);
-    memset(subShards, 0, sizeof(uint8_t *) * DataShards);
+    char ** subShards = (char **) malloc(sizeof(uint8_t *) * DataShards);
+    memset(subShards, 0, sizeof(char *) * DataShards);
 
     std::vector<int> validIndices(DataShards, 0);
     std::vector<int> invalidIndices;
@@ -168,17 +168,17 @@ ReedSolomon::Reconstruct(uint8_t ** shards, size_t numShards, int shardSize) {
     // The input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special decode matrix we just built.
-    uint8_t ** outputs = (uint8_t **) malloc(sizeof(uint8_t *) * ParityShards);
+    char ** outputs = (char **) malloc(sizeof(char *) * ParityShards);
     memset(outputs, 0, sizeof(uint8_t *) * ParityShards);
 
-    uint8_t ** matrixRows = (uint8_t **) malloc(sizeof(uint8_t *) * ParityShards);
+    char ** matrixRows = (char **) malloc(sizeof(char *) * ParityShards);
     memset(matrixRows, 0, sizeof(uint8_t *) * ParityShards);
 
     int outputCount = 0;
 
     for (int iShard = 0;iShard < DataShards; iShard++) {
         if (shards[iShard] == nullptr) {
-            shards[iShard] = (uint8_t *) malloc(sizeof(uint8_t) * shardSize);
+            shards[iShard] = (char *) malloc(sizeof(char) * shardSize);
             outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = dataDecodeMatrix->m[iShard];
             outputCount++;
@@ -195,7 +195,7 @@ ReedSolomon::Reconstruct(uint8_t ** shards, size_t numShards, int shardSize) {
     outputCount = 0;
     for (int iShard = 0;iShard < DataShards; iShard++) {
         if (shards[iShard] == nullptr) {
-            shards[iShard] = (uint8_t *) malloc(sizeof(uint8_t) * shardSize);
+            shards[iShard] = (char *) malloc(sizeof(char) * shardSize);
             outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = parity[iShard-DataShards];
             outputCount++;

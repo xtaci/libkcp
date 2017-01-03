@@ -89,6 +89,11 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
     fec->paws = (0xffffffff/uint32_t(fec->shardSize) - 1) * uint32_t(fec->shardSize);
     auto enc = ReedSolomon::New(dataShards, parityShards);
     fec->enc = enc;
+    fec->shardBuffer = (char **)malloc(sizeof(char*) * fec->shardSize);
+    for (int i=0;i<fec->shardSize;i++) {
+        fec->shardBuffer[i] = (char*)malloc(sizeof(char) * FEC::mtuLimit);
+    }
+
     return fec;
 }
 
@@ -124,7 +129,7 @@ FEC::markFEC(char *data) {
 }
 
 int
-FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
+FEC::input(fecPacket *pkt, std::vector<char *> *recovered) {
     uint32_t now = currentMs();
     if (now-lastCheck >= FEC::fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
@@ -172,8 +177,7 @@ FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
         int first = -1;
         int maxlen = 0;
 
-        char ** shards = (char **) malloc(sizeof(char *) * shardSize);
-        memset(shards, 0 , sizeof(char *) * shardSize);
+        std::vector<int> shards(shardSize);
         std::vector<bool> shardsflag(shardSize, false);
 
         for (int i = searchBegin; i <= searchEnd; i++) {
@@ -181,7 +185,7 @@ FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
             if (seqid > shardEnd) {
                 break;
             } else if (seqid >= shardBegin) {
-                shards[seqid%shardSize] = rx[i]->data;
+                shards[seqid%shardSize] = i;
                 shardsflag[seqid%shardSize] = true;
                 numshard++;
                 if (rx[i]->flag == typeData) {
@@ -199,15 +203,37 @@ FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
         if (numDataShard == dataShards) { // no lost
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         } else if (numshard >= dataShards) { // recoverable
+            zerobuffer();
             for (int k=0;k<shardSize;k++){
                 if (!shardsflag[k]) {
-
+                    memcpy(shardBuffer[k], rx[shards[k]]->data, rx[shards[k]]->sz);
                 }
             }
+
+            if (int ret = enc->Reconstruct(shardBuffer, shardSize, FEC::mtuLimit) && ret== 0 ){
+                for (int k=0;k<dataShards;k++){
+                    if (!shardsflag[k]) {
+                        recovered->push_back(shardBuffer[k]);
+                    }
+                }
+            }
+            rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         }
     }
 
+    // keep rxlimit
+    if (rx.size() > rxlimit) {
+        rx.erase(rx.begin());
+    }
+
     return 0;
+}
+
+void
+FEC::zerobuffer() {
+    for (int i=0;i<shardSize;i++) {
+        memset(shardBuffer[i], 0, FEC::mtuLimit);
+    }
 }
 
 

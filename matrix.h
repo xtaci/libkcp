@@ -46,7 +46,7 @@ public:
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-    uint8_t **m;
+    char **m;
     int rows,cols;
 };
 

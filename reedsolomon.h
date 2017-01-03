@@ -25,7 +25,7 @@ public:
     // Each shard is a byte array, and they must all be the same size.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
-    int Encode(uint8_t**shards, int dataShards, size_t shardSize);
+    int Encode(char**shards, int dataShards, size_t shardSize);
 
     // Multiplies a subset of rows from a coding matrix by a full set of
     // input shards to produce some output shards.
@@ -36,7 +36,7 @@ public:
     // The number of outputs computed, and the
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(uint8_t **matrixRows, uint8_t ** inputs, uint8_t **outputs, int outputCount, size_t byteCount);
+    void codeSomeShards(char **matrixRows, char ** inputs, char **outputs, int outputCount, size_t byteCount);
 
     // Reconstruct will recreate the missing shards, if possible.
     //
@@ -51,7 +51,7 @@ public:
     //
     // The reconstructed shard set is complete, but integrity is not verified.
     // Use the Verify function to check if data set is ok.
-    int Reconstruct(uint8_t ** shards, size_t numShards, int shardSize);
+    int Reconstruct(char ** shards, size_t numShards, size_t shardSize);
 
 private:
     int DataShards;  // Number of data shards, should not be modified.
@@ -60,7 +60,7 @@ private:
 
     matrix *m;
     inversionTree *tree;
-    uint8_t **parity;
+    char **parity;
 
     ReedSolomon() = default;
     ~ReedSolomon() = default;

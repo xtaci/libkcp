@@ -4,19 +4,19 @@
 
 #include "galois.h"
 
-uint8_t galAdd(uint8_t a, uint8_t b) {
+char galAdd(char a, char b) {
     return a ^ b;
 }
 
-uint8_t galSub(uint8_t a, uint8_t b) {
+char galSub(char a, char b) {
     return a ^ b;
 }
 
-uint8_t galMultiply(uint8_t a, uint8_t b) {
+char galMultiply(char a, char b) {
     return mulTable[a][b];
 }
 
-uint8_t galDivide(uint8_t a, uint8_t b) {
+char galDivide(char a, char b) {
     if (a == 0) {
         return 0;
     }
@@ -35,7 +35,7 @@ uint8_t galDivide(uint8_t a, uint8_t b) {
     return expTable[logResult];
 }
 
-uint8_t galExp(uint8_t a, uint8_t n) {
+char galExp(char a, char n) {
     if (n == 0) {
         return 1;
     }

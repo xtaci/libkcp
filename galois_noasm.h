@@ -10,8 +10,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void galMulSlice(uint8_t c, uint8_t in[], uint8_t out[], size_t sz);
-void galMulSliceXor(uint8_t c, uint8_t in[], uint8_t out[],size_t sz);
+void galMulSlice(char c, char in[], char out[], size_t sz);
+void galMulSliceXor(char c, char in[], char out[],size_t sz);
 
 #ifdef __cplusplus
 }
