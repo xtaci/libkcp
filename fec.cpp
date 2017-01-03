@@ -89,7 +89,6 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
     fec->paws = (0xffffffff/uint32_t(fec->shardSize) - 1) * uint32_t(fec->shardSize);
     auto enc = ReedSolomon::New(dataShards, parityShards);
     fec->enc = enc;
-    fec->shards = (char **) malloc(sizeof(char *) * fec->shardSize);
     return fec;
 }
 
@@ -102,6 +101,7 @@ FEC::decode(char* data, size_t sz) {
     gettimeofday(&time, NULL);
     pkt->ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
     pkt->data = (char*)malloc(sizeof(char*) * sz);
+    pkt->sz = sz;
     memcpy(pkt->data, data, sz);
     return pkt;
 }
@@ -149,7 +149,7 @@ FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
         }
     }
     // insert into ordered rx queue
-    rx.insert(rx.begin()+insertIdx, pkt);
+    rx.insert(rx.begin()+insertIdx, std::shared_ptr<fecPacket>(pkt));
 
     // shard range for current packet
     int shardBegin = pkt->seqid - pkt->seqid%shardSize;
@@ -165,6 +165,48 @@ FEC::input(fecPacket *pkt, uint8_t ** shards, size_t *numShards, int *sz) {
     if (searchEnd >= rx.size()) {
         searchEnd = rx.size()-1;
     }
+
+    if (searchEnd > searchBegin && searchEnd-searchBegin+1 >= dataShards) {
+        int numshard = 0;
+        int numDataShard = 0;
+        int first = -1;
+        int maxlen = 0;
+
+        char ** shards = (char **) malloc(sizeof(char *) * shardSize);
+        memset(shards, 0 , sizeof(char *) * shardSize);
+        std::vector<bool> shardsflag(shardSize, false);
+
+        for (int i = searchBegin; i <= searchEnd; i++) {
+            auto seqid = rx[i]->seqid;
+            if (seqid > shardEnd) {
+                break;
+            } else if (seqid >= shardBegin) {
+                shards[seqid%shardSize] = rx[i]->data;
+                shardsflag[seqid%shardSize] = true;
+                numshard++;
+                if (rx[i]->flag == typeData) {
+                    numDataShard++;
+                }
+                if (numshard == 1) {
+                    first = i;
+                }
+                if (rx[i]->sz > maxlen) {
+                    maxlen = rx[i]->sz;
+                }
+            }
+        }
+
+        if (numDataShard == dataShards) { // no lost
+            rx.erase(rx.begin()+first, rx.begin() + first+numshard);
+        } else if (numshard >= dataShards) { // recoverable
+            for (int k=0;k<shardSize;k++){
+                if (!shardsflag[k]) {
+
+                }
+            }
+        }
+    }
+
     return 0;
 }
 
