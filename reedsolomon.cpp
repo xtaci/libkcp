@@ -17,10 +17,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
         return nullptr;
     }
 
-    ReedSolomon * r = new ReedSolomon;
-    r->DataShards = dataShards;
-    r->ParityShards = parityShards;
-    r->Shards = dataShards + parityShards;
+    ReedSolomon * r = new ReedSolomon(dataShards, parityShards);
 
     // Start with a Vandermonde matrix.  This matrix would work,
     // in theory, but doesn't have the property that the data

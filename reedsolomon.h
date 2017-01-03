@@ -55,15 +55,19 @@ public:
     int Reconstruct(byte ** shards, size_t numShards, size_t shardSize);
 
 private:
-    int DataShards;  // Number of data shards, should not be modified.
-    int ParityShards; // Number of parity shards, should not be modified.
-    int Shards; // Total number of shards. Calculated, and should not be modified.
+    const int DataShards;  // Number of data shards, should not be modified.
+    const int ParityShards; // Number of parity shards, should not be modified.
+    const int Shards; // Total number of shards. Calculated, and should not be modified.
 
     std::shared_ptr<matrix> m;
     std::shared_ptr<inversionTree> tree;
     byte **parity;
 
-    ReedSolomon() = default;
+    inline ReedSolomon(int dataShards, int parityShards):
+            DataShards(dataShards),
+            ParityShards(parityShards),
+            Shards(dataShards + parityShards){}
+
     ~ReedSolomon() = default;
 };
 
