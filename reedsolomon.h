@@ -59,8 +59,8 @@ private:
     int ParityShards; // Number of parity shards, should not be modified.
     int Shards; // Total number of shards. Calculated, and should not be modified.
 
-    matrix *m;
-    inversionTree *tree;
+    std::shared_ptr<matrix> m;
+    std::shared_ptr<inversionTree> tree;
     byte **parity;
 
     ReedSolomon() = default;

@@ -36,14 +36,14 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // invertible.
     auto top = vm->SubMatrix(0,0, dataShards,dataShards);
     top = top->Invert();
-    r->m = vm->Multiply(top);
+    r->m = std::shared_ptr<matrix>(vm->Multiply(top));
 
     // Inverted matrices are cached in a tree keyed by the indices
     // of the invalid rows of the data to reconstruct.
     // The inversion root node will have the identity matrix as
     // its inversion matrix because it implies there are no errors
     // with the original data.
-    r->tree = inversionTree::newInversionTree(dataShards, parityShards);
+    r->tree = std::shared_ptr<inversionTree>(inversionTree::newInversionTree(dataShards, parityShards));
 
     r->parity = (byte**)malloc(sizeof(byte*) * parityShards);
     for (int i=0;i<parityShards;i++) {

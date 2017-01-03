@@ -19,7 +19,6 @@ struct inversionNode {
 class inversionTree {
 public:
     inversionTree(const inversionTree &) = delete;
-
     inversionTree &operator=(const inversionTree &) = delete;
 
 
@@ -41,8 +40,6 @@ public:
 
 private:
     inline inversionTree(inversionNode r): root(r) {};
-    ~inversionTree() = default;
-
     inversionNode root;
 };
 
