@@ -32,6 +32,7 @@ public:
     void markFEC(char * data);
 
     int input(fecPacket * pkt, std::vector<char *> *recovered);
+    int calcECC(char ** data, int offset, int dataShard, int shardSize);
 private:
     FEC() = default;
     ~FEC() = default;

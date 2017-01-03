@@ -53,8 +53,8 @@ ReedSolomon::New(int dataShards, int parityShards) {
 }
 
 int
-ReedSolomon::Encode(char **shards, int dataShards, size_t shardSize) {
-    if (dataShards != this->DataShards) {
+ReedSolomon::Encode(char **shards, int count, size_t shardSize) {
+    if (count != this->DataShards) {
         return -1;
     }
 

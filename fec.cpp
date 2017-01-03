@@ -229,6 +229,23 @@ FEC::input(fecPacket *pkt, std::vector<char *> *recovered) {
     return 0;
 }
 
+int
+FEC::calcECC(char ** data, int offset, int count, int maxlen) {
+    if (count != shardSize) {
+        return -1;
+    }
+
+    char ** shards = (char**)malloc(sizeof(char*) * shardSize);
+    memset(shards, 0, sizeof(char*) * shardSize);
+    for (int i=0;i<count;i++) {
+        shards[i] = data[i] + offset;
+    }
+
+    this->enc->Encode(shards, count, maxlen - offset);
+    return 0;
+}
+
+
 void
 FEC::zerobuffer() {
     for (int i=0;i<shardSize;i++) {
