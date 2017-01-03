@@ -6,14 +6,14 @@
 #define KCP_INVERSION_TREE_H
 
 #include <cstddef>
+#include <vector>
 #include "matrix.h"
 
-class inversionNode {
-public:
+struct inversionNode {
     matrix * m;
     inversionNode **children;
-    matrix* getInvertedMatrix(int *invalidIndices, size_t sz, int parent);
-    void insertInvertedMatrix(int *invalidIndices, size_t sz, matrix * matrix, int shards, int parent);
+    matrix* getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
+    void insertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards, int parent);
 };
 
 class inversionTree {
@@ -22,7 +22,6 @@ public:
 
     inversionTree &operator=(const inversionTree &) = delete;
 
-    inversionNode * root;
 
     // newInversionTree initializes a tree for storing inverted matrices.
     // Note that the root node is the identity matrix as it implies
@@ -32,16 +31,18 @@ public:
 
     // GetInvertedMatrix returns the cached inverted matrix or nil if it
     // is not found in the tree keyed on the indices of invalid rows.
-    matrix * GetInvertedMatrix(int *invalidIndices, size_t sz);
+    matrix * GetInvertedMatrix(std::vector<int> & invalidIndices);
 
     // InsertInvertedMatrix inserts a new inverted matrix into the tree
     // keyed by the indices of invalid rows.  The total number of shards
     // is required for creating the proper length lists of child nodes for
     // each node.
-    int InsertInvertedMatrix(int *invalidIndices, size_t sz, matrix * matrix, int shards);
+    int InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix * matrix, int shards);
 private:
-    inversionTree() = default;
+    inline inversionTree(inversionNode r): root(r) {};
     ~inversionTree() = default;
+
+    inversionNode root;
 };
 
 

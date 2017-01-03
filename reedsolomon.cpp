@@ -129,7 +129,7 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
 
     // Attempt to get the cached inverted matrix out of the tree
     // based on the indices of the invalid rows.
-    auto dataDecodeMatrix = tree->GetInvertedMatrix(invalidIndices.data(), invalidIndices.size());
+    auto dataDecodeMatrix = tree->GetInvertedMatrix(invalidIndices);
 
     // If the inverted matrix isn't cached in the tree yet we must
     // construct it ourselves and insert it into the tree for the
@@ -158,7 +158,7 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
-        if (int ret = tree->InsertInvertedMatrix(invalidIndices.data(), invalidIndices.size(), dataDecodeMatrix, Shards) && ret != 0) {
+        if (int ret = tree->InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, Shards) && ret != 0) {
             return -3;
         }
     }
