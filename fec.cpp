@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include "fec.h"
 #include "ikcp.h"
+#include "sess.h"
 
 /* encode 16 bits unsigned int (lsb) */
 static inline char *encode16u(char *p, unsigned short w)
@@ -124,7 +125,20 @@ FEC::markFEC(char *data) {
 
 int
 FEC::input(fecPacket pkt, uint8_t ** shards, size_t *numShards, int *shardSize) {
+    uint32_t now = currentMs();
+    if (now-this->lastCheck >= FEC::fecExpire) {
+        for (auto it = this->rx.begin();it !=this->rx.end();) {
+            if (now-it->ts > FEC::fecExpire) {
+                it = this->rx.erase(it);
+            } else {
+                it++;
+            }
+        }
+        this->lastCheck = now;
+    }
 
+    // insertion
+    return 0;
 }
 
 

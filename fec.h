@@ -30,7 +30,6 @@ public:
     void markFEC(char * data);
 
     int input(fecPacket pkt, uint8_t ** shards, size_t *numShards, int *shardSize);
-
 private:
     FEC() = default;
     ~FEC() = default;
@@ -51,7 +50,7 @@ private:
     static const size_t fecHeaderSizePlus2{fecHeaderSize+2};
     static const char typeData = 0xf1;
     static const char typeFEC = 0xf2;
-    static const int fecExpire;
+    static const int fecExpire{30000};
 };
 
 
