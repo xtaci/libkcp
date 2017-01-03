@@ -8,21 +8,21 @@
 #include "fec.h"
 #include "ikcp.h"
 
-/* decode 32 bits unsigned int (lsb) */
-static inline void decode32u(const char *p, uint32_t *l)
+/* encode 16 bits unsigned int (lsb) */
+static inline char *encode16u(char *p, unsigned short w)
 {
 #if IWORDS_BIG_ENDIAN
-    *l = *(const unsigned char*)(p + 3);
-	*l = *(const unsigned char*)(p + 2) + (*l << 8);
-	*l = *(const unsigned char*)(p + 1) + (*l << 8);
-	*l = *(const unsigned char*)(p + 0) + (*l << 8);
+    *(unsigned char*)(p + 0) = (w & 255);
+	*(unsigned char*)(p + 1) = (w >> 8);
 #else
-    *l = *(uint32_t*)p;
+    *(unsigned short*)(p) = w;
 #endif
+    p += 2;
+    return p;
 }
 
 /* decode 16 bits unsigned int (lsb) */
-static inline void decode16u(const char *p, uint16_t *w)
+static inline char *decode16u(char *p, unsigned short *w)
 {
 #if IWORDS_BIG_ENDIAN
     *w = *(const unsigned char*)(p + 1);
@@ -30,6 +30,44 @@ static inline void decode16u(const char *p, uint16_t *w)
 #else
     *w = *(const unsigned short*)p;
 #endif
+    p += 2;
+    return p;
+}
+
+/* encode 32 bits unsigned int (lsb) */
+static inline char *encode32u(char *p, IUINT32 l)
+{
+#if IWORDS_BIG_ENDIAN
+    *(unsigned char*)(p + 0) = (unsigned char)((l >>  0) & 0xff);
+	*(unsigned char*)(p + 1) = (unsigned char)((l >>  8) & 0xff);
+	*(unsigned char*)(p + 2) = (unsigned char)((l >> 16) & 0xff);
+	*(unsigned char*)(p + 3) = (unsigned char)((l >> 24) & 0xff);
+#else
+    *(IUINT32*)p = l;
+#endif
+    p += 4;
+    return p;
+}
+
+/* decode 32 bits unsigned int (lsb) */
+static inline char *decode32u(char *p, IUINT32 *l)
+{
+#if IWORDS_BIG_ENDIAN
+    *l = *(const unsigned char*)(p + 3);
+	*l = *(const unsigned char*)(p + 2) + (*l << 8);
+	*l = *(const unsigned char*)(p + 1) + (*l << 8);
+	*l = *(const unsigned char*)(p + 0) + (*l << 8);
+#else
+    *l = *(const IUINT32*)p;
+#endif
+    p += 4;
+    return p;
+}
+
+fecPacket::~fecPacket() {
+    if (this->data != nullptr) {
+        free(this->data);
+    }
 }
 
 FEC *
@@ -57,8 +95,8 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
 fecPacket
 FEC::decode(char* data, size_t sz) {
     fecPacket pkt;
-    decode32u(data, &pkt.seqid);
-    decode16u(data+4, &pkt.flag);
+    data = decode32u(data, &pkt.seqid);
+    data =decode16u(data, &pkt.flag);
     struct timeval time;
     gettimeofday(&time, NULL);
     pkt.ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
@@ -66,4 +104,27 @@ FEC::decode(char* data, size_t sz) {
     memcpy(pkt.data, data, sz);
     return pkt;
 }
+
+void
+FEC::markData(char *data) {
+    data = encode32u(data,this->next);
+    data = encode16u(data,FEC::typeData);
+    this->next++;
+}
+
+void
+FEC::markFEC(char *data) {
+    data = encode32u(data,this->next);
+    data = encode16u(data,FEC::typeFEC);
+    this->next++;
+    if (this->next >= this->paws) { // paws would only occurs in markFEC
+        this->next = 0;
+    }
+}
+
+int
+FEC::input(fecPacket pkt, uint8_t ** shards, size_t *numShards, int *shardSize) {
+
+}
+
 

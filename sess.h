@@ -4,6 +4,7 @@
 #include "ikcp.h"
 #include "io.h"
 #include <sys/types.h>
+#include <sys/time.h>
 
 class UDPSession : public ReadWriter {
 private:
@@ -64,5 +65,12 @@ private:
     static const size_t mtuLimit{2048};
     static const size_t streamBufferLimit{65535};
 };
+
+inline uint32_t currentMs() {
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return uint32_t((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
 
 #endif //KCP_SESS_H
