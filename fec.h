@@ -28,7 +28,7 @@ public:
     void markFEC(char * data);
 
     int input(fecPacket * pkt, std::vector<byte *> *recovered);
-    int calcECC(byte ** data, int offset, int dataShard, int shardSize);
+    std::vector<row> calcECC(std::vector<row> &data);
 
 private:
     std::vector<std::shared_ptr<fecPacket>> rx; // ordered receive queue
