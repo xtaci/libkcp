@@ -225,7 +225,11 @@ FEC::calcECC(byte ** data, int offset, int count, int maxlen) {
     }
 
     std::vector<row> shards(totalShards);
-    for (int i=0;i<count;i++) {
+    for (int i=dataShards;i<shards.size();i++) {
+        shards[i]->resize(maxlen - offset);
+    }
+
+    for (int i=0;i<dataShards;i++) {
         shards[i] = std::make_shared<std::vector<byte>>(data[i] + offset, data[i] + maxlen);
     }
 
