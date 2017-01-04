@@ -10,9 +10,9 @@ matrix::newMatrix(size_t rows, size_t cols) {
     matrix m;
     m.rows = rows;
     m.cols = cols;
-    m.m = std::vector<row>(rows);
+    m.m.resize(rows);
     for (auto i = 0; i < rows; i++) {
-        m.m[i] = std::make_shared<std::vector<byte>>(cols, 0);
+        m.m[i]->resize(cols);
     }
     return m;
 }
