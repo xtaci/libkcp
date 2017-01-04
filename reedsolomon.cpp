@@ -34,7 +34,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
 
     // Inverted matrices are cached in a tree keyed by the indices
     // of the invalid rows of the data to reconstruct.
-    // The inversion root node will have the identity matrix as
+    // The inversion m_root node will have the identity matrix as
     // its inversion matrix because it implies there are no errors
     // with the original data.
     r->tree = inversionTree::newInversionTree(dataShards, parityShards);

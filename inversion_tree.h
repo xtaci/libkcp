@@ -9,16 +9,16 @@
 #include "matrix.h"
 
 struct inversionNode {
-    matrix m;
-    std::vector<std::shared_ptr<inversionNode>> children;
-    matrix getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
-    void insertInvertedMatrix(std::vector<int> & invalidIndices, matrix &matrix, int shards, int parent);
+    struct matrix m_matrix;
+    std::vector<std::shared_ptr<inversionNode>> m_children;
+    struct matrix getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
+    void insertInvertedMatrix(std::vector<int> & invalidIndices, struct matrix &matrix, int shards, int parent);
 };
 
 class inversionTree {
 public:
     // newInversionTree initializes a tree for storing inverted matrices.
-    // Note that the root node is the identity matrix as it implies
+    // Note that the m_root node is the identity matrix as it implies
     // there were no errors with the original data.
     static inversionTree newInversionTree(int dataShards, int parityShards);
 
@@ -33,7 +33,7 @@ public:
     int InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix &matrix, int shards);
 
 private:
-    inversionNode root;
+    inversionNode m_root;
 };
 
 

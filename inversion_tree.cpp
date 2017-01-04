@@ -6,8 +6,8 @@
 
 inversionTree inversionTree::newInversionTree(int dataShards, int parityShards) {
     inversionTree tree;
-    tree.root.children.resize(dataShards + parityShards);
-    tree.root.m = matrix::identityMatrix(dataShards);
+    tree.m_root.m_children.resize(dataShards + parityShards);
+    tree.m_root.m_matrix = matrix::identityMatrix(dataShards);
     return tree;
 }
 
@@ -15,16 +15,16 @@ inversionTree inversionTree::newInversionTree(int dataShards, int parityShards) 
 matrix
 inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
     if (invalidIndices.size() == 0) {
-        return root.m;
+        return m_root.m_matrix;
     }
 
-    return root.getInvertedMatrix(invalidIndices, 0);
+    return m_root.getInvertedMatrix(invalidIndices, 0);
 }
 
 int
 inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix & matrix, int shards) {
     // If no invalid indices were given then we are done because the
-    // root node is already set with the identity matrix.
+    // m_root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
         return -1;
     }
@@ -35,22 +35,22 @@ inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix & 
 
     // Recursively create nodes for the inverted matrix in the tree until
     // we reach the node to insert the matrix to.  We start by passing in
-    // 0 as the parent index as we start at the root of the tree.
-    root.insertInvertedMatrix(invalidIndices, matrix, shards, 0);
+    // 0 as the parent index as we start at the m_root of the tree.
+    m_root.insertInvertedMatrix(invalidIndices, matrix, shards, 0);
 
     return 0;
 }
 
 matrix
 inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) {
-    // Get the child node to search next from the list of children.  The
-    // list of children starts relative to the parent index passed in
+    // Get the child node to search next from the list of m_children.  The
+    // list of m_children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
     // search recursively, the first invalid index gets popped off the list,
-    // so when searching through the list of children, use that first invalid
+    // so when searching through the list of m_children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    auto node = children[firstIndex-parent];
+    auto node = m_children[firstIndex-parent];
 
     // If the child node doesn't exist in the list yet, fail fast by
     // returning, so we can construct and insert the proper inverted matrix.
@@ -72,31 +72,31 @@ inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) 
     // node.  Return it, however keep in mind that the matrix could still be
     // nil because intermediary nodes in the tree are created sometimes with
     // their inversion matrices uninitialized.
-    return m;
+    return m_matrix;
 }
 
 void
-inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matrix &matrix, int shards, int parent){
-    // As above, get the child node to search next from the list of children.
-    // The list of children starts relative to the parent index passed in
+inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, struct matrix &matrix, int shards, int parent){
+    // As above, get the child node to search next from the list of m_children.
+    // The list of m_children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
     // search recursively, the first invalid index gets popped off the list,
-    // so when searching through the list of children, use that first invalid
+    // so when searching through the list of m_children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    auto node = children[firstIndex-parent];
+    auto node = m_children[firstIndex-parent];
 
     // If the child node doesn't exist in the list yet, create a new
     // node because we have the writer lock and add it to the list
-    // of children.
+    // of m_children.
     if (node == nullptr) {
-        // Make the length of the list of children equal to the number
+        // Make the length of the list of m_children equal to the number
         // of shards minus the first invalid index because the list of
         // invalid indices is sorted, so only this length of errors
         // are possible in the tree.
         auto node = std::make_shared<inversionNode>();
-        node->children.resize(shards - firstIndex);
-        children[firstIndex - parent] = node;
+        node->m_children.resize(shards - firstIndex);
+        m_children[firstIndex - parent] = node;
     }
 
 
@@ -111,7 +111,7 @@ inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matrix &m
         std::vector<int> subvector(invalidIndices.begin() +1,invalidIndices.end());
         insertInvertedMatrix(subvector, matrix, shards, firstIndex+1);
     } else {
-        this->m = matrix;
+        this->m_matrix = matrix;
     }
 }
 
