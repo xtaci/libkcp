@@ -162,7 +162,7 @@ matrix::gaussianElimination() {
 }
 
 matrix
-matrix::vandermonde(int rows, int cols) {
+matrix::vandermonde(size_t rows, size_t cols) {
     matrix result = matrix::newMatrix(rows, cols);
     for (auto r = 0;r<rows;r++) {
         for (auto c=0;c<cols;c++) {

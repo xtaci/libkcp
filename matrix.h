@@ -20,7 +20,7 @@ struct matrix {
     // Create a Vandermonde matrix, which is guaranteed to have the
     // property that any subset of rows that forms a square matrix
     // is invertible.
-    static matrix vandermonde(int rows, int cols);
+    static matrix vandermonde(size_t rows, size_t cols);
 
     // Multiply multiplies this matrix (the one on the left) by another
     // matrix (the one on the right) and returns a new matrix with the result.
