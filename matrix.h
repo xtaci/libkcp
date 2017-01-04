@@ -46,10 +46,10 @@ struct matrix {
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-    std::vector<row> m;
-    size_t rows,cols;
+    std::vector<row> data;
+    size_t rows{0},cols{0};
 
-    inline byte& at(int row , int col) { return (*(m[row]))[col]; }
+    inline byte& at(size_t row , size_t col) { return (*(data[row]))[col]; }
     inline size_t size() {return rows*cols;}
 };
 

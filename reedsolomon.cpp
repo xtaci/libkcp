@@ -41,7 +41,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
 
     r->parity = std::vector<row>(parityShards);
     for (int i=0;i<parityShards;i++) {
-        r->parity[i] = r->m.m[dataShards+i];
+        r->parity[i] = r->m.data[dataShards+i];
     }
     return r;
 }
@@ -177,7 +177,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         if (shards[iShard]->size() == 0) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
             outputs[outputCount] = shards[iShard];
-            matrixRows[outputCount] = dataDecodeMatrix.m[iShard];
+            matrixRows[outputCount] = dataDecodeMatrix.data[iShard];
             outputCount++;
         }
     }

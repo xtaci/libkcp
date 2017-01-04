@@ -10,9 +10,9 @@ matrix::newMatrix(size_t rows, size_t cols) {
     matrix m;
     m.rows = rows;
     m.cols = cols;
-    m.m.resize(rows);
+    m.data.resize(rows);
     for (auto i = 0; i < rows; i++) {
-        m.m[i]->resize(cols);
+        m.data[i]->resize(cols);
     }
     return m;
 }
@@ -29,9 +29,13 @@ matrix::identityMatrix(int size) {
 
 matrix
 matrix::Multiply(matrix &right) {
-    matrix result = matrix::newMatrix(this->rows, right.cols);
+    if (cols != right.size()) {
+        return matrix{};
+    }
 
-    for (int r = 0; r < result.rows; r++) {
+    matrix result = matrix::newMatrix(rows, right.cols);
+
+    for (auto r = 0; r < result.rows; r++) {
         for (auto c = 0; c < result.cols; c++) {
             byte value = 0;
             for (auto i = 0; i < this->cols; i++) {
@@ -77,7 +81,7 @@ matrix::SwapRows(int r1, int r2) {
         return -1;
     }
 
-    std::swap(m[r1], m[r2]);
+    std::swap(data[r1], data[r2]);
     return 0;
 }
 
@@ -104,7 +108,6 @@ matrix::Invert() {
 
 int
 matrix::gaussianElimination() {
-
     auto rows = this->rows;
     auto columns = this->cols;
     // Clear out the part below the main diagonal and scale the main
