@@ -59,7 +59,7 @@ private:
     const int m_parityShards; // Number of parity shards, should not be modified.
     const int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
-    std::shared_ptr<matrix> m;
+    matrix m;
     std::shared_ptr<inversionTree> tree;
     std::vector<row> parity;
 

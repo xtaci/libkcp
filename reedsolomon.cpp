@@ -22,18 +22,15 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // Start with a Vandermonde matrix.  This matrix would work,
     // in theory, but doesn't have the property that the data
     // shards are unchanged after encoding.
-    matrix * vm  = matrix::vandermonde(r->m_totalShards, r->m_dataShards);
-    if (vm == nullptr){
-        return nullptr;
-    }
+    matrix vm  = matrix::vandermonde(r->m_totalShards, r->m_dataShards);
 
     // Multiply by the inverse of the top square of the matrix.
     // This will make the top square be the identity matrix, but
     // preserve the property that any square subset of rows  is
     // invertible.
-    auto top = vm->SubMatrix(0,0, dataShards,dataShards);
-    top = top->Invert();
-    r->m = std::shared_ptr<matrix>(vm->Multiply(top));
+    auto top = vm.SubMatrix(0,0, dataShards,dataShards);
+    top = top.Invert();
+    r->m =vm.Multiply(top);
 
     // Inverted matrices are cached in a tree keyed by the indices
     // of the invalid rows of the data to reconstruct.
@@ -44,7 +41,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
 
     r->parity = std::vector<row>(parityShards);
     for (int i=0;i<parityShards;i++) {
-        r->parity[i] = r->m->m[dataShards+i];
+        r->parity[i] = r->m.m[dataShards+i];
     }
     return r;
 }
@@ -138,7 +135,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // If the inverted matrix isn't cached in the tree yet we must
     // construct it ourselves and insert it into the tree for the
     // future.  In this way the inversion tree is lazily loaded.
-    if (dataDecodeMatrix == nullptr) {
+    if (dataDecodeMatrix.size() != 0) {
         // Pull out the rows of the matrix that correspond to the
         // shards that we have and build a square matrix.  This
         // matrix could be used to generate the shards that we have
@@ -146,7 +143,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         auto subMatrix = matrix::newMatrix(m_dataShards, m_dataShards);
         for (int subMatrixRow = 0; subMatrixRow < validIndices.size(); subMatrixRow++) {
             for (int c = 0; c < m_dataShards; c++) {
-                subMatrix->at(subMatrixRow,c) = m->at(validIndices[subMatrixRow], c);
+                subMatrix.at(subMatrixRow,c) = m.at(validIndices[subMatrixRow], c);
             };
         }
 
@@ -155,14 +152,14 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         // generates the shard that we want to decode.  Note that
         // since this matrix maps back to the original data, it can
         // be used to create a data shard, but not a parity shard.
-        auto dataDecodeMatrix = subMatrix->Invert();
-        if (dataDecodeMatrix == nullptr) {
+        auto dataDecodeMatrix = subMatrix.Invert();
+        if (dataDecodeMatrix.size() == 0) {
             return -2;
         }
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
-        if (int ret = tree->InsertInvertedMatrix(invalidIndices, std::shared_ptr<matrix>(dataDecodeMatrix), m_totalShards) && ret != 0) {
+        if (int ret = tree->InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards) && ret != 0) {
             return -3;
         }
     }
@@ -180,7 +177,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         if (shards[iShard]->size() == 0) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
             outputs[outputCount] = shards[iShard];
-            matrixRows[outputCount] = dataDecodeMatrix->m[iShard];
+            matrixRows[outputCount] = dataDecodeMatrix.m[iShard];
             outputCount++;
         }
     }

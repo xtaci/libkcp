@@ -5,78 +5,66 @@
 #include "galois.h"
 #include "matrix.h"
 
-matrix *
-matrix::newMatrix(int rows, int cols) {
-    if (rows <= 0 || cols <= 0) {
-        return nullptr;
-    }
-
-    matrix *m = new(matrix);
-    m->rows = rows;
-    m->cols = cols;
-    m->m =  std::vector<row>(rows);
+matrix
+matrix::newMatrix(size_t rows, size_t cols) {
+    matrix m;
+    m.rows = rows;
+    m.cols = cols;
+    m.m = std::vector<row>(rows);
     for (auto i = 0; i < rows; i++) {
-        m->m[i] = std::make_shared<std::vector<byte>>(cols, 0);
+        m.m[i] = std::make_shared<std::vector<byte>>(cols, 0);
     }
     return m;
 }
 
-matrix *
+matrix
 matrix::identityMatrix(int size) {
-    matrix *m = matrix::newMatrix(size, size);
+    matrix m = matrix::newMatrix(size, size);
     for (auto i = 0; i < size; i++) {
-        m->at(i,i) = 1;
+        m.at(i,i) = 1;
     }
     return m;
 }
 
 
-matrix *
-matrix::Multiply(matrix *right) {
-    if (this->rows != right->cols) {
-        return nullptr;
-    }
+matrix
+matrix::Multiply(matrix &right) {
+    matrix result = matrix::newMatrix(this->rows, right.cols);
 
-    matrix *result = matrix::newMatrix(this->rows, right->cols);
-
-    for (int r = 0; r < result->rows; r++) {
-        for (auto c = 0; c < result->cols; c++) {
+    for (int r = 0; r < result.rows; r++) {
+        for (auto c = 0; c < result.cols; c++) {
             byte value = 0;
             for (auto i = 0; i < this->cols; i++) {
-                value ^= galMultiply(at(r,i), right->at(i,c));
+                value ^= galMultiply(at(r,i), right.at(i,c));
             }
-            result->at(r,c) = value;
+            result.at(r,c) = value;
         }
     }
     return result;
 }
 
-matrix *
-matrix::Augment(matrix *right) {
-    if (this->rows != right->cols) {
-        return nullptr;
-    }
-
-    matrix *result = matrix::newMatrix(this->rows, this->cols + right->cols);
+matrix
+matrix::Augment(matrix &right) {
+    matrix result = matrix::newMatrix(this->rows, this->cols + right.cols);
 
     for (auto r = 0; r < this->rows; r++) {
         for (auto c = 0; c < this->cols; c++) {
-            result->at(r,c)  = at(r,c);
+            result.at(r,c)  = at(r,c);
         }
         auto cols = this->cols;
-        for (auto c = 0; c < right->cols; c++) {
-            result->at(r,cols+c)  = right->at(r,c);
+        for (auto c = 0; c < right.cols; c++) {
+            result.at(r,cols+c)  = right.at(r,c);
         }
     }
     return result;
 }
 
-matrix *
+matrix
 matrix::SubMatrix(int rmin, int cmin, int rmax, int cmax) {
-    matrix *result = matrix::newMatrix(rmax - rmin, cmax - cmin);
+    matrix result = matrix::newMatrix(rmax - rmin, cmax - cmin);
     for (auto r = rmin; r < rmax; r++) {
         for (auto c = cmin; c < cmax; c++) {
-            result->at(r- rmin, c - cmin) = at(r,c);
+            result.at(r- rmin, c - cmin) = at(r,c);
         }
     }
     return result;
@@ -98,20 +86,20 @@ matrix::IsSquare() {
     return this->rows == this->cols;
 }
 
-matrix *
+matrix
 matrix::Invert() {
     if (!IsSquare()) {
-        return nullptr;
+        return matrix{};
     }
     auto work = matrix::identityMatrix(rows);
     work = matrix::Augment(work);
 
-    auto ret = work->gaussianElimination();
+    auto ret = work.gaussianElimination();
     if (ret != 0 ){
-        return nullptr;
+        return matrix{};
     }
 
-    return work->SubMatrix(0, rows, rows,rows*2);
+    return work.SubMatrix(0, rows, rows,rows*2);
 }
 
 int
@@ -173,12 +161,12 @@ matrix::gaussianElimination() {
     return 0;
 }
 
-matrix *
+matrix
 matrix::vandermonde(int rows, int cols) {
-    matrix * result = matrix::newMatrix(rows, cols);
+    matrix result = matrix::newMatrix(rows, cols);
     for (auto r = 0;r<rows;r++) {
         for (auto c=0;c<cols;c++) {
-            result->at(r,c) = galExp(byte(r), byte(c));
+            result.at(r,c) = galExp(byte(r), byte(c));
         }
     }
     return result;

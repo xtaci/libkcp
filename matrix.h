@@ -10,28 +10,27 @@
 
 using row = std::shared_ptr<std::vector<byte>>;
 
-class matrix {
-public:
+struct matrix {
     // newMatrix returns a matrix of zeros.
-    static matrix *newMatrix(int rows, int cols);
+    static matrix newMatrix(size_t rows, size_t cols);
 
     // IdentityMatrix returns an identity matrix of the given size.
-    static matrix *identityMatrix(int size);
+    static matrix identityMatrix(int size);
 
     // Create a Vandermonde matrix, which is guaranteed to have the
     // property that any subset of rows that forms a square matrix
     // is invertible.
-    static matrix * vandermonde(int rows, int cols);
+    static matrix vandermonde(int rows, int cols);
 
     // Multiply multiplies this matrix (the one on the left) by another
     // matrix (the one on the right) and returns a new matrix with the result.
-    matrix *Multiply(matrix *right);
+    matrix Multiply(matrix &right);
 
     // Augment returns the concatenation of this matrix and the matrix on the right.
-    matrix *Augment(matrix *right);
+    matrix Augment(matrix &right);
 
     // Returns a part of this matrix. Data is copied.
-    matrix *SubMatrix(int rmin, int cmin, int rmax, int cmax);
+    matrix SubMatrix(int rmin, int cmin, int rmax, int cmax);
 
     // IsSquare will return true if the matrix is square
     bool IsSquare();
@@ -42,15 +41,16 @@ public:
     // Invert returns the inverse of this matrix.
     // Returns ErrSingular when the matrix is singular and doesn't have an inverse.
     // The matrix must be square, otherwise ErrNotSquare is returned.
-    matrix * Invert();
+    matrix Invert();
 
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
     std::vector<row> m;
-    int rows,cols;
+    size_t rows,cols;
 
     inline byte& at(int row , int col) { return (*(m[row]))[col]; }
+    inline size_t size() {return rows*cols;}
 };
 
 
