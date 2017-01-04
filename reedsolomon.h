@@ -60,7 +60,7 @@ private:
     const int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
     matrix m;
-    std::shared_ptr<inversionTree> tree;
+    inversionTree tree;
     std::vector<row> parity;
 
     inline ReedSolomon(int dataShards, int parityShards):

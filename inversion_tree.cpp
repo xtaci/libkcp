@@ -4,13 +4,11 @@
 
 #include "inversion_tree.h"
 
-inversionTree *inversionTree::newInversionTree(int dataShards, int parityShards) {
-    matrix identity = matrix::identityMatrix(dataShards);
-    inversionNode root{
-            .m = identity,
-            .children = new inversionNode*[dataShards + parityShards](),
-    };
-    return new inversionTree(root);
+inversionTree inversionTree::newInversionTree(int dataShards, int parityShards) {
+    inversionTree tree;
+    tree.root.children.resize(dataShards + parityShards);
+    tree.root.m = matrix::identityMatrix(dataShards);
+    return tree;
 }
 
 
@@ -52,7 +50,7 @@ inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) 
     // so when searching through the list of children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    inversionNode *node = children[firstIndex-parent];
+    auto node = children[firstIndex-parent];
 
     // If the child node doesn't exist in the list yet, fail fast by
     // returning, so we can construct and insert the proper inverted matrix.
@@ -86,7 +84,7 @@ inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matrix &m
     // so when searching through the list of children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    inversionNode * node = children[firstIndex-parent];
+    auto node = children[firstIndex-parent];
 
     // If the child node doesn't exist in the list yet, create a new
     // node because we have the writer lock and add it to the list
@@ -96,10 +94,9 @@ inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, matrix &m
         // of shards minus the first invalid index because the list of
         // invalid indices is sorted, so only this length of errors
         // are possible in the tree.
-        auto node = new inversionNode {
-                .children = new inversionNode*[shards - firstIndex](),
-        };
-        children[firstIndex- parent] =node;
+        auto node = std::make_shared<inversionNode>();
+        node->children.resize(shards - firstIndex);
+        children[firstIndex - parent] = node;
     }
 
 

@@ -30,14 +30,14 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // invertible.
     auto top = vm.SubMatrix(0,0, dataShards,dataShards);
     top = top.Invert();
-    r->m =vm.Multiply(top);
+    r->m = vm.Multiply(top);
 
     // Inverted matrices are cached in a tree keyed by the indices
     // of the invalid rows of the data to reconstruct.
     // The inversion root node will have the identity matrix as
     // its inversion matrix because it implies there are no errors
     // with the original data.
-    r->tree = std::shared_ptr<inversionTree>(inversionTree::newInversionTree(dataShards, parityShards));
+    r->tree = inversionTree::newInversionTree(dataShards, parityShards);
 
     r->parity = std::vector<row>(parityShards);
     for (int i=0;i<parityShards;i++) {
@@ -130,7 +130,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
     // Attempt to get the cached inverted matrix out of the tree
     // based on the indices of the invalid rows.
-    auto dataDecodeMatrix = tree->GetInvertedMatrix(invalidIndices);
+    auto dataDecodeMatrix = tree.GetInvertedMatrix(invalidIndices);
 
     // If the inverted matrix isn't cached in the tree yet we must
     // construct it ourselves and insert it into the tree for the
@@ -159,7 +159,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
-        if (int ret = tree->InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards) && ret != 0) {
+        if (int ret = tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards) && ret != 0) {
             return -3;
         }
     }
