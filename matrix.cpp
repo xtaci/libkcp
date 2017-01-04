@@ -17,7 +17,7 @@ matrix::newMatrix(int rows, int cols) {
     m->rows = rows;
     m->cols = cols;
     m->m =  std::vector<row>(rows);
-    for (int i = 0; i < rows; i++) {
+    for (auto i = 0; i < rows; i++) {
         m->m[i] = std::make_shared<std::vector<byte>>(cols, 0);
     }
     return m;
@@ -26,7 +26,7 @@ matrix::newMatrix(int rows, int cols) {
 matrix *
 matrix::identityMatrix(int size) {
     matrix *m = matrix::newMatrix(size, size);
-    for (int i = 0; i < size; i++) {
+    for (auto i = 0; i < size; i++) {
         m->at(i,i) = 1;
     }
     return m;
@@ -42,9 +42,9 @@ matrix::Multiply(matrix *right) {
     matrix *result = matrix::newMatrix(this->rows, right->cols);
 
     for (int r = 0; r < result->rows; r++) {
-        for (int c = 0; c < result->cols; c++) {
+        for (auto c = 0; c < result->cols; c++) {
             byte value = 0;
-            for (int i = 0; i < this->cols; i++) {
+            for (auto i = 0; i < this->cols; i++) {
                 value ^= galMultiply(at(r,i), right->at(i,c));
             }
             result->at(r,c) = value;
@@ -61,12 +61,12 @@ matrix::Augment(matrix *right) {
 
     matrix *result = matrix::newMatrix(this->rows, this->cols + right->cols);
 
-    for (int r = 0; r < this->rows; r++) {
-        for (int c = 0; c < this->cols; c++) {
+    for (auto r = 0; r < this->rows; r++) {
+        for (auto c = 0; c < this->cols; c++) {
             result->at(r,c)  = at(r,c);
         }
-        int cols = this->cols;
-        for (int c = 0; c < right->cols; c++) {
+        auto cols = this->cols;
+        for (auto c = 0; c < right->cols; c++) {
             result->at(r,cols+c)  = right->at(r,c);
         }
     }
@@ -76,8 +76,8 @@ matrix::Augment(matrix *right) {
 matrix *
 matrix::SubMatrix(int rmin, int cmin, int rmax, int cmax) {
     matrix *result = matrix::newMatrix(rmax - rmin, cmax - cmin);
-    for (int r = rmin; r < rmax; r++) {
-        for (int c = cmin; c < cmax; c++) {
+    for (auto r = rmin; r < rmax; r++) {
+        for (auto c = cmin; c < cmax; c++) {
             result->at(r- rmin, c - cmin) = at(r,c);
         }
     }
@@ -119,11 +119,11 @@ matrix::Invert() {
 int
 matrix::gaussianElimination() {
 
-    int rows = this->rows;
-    int columns = this->cols;
+    auto rows = this->rows;
+    auto columns = this->cols;
     // Clear out the part below the main diagonal and scale the main
     // diagonal to be 1.
-    for (int r = 0; r < rows; r++) {
+    for (auto r = 0; r < rows; r++) {
         // If the element on the diagonal is 0, find a row below
         // that has a non-zero and swap them.
         if (at(r,r) == 0) {
@@ -143,7 +143,7 @@ matrix::gaussianElimination() {
         // Scale to 1.
         if (at(r,r) != 1) {
             byte scale = galDivide(1, at(r,r));
-            for (int c = 0; c < columns; c++) {
+            for (auto c = 0; c < columns; c++) {
                 at(r,c) = galMultiply(at(r,c), scale);
             }
         }
@@ -154,7 +154,7 @@ matrix::gaussianElimination() {
         for (int rowBelow = r + 1; rowBelow < rows; rowBelow++) {
             if (at(rowBelow,r) != 0) {
                 byte scale = at(rowBelow,r);
-                for (int c = 0; c < columns; c++) {
+                for (auto c = 0; c < columns; c++) {
                     at(rowBelow,c) ^= galMultiply(scale,  at(r,c));
                 }
             }
@@ -162,11 +162,11 @@ matrix::gaussianElimination() {
     }
 
     // Now clear the part above the main diagonal.
-    for (int d = 0; d < rows; d++) {
-        for (int rowAbove = 0; rowAbove < d; rowAbove++) {
+    for (auto d = 0; d < rows; d++) {
+        for (auto rowAbove = 0; rowAbove < d; rowAbove++) {
             if (at(rowAbove,d) != 0) {
                 byte scale = at(rowAbove,d);
-                for (int c = 0; c < columns; c++) {
+                for (auto c = 0; c < columns; c++) {
                     at(rowAbove,c) ^= galMultiply(scale, at(d,c));
                 }
             }
@@ -178,8 +178,8 @@ matrix::gaussianElimination() {
 matrix *
 matrix::vandermonde(int rows, int cols) {
     matrix * result = matrix::newMatrix(rows, cols);
-    for (int r = 0;r<rows;r++) {
-        for (int c=0;c<cols;c++) {
+    for (auto r = 0;r<rows;r++) {
+        for (auto c=0;c<cols;c++) {
             result->at(r,c) = galExp(byte(r), byte(c));
         }
     }
