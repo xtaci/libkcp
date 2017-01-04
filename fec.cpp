@@ -64,12 +64,6 @@ static inline char *decode32u(char *p, IUINT32 *l)
     return p;
 }
 
-fecPacket::~fecPacket() {
-    if (this->data != nullptr) {
-        free(this->data);
-    }
-}
-
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
 
 FEC
@@ -92,17 +86,15 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
     return fec;
 }
 
-fecPacket *
+fecPacket
 FEC::decode(char* data, size_t sz) {
-    fecPacket *pkt = new(fecPacket);
-    data = decode32u(data, &pkt->seqid);
-    data =decode16u(data, &pkt->flag);
+    fecPacket pkt;
+    data = decode32u(data, &pkt.seqid);
+    data = decode16u(data, &pkt.flag);
     struct timeval time;
     gettimeofday(&time, NULL);
-    pkt->ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
-    pkt->data = (char*)malloc(sizeof(char*) * sz);
-    pkt->sz = sz;
-    memcpy(pkt->data, data, sz);
+    pkt.ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
+    pkt.data = std::make_shared<std::vector<byte>>(data, data+sz);
     return pkt;
 }
 
@@ -124,11 +116,11 @@ FEC::markFEC(char *data) {
 }
 
 int
-FEC::input(fecPacket *pkt, std::vector<byte *> &recovered) {
+FEC::input(fecPacket &pkt, std::vector<byte *> &recovered) {
     uint32_t now = currentMs();
     if (now-lastCheck >= fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
-            if (now - (*it)->ts > fecExpire) {
+            if (now - it->ts > fecExpire) {
                 it = rx.erase(it);
             } else {
                 it++;
@@ -141,22 +133,22 @@ FEC::input(fecPacket *pkt, std::vector<byte *> &recovered) {
     int n = this->rx.size() -1;
     int insertIdx = 0;
     for (int i=n;i>=0;i--) {
-        if (pkt->seqid == rx[i]->seqid) {
+        if (pkt.seqid == rx[i].seqid) {
             return 0;
-        } else if (pkt->seqid > rx[i]->seqid) {
+        } else if (pkt.seqid > rx[i].seqid) {
             insertIdx = i + 1;
             break;
         }
     }
     // insert into ordered rx queue
-    rx.insert(rx.begin()+insertIdx, std::shared_ptr<fecPacket>(pkt));
+    rx.insert(rx.begin()+insertIdx, pkt);
 
     // shard range for current packet
-    int shardBegin = pkt->seqid - pkt->seqid%totalShards;
+    int shardBegin = pkt.seqid - pkt.seqid%totalShards;
     int shardEnd = shardBegin + totalShards - 1;
 
     // max search range in ordered queue for current shard
-    int searchBegin = insertIdx - pkt->seqid%totalShards;
+    int searchBegin = insertIdx - pkt.seqid%totalShards;
     if (searchBegin < 0) {
         searchBegin = 0;
     }
@@ -175,20 +167,20 @@ FEC::input(fecPacket *pkt, std::vector<byte *> &recovered) {
         std::vector<int> indices(totalShards, -1);
 
         for (int i = searchBegin; i <= searchEnd; i++) {
-            auto seqid = rx[i]->seqid;
+            auto seqid = rx[i].seqid;
             if (seqid > shardEnd) {
                 break;
             } else if (seqid >= shardBegin) {
                 indices[seqid%totalShards] = i;
                 numshard++;
-                if (rx[i]->flag == typeData) {
+                if (rx[i].flag == typeData) {
                     numDataShard++;
                 }
                 if (numshard == 1) {
                     first = i;
                 }
-                if (rx[i]->sz > maxlen) {
-                    maxlen = rx[i]->sz;
+                if (rx[i].data->size() > maxlen) {
+                    maxlen = rx[i].data->size();
                 }
             }
         }
@@ -199,9 +191,7 @@ FEC::input(fecPacket *pkt, std::vector<byte *> &recovered) {
             std::vector<row> shardVec(totalShards);
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
-                    shardVec[k] = std::make_shared<std::vector<byte>>(mtuLimit, 0);
-                    auto &pkt = rx[indices[k]];
-                    shardVec[k]->assign(pkt->data, pkt->data+ pkt->sz);
+                    shardVec[k] = rx[indices[k]].data;
                 }
             }
 

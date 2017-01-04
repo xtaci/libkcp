@@ -21,11 +21,8 @@ class fecPacket {
 public:
     uint32_t seqid;
     uint16_t flag;
-    char *data;
-    size_t sz;
+    row data;
     uint32_t ts;
-
-    ~fecPacket();
 };
 
 class FEC {
@@ -34,18 +31,18 @@ public:
 
     static FEC newFEC(int rxlimit, int dataShards, int parityShards);
 
-    fecPacket *decode(char *data, size_t sz);
+    static fecPacket decode(char *data, size_t sz);
 
     void markData(char *data);
 
     void markFEC(char *data);
 
-    int input(fecPacket *pkt, std::vector<byte *> &recovered);
+    int input(fecPacket & pkt, std::vector<byte *> &recovered);
 
     std::vector<row> calcECC(std::vector<row> &data);
 
 private:
-    std::vector<std::shared_ptr<fecPacket>> rx; // ordered receive queue
+    std::vector<fecPacket> rx; // ordered receive queue
     int rxlimit;  // queue size limit
     int dataShards;
     int parityShards;
@@ -54,8 +51,6 @@ private:
     ReedSolomon enc;
     uint32_t paws;  // Protect Against Wrapped Sequence numbers
     uint32_t lastCheck{0};
-
-
 };
 
 
