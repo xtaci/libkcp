@@ -7,22 +7,22 @@
 #include "reedsolomon.h"
 #include "galois_noasm.h"
 
-ReedSolomon *
-ReedSolomon::New(int dataShards, int parityShards) {
+ReedSolomon
+ReedSolomon::New(int dataShards, int parityShards) throw() {
     if (dataShards<=0 || parityShards <=0) {
-        return nullptr;
+        throw std::invalid_argument("invalid arguments");
     }
 
     if (dataShards + parityShards > 255) {
-        return nullptr;
+        throw std::invalid_argument("invalid arguments");
     }
 
-    ReedSolomon * r = new ReedSolomon(dataShards, parityShards);
+    ReedSolomon r(dataShards, parityShards);
 
     // Start with a Vandermonde matrix.  This matrix would work,
     // in theory, but doesn't have the property that the data
     // shards are unchanged after encoding.
-    matrix vm  = matrix::vandermonde(r->m_totalShards, r->m_dataShards);
+    matrix vm  = matrix::vandermonde(r.m_totalShards, r.m_dataShards);
 
     // Multiply by the inverse of the top square of the matrix.
     // This will make the top square be the identity matrix, but
@@ -30,18 +30,18 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // invertible.
     auto top = vm.SubMatrix(0,0, dataShards,dataShards);
     top = top.Invert();
-    r->m = vm.Multiply(top);
+    r.m = vm.Multiply(top);
 
     // Inverted matrices are cached in a tree keyed by the indices
     // of the invalid rows of the data to reconstruct.
     // The inversion m_root node will have the identity matrix as
     // its inversion matrix because it implies there are no errors
     // with the original data.
-    r->tree = inversionTree::newInversionTree(dataShards, parityShards);
+    r.tree = inversionTree::newInversionTree(dataShards, parityShards);
 
-    r->parity = std::vector<row>(parityShards);
+    r.parity = std::vector<row>(parityShards);
     for (int i=0;i<parityShards;i++) {
-        r->parity[i] = r->m.data[dataShards+i];
+        r.parity[i] = r.m.data[dataShards+i];
     }
     return r;
 }

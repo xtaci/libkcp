@@ -22,10 +22,7 @@ public:
 
 class FEC {
 public:
-    static FEC *newFEC(int rxlimit, int dataShards, int parityShards);
-    FEC(const FEC &) = delete;
-    FEC &operator=(const FEC &) = delete;
-
+    static FEC newFEC(int rxlimit, int dataShards, int parityShards)throw();
     fecPacket * decode(char* data, size_t sz);
     void markData(char * data);
     void markFEC(char * data);
@@ -33,16 +30,13 @@ public:
     int input(fecPacket * pkt, std::vector<byte *> *recovered);
     int calcECC(byte ** data, int offset, int dataShard, int shardSize);
 private:
-    FEC() = default;
-    ~FEC() = default;
-
     std::vector<std::shared_ptr<fecPacket>> rx; // ordered receive queue
     int rxlimit;  // queue size limit
     int dataShards;
     int parityShards;
     int totalShards;
     uint32_t next{0}; // next seqid
-    ReedSolomon * enc;
+    ReedSolomon enc;
     uint32_t paws;  // Protect Against Wrapped Sequence numbers
     uint32_t lastCheck{0};
 

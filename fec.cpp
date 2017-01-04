@@ -70,24 +70,23 @@ fecPacket::~fecPacket() {
     }
 }
 
-FEC *
-FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
+FEC
+FEC::newFEC(int rxlimit, int dataShards, int parityShards) throw() {
     if (dataShards <= 0 || parityShards <= 0) {
-        return nullptr;
+        throw std::invalid_argument("invalid arguments");
     }
 
     if (rxlimit < dataShards+parityShards) {
-        return nullptr;
+        throw std::invalid_argument("invalid arguments");
     }
 
-    auto fec = new(FEC);
-    fec->rxlimit = rxlimit;
-    fec->dataShards = dataShards;
-    fec->parityShards = parityShards;
-    fec->totalShards = dataShards + parityShards;
-    fec->paws = (0xffffffff/uint32_t(fec->totalShards) - 1) * uint32_t(fec->totalShards);
-    auto enc = ReedSolomon::New(dataShards, parityShards);
-    fec->enc = enc;
+    FEC fec;
+    fec.rxlimit = rxlimit;
+    fec.dataShards = dataShards;
+    fec.parityShards = parityShards;
+    fec.totalShards = dataShards + parityShards;
+    fec.paws = (0xffffffff/uint32_t(fec.totalShards) - 1) * uint32_t(fec.totalShards);
+    fec.enc = ReedSolomon::New(dataShards, parityShards);
 
     return fec;
 }
@@ -205,7 +204,7 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
                 }
             }
 
-            if (int ret = enc->Reconstruct(shardVec) && ret== 0 ){
+            if (int ret = enc.Reconstruct(shardVec) && ret== 0 ){
             }
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         }
@@ -230,7 +229,7 @@ FEC::calcECC(byte ** data, int offset, int count, int maxlen) {
         shards[i] = std::make_shared<std::vector<byte>>(data[i] + offset, data[i] + maxlen);
     }
 
-    this->enc->Encode(shards);
+    this->enc.Encode(shards);
     return 0;
 }
 
