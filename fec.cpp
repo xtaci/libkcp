@@ -85,14 +85,10 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards) {
     fec->rxlimit = rxlimit;
     fec->dataShards = dataShards;
     fec->parityShards = parityShards;
-    fec->shardSize = dataShards + parityShards;
-    fec->paws = (0xffffffff/uint32_t(fec->shardSize) - 1) * uint32_t(fec->shardSize);
+    fec->totalShards = dataShards + parityShards;
+    fec->paws = (0xffffffff/uint32_t(fec->totalShards) - 1) * uint32_t(fec->totalShards);
     auto enc = ReedSolomon::New(dataShards, parityShards);
     fec->enc = enc;
-    fec->shardBuffer = (byte **)malloc(sizeof(byte*) * fec->shardSize);
-    for (int i=0;i<fec->shardSize;i++) {
-        fec->shardBuffer[i] = (byte*)malloc(sizeof(byte) * FEC::mtuLimit);
-    }
 
     return fec;
 }
@@ -157,16 +153,16 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
     rx.insert(rx.begin()+insertIdx, std::shared_ptr<fecPacket>(pkt));
 
     // shard range for current packet
-    int shardBegin = pkt->seqid - pkt->seqid%shardSize;
-    int shardEnd = shardBegin + shardSize - 1;
+    int shardBegin = pkt->seqid - pkt->seqid%totalShards;
+    int shardEnd = shardBegin + totalShards - 1;
 
     // max search range in ordered queue for current shard
-    int searchBegin = insertIdx - pkt->seqid%shardSize;
+    int searchBegin = insertIdx - pkt->seqid%totalShards;
     if (searchBegin < 0) {
         searchBegin = 0;
     }
 
-    int searchEnd = searchBegin + shardSize - 1;
+    int searchEnd = searchBegin + totalShards - 1;
     if (searchEnd >= rx.size()) {
         searchEnd = rx.size()-1;
     }
@@ -177,16 +173,14 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
         int first = -1;
         int maxlen = 0;
 
-        std::vector<int> shards(shardSize);
-        std::vector<bool> shardsflag(shardSize, false);
+        std::vector<int> indices(totalShards, -1);
 
         for (int i = searchBegin; i <= searchEnd; i++) {
             auto seqid = rx[i]->seqid;
             if (seqid > shardEnd) {
                 break;
             } else if (seqid >= shardBegin) {
-                shards[seqid%shardSize] = i;
-                shardsflag[seqid%shardSize] = true;
+                indices[seqid%totalShards] = i;
                 numshard++;
                 if (rx[i]->flag == typeData) {
                     numDataShard++;
@@ -203,19 +197,16 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
         if (numDataShard == dataShards) { // no lost
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         } else if (numshard >= dataShards) { // recoverable
-            zerobuffer();
-            for (int k=0;k<shardSize;k++){
-                if (!shardsflag[k]) {
-                    memcpy(shardBuffer[k], rx[shards[k]]->data, rx[shards[k]]->sz);
+            std::vector<row> shardVec(totalShards);
+            for (int k=0;k<totalShards;k++){
+                if (indices[k] != -1) {
+                    shardVec[k] = row(FEC::mtuLimit);
+                    auto &pkt = rx[indices[k]];
+                    shardVec[k].assign(pkt->data, pkt->data+ pkt->sz);
                 }
             }
 
-            if (int ret = enc->Reconstruct(shardBuffer, shardSize, FEC::mtuLimit) && ret== 0 ){
-                for (int k=0;k<dataShards;k++){
-                    if (!shardsflag[k]) {
-                        recovered->push_back(shardBuffer[k]);
-                    }
-                }
+            if (int ret = enc->Reconstruct(shardVec) && ret== 0 ){
             }
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         }
@@ -231,26 +222,17 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
 
 int
 FEC::calcECC(byte ** data, int offset, int count, int maxlen) {
-    if (count != shardSize) {
+    if (count != totalShards) {
         return -1;
     }
 
-    byte ** shards = (byte**)malloc(sizeof(byte*) * shardSize);
-    memset(shards, 0, sizeof(byte*) * shardSize);
+    std::vector<row> shards(totalShards);
     for (int i=0;i<count;i++) {
-        shards[i] = data[i] + offset;
+        shards[i] = row(data[i] + offset, data[i] + maxlen);
     }
 
     this->enc->Encode(shards, count, maxlen - offset);
     return 0;
-}
-
-
-void
-FEC::zerobuffer() {
-    for (int i=0;i<shardSize;i++) {
-        memset(shardBuffer[i], 0, FEC::mtuLimit);
-    }
 }
 
 

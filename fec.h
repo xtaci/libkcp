@@ -41,7 +41,7 @@ private:
     int rxlimit;  // queue size limit
     int dataShards;
     int parityShards;
-    int shardSize;
+    int totalShards;
     uint32_t next{0}; // next seqid
     ReedSolomon * enc;
     uint32_t paws;  // Protect Against Wrapped Sequence numbers
@@ -53,7 +53,6 @@ private:
     static const uint16_t typeFEC = 0xf2;
     static const int fecExpire{30000};
 
-    byte **shardBuffer;
     static const int mtuLimit {2048};
 
     void zerobuffer();

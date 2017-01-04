@@ -16,10 +16,9 @@ matrix::newMatrix(int rows, int cols) {
     matrix *m = new(matrix);
     m->rows = rows;
     m->cols = cols;
-    m->m = (byte **) malloc(sizeof(byte *) * rows);
+    m->m =  std::vector<row>(rows);
     for (int i = 0; i < rows; i++) {
-        m->m[i] = (byte *) malloc(sizeof(byte) * cols);
-        memset(m->m[i], 0, sizeof(byte) * cols);
+        m->m[i] = std::vector<byte>(cols, 0);
     }
     return m;
 }
@@ -44,7 +43,7 @@ matrix::Multiply(matrix *right) {
 
     for (int r = 0; r < result->rows; r++) {
         for (int c = 0; c < result->cols; c++) {
-            uint8_t value = 0;
+            byte value = 0;
             for (int i = 0; i < this->cols; i++) {
                 value ^= galMultiply(m[r][i], right->m[i][c]);
             }
@@ -92,7 +91,7 @@ matrix::SwapRows(int r1, int r2) {
         return -1;
     }
 
-    byte *tmp;
+    row tmp;
     tmp = m[r2];
     m[r2] = m[r1];
     m[r1] = tmp;
@@ -146,7 +145,7 @@ matrix::gaussianElimination() {
 
         // Scale to 1.
         if (m[r][r] != 1) {
-            uint8_t scale = galDivide(1, m[r][r]);
+            byte scale = galDivide(1, m[r][r]);
             for (int c = 0; c < columns; c++) {
                 m[r][c] = galMultiply(m[r][c], scale);
             }
@@ -157,7 +156,7 @@ matrix::gaussianElimination() {
         // both exclusive or in the Galois field.)
         for (int rowBelow = r + 1; rowBelow < rows; rowBelow++) {
             if (m[rowBelow][r] != 0) {
-                uint8_t scale = m[rowBelow][r];
+                byte scale = m[rowBelow][r];
                 for (int c = 0; c < columns; c++) {
                     m[rowBelow][c] ^= galMultiply(scale, m[r][c]);
                 }
@@ -169,7 +168,7 @@ matrix::gaussianElimination() {
     for (int d = 0; d < rows; d++) {
         for (int rowAbove = 0; rowAbove < d; rowAbove++) {
             if (m[rowAbove][d] != 0) {
-                uint8_t scale = m[rowAbove][d];
+                byte scale = m[rowAbove][d];
                 for (int c = 0; c < columns; c++) {
                     m[rowAbove][c] ^= galMultiply(scale, m[d][c]);
                 }
@@ -184,7 +183,7 @@ matrix::vandermonde(int rows, int cols) {
     matrix * result = matrix::newMatrix(rows, cols);
     for (int r = 0;r<rows;r++) {
         for (int c=0;c<cols;c++) {
-            result->m[r][c] = galExp(uint8_t(r), uint8_t(c));
+            result->m[r][c] = galExp(byte(r), byte(c));
         }
     }
     return result;

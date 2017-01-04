@@ -26,7 +26,7 @@ public:
     // Each shard is a byte array, and they must all be the same size.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
-    int Encode(byte**shards, int dataShards, size_t shardSize);
+    int Encode(std::vector<row> &shards, int dataShards, size_t shardSize);
 
     // Multiplies a subset of rows from a coding matrix by a full set of
     // input shards to produce some output shards.
@@ -37,7 +37,7 @@ public:
     // The number of outputs computed, and the
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(byte **matrixRows, byte ** inputs, byte **outputs, int outputCount, size_t byteCount);
+    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount);
 
     // Reconstruct will recreate the missing shards, if possible.
     //
@@ -52,23 +52,25 @@ public:
     //
     // The reconstructed shard set is complete, but integrity is not verified.
     // Use the Verify function to check if data set is ok.
-    int Reconstruct(byte ** shards, size_t numShards, size_t shardSize);
+    int Reconstruct(std::vector<row> &shards);
 
 private:
-    const int DataShards;  // Number of data shards, should not be modified.
-    const int ParityShards; // Number of parity shards, should not be modified.
-    const int Shards; // Total number of shards. Calculated, and should not be modified.
+    const int m_dataShards;  // Number of data shards, should not be modified.
+    const int m_parityShards; // Number of parity shards, should not be modified.
+    const int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
     std::shared_ptr<matrix> m;
     std::shared_ptr<inversionTree> tree;
-    byte **parity;
+    std::vector<row> parity;
 
     inline ReedSolomon(int dataShards, int parityShards):
-            DataShards(dataShards),
-            ParityShards(parityShards),
-            Shards(dataShards + parityShards){}
+            m_dataShards(dataShards),
+            m_parityShards(parityShards),
+            m_totalShards(dataShards + parityShards){}
 
     ~ReedSolomon() = default;
+
+    int shardSize(std::vector<row> & shards);
 };
 
 

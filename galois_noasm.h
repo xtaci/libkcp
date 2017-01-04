@@ -7,12 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "galois.h"
+#include "matrix.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-void galMulSlice(byte c, byte in[], byte out[], size_t sz);
-void galMulSliceXor(byte c, byte in[], byte out[],size_t sz);
+void galMulSlice(byte c,  row in, row out);
+void galMulSliceXor(byte c, row in, row out);
 
 #ifdef __cplusplus
 }

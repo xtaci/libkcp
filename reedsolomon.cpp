@@ -22,7 +22,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // Start with a Vandermonde matrix.  This matrix would work,
     // in theory, but doesn't have the property that the data
     // shards are unchanged after encoding.
-    matrix * vm  = matrix::vandermonde(r->Shards, r->DataShards);
+    matrix * vm  = matrix::vandermonde(r->m_totalShards, r->m_dataShards);
     if (vm == nullptr){
         return nullptr;
     }
@@ -42,7 +42,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // with the original data.
     r->tree = std::shared_ptr<inversionTree>(inversionTree::newInversionTree(dataShards, parityShards));
 
-    r->parity = (byte**)malloc(sizeof(byte*) * parityShards);
+    r->parity = std::vector<row>(parityShards);
     for (int i=0;i<parityShards;i++) {
         r->parity[i] = r->m->m[dataShards+i];
     }
@@ -50,54 +50,60 @@ ReedSolomon::New(int dataShards, int parityShards) {
 }
 
 int
-ReedSolomon::Encode(byte **shards, int count, size_t shardSize) {
-    if (count != this->DataShards) {
+ReedSolomon::Encode(std::vector<row> &shards, int count, size_t shardSize) {
+    if (count != m_dataShards) {
         return -1;
     }
 
     // Get the slice of output buffers.
-    byte **output = &shards[DataShards];
+    std::vector<row> output(shards.begin() + m_dataShards, shards.end());
 
     // Do the coding.
-    this->codeSomeShards(parity, shards, output, ParityShards, shardSize);
+    codeSomeShards(parity, shards, output, m_parityShards);
     return 0;
 };
 
 
 void
-ReedSolomon::codeSomeShards(byte **matrixRows, byte ** inputs, byte **outputs, int outputCount, size_t byteCount) {
-    for (int c = 0; c < DataShards; c++) {
+ReedSolomon::codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount) {
+    for (int c = 0; c < m_dataShards; c++) {
         auto in = inputs[c];
         for (int iRow = 0; iRow < outputCount; iRow++) {
             if (c == 0) {
-                galMulSlice(matrixRows[iRow][c], in, outputs[iRow], byteCount);
+                galMulSlice(matrixRows[iRow][c], in, outputs[iRow]);
             } else {
-                galMulSliceXor(matrixRows[iRow][c], in, outputs[iRow], byteCount);
+                galMulSliceXor(matrixRows[iRow][c], in, outputs[iRow]);
             }
         }
     }
 }
 
 int
-ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
+ReedSolomon::Reconstruct(std::vector<row> &shards) {
+    if (shards.size() != m_totalShards) {
+        return -1;
+    }
+
+    auto shardSize = this->shardSize(shards);
+
     // Quick check: are all of the shards present?  If so, there's
     // nothing to do.
     int numberPresent = 0;
-    for (int i = 0; i < Shards; i++) {
-        if (shards[i] != nullptr) {
+    for (int i = 0; i < m_totalShards; i++) {
+        if (shards[i].size() != 0) {
             numberPresent++;
         }
     }
 
-    if (numberPresent == Shards) {
+    if (numberPresent == m_totalShards) {
         // Cool.  All of the shards data data.  We don't
         // need to do anything.
-        return 0;
+        return -2;
     }
 
     // More complete sanity check
-    if (numberPresent < DataShards) {
-        return -1;
+    if (numberPresent < m_dataShards) {
+        return -3;
     }
 
     // Pull out an array holding just the shards that
@@ -107,15 +113,13 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
     //
     // Also, create an array of indices of the valid rows we do have
     // and the invalid rows we don't have up until we have enough valid rows.
-    byte ** subShards = (byte **) malloc(sizeof(byte *) * DataShards);
-    memset(subShards, 0, sizeof(byte *) * DataShards);
-
-    std::vector<int> validIndices(DataShards, 0);
+    std::vector<row> subShards(m_dataShards);
+    std::vector<int> validIndices(m_dataShards, 0);
     std::vector<int> invalidIndices;
     int subMatrixRow = 0;
 
-    for (int matrixRow = 0; matrixRow < Shards && subMatrixRow < DataShards; matrixRow++) {
-        if (shards[matrixRow] != nullptr) {
+    for (int matrixRow = 0; matrixRow < m_totalShards && subMatrixRow < m_dataShards; matrixRow++) {
+        if (shards[matrixRow].size() != 0) {
             subShards[subMatrixRow] = shards[matrixRow];
             validIndices[subMatrixRow] = matrixRow;
             subMatrixRow++;
@@ -136,9 +140,9 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
         // shards that we have and build a square matrix.  This
         // matrix could be used to generate the shards that we have
         // from the original data.
-        auto subMatrix = matrix::newMatrix(DataShards, DataShards);
+        auto subMatrix = matrix::newMatrix(m_dataShards, m_dataShards);
         for (int subMatrixRow = 0; subMatrixRow < validIndices.size(); subMatrixRow++) {
-            for (int c = 0; c < DataShards; c++) {
+            for (int c = 0; c < m_dataShards; c++) {
                 subMatrix->m[subMatrixRow][c] = m->m[validIndices[subMatrixRow]][c];
             };
         }
@@ -155,7 +159,7 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
-        if (int ret = tree->InsertInvertedMatrix(invalidIndices, std::shared_ptr<matrix>(dataDecodeMatrix), Shards) && ret != 0) {
+        if (int ret = tree->InsertInvertedMatrix(invalidIndices, std::shared_ptr<matrix>(dataDecodeMatrix), m_totalShards) && ret != 0) {
             return -3;
         }
     }
@@ -165,23 +169,20 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
     // The input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special decode matrix we just built.
-    byte ** outputs = (byte **) malloc(sizeof(byte *) * ParityShards);
-    memset(outputs, 0, sizeof(uint8_t *) * ParityShards);
-
-    byte ** matrixRows = (byte **) malloc(sizeof(byte *) * ParityShards);
-    memset(matrixRows, 0, sizeof(uint8_t *) * ParityShards);
-
+    std::vector<row> outputs(m_parityShards);
+    std::vector<row> matrixRows(m_parityShards);
     int outputCount = 0;
 
-    for (int iShard = 0;iShard < DataShards; iShard++) {
-        if (shards[iShard] == nullptr) {
-            shards[iShard] = (byte *) malloc(sizeof(byte) * shardSize);
+    for (int iShard = 0;iShard < m_dataShards; iShard++) {
+        if (shards[iShard].size() == 0) {
+            shards[iShard] = row(shardSize);
             outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = dataDecodeMatrix->m[iShard];
             outputCount++;
         }
     }
-    codeSomeShards(matrixRows, subShards, outputs+outputCount, outputCount, shardSize);
+
+    codeSomeShards(matrixRows, subShards, outputs, outputCount);
 
     // Now that we have all of the data shards intact, we can
     // compute any of the parity that is missing.
@@ -190,18 +191,26 @@ ReedSolomon::Reconstruct(byte ** shards, size_t numShards, size_t shardSize) {
     // any that we just calculated.  The output is whichever of the
     // data shards were missing.
     outputCount = 0;
-    for (int iShard = 0;iShard < DataShards; iShard++) {
-        if (shards[iShard] == nullptr) {
-            shards[iShard] = (byte *) malloc(sizeof(byte) * shardSize);
+    for (int iShard = 0;iShard < m_dataShards; iShard++) {
+        if (shards[iShard].size() == 0) {
+            shards[iShard] = row(shardSize);
             outputs[outputCount] = shards[iShard];
-            matrixRows[outputCount] = parity[iShard-DataShards];
+            matrixRows[outputCount] = parity[iShard-m_dataShards];
             outputCount++;
         }
     }
-    codeSomeShards(matrixRows, shards + DataShards, outputs+outputCount, outputCount, shardSize);
+    codeSomeShards(matrixRows, shards, outputs, outputCount);
 
     return 0;
 }
 
 
+int ReedSolomon::shardSize(std::vector<row> & shards)  {
+    for (int i =0;i<shards.size();i++) {
+        if (shards[i].size() != 0){
+            return shards[i].size();
+        }
+    }
 
+    return 0;
+}

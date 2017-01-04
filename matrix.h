@@ -6,7 +6,10 @@
 #define KCP_MATRIX_H
 
 #include <stdint.h>
+#include <vector>
 #include "galois.h"
+
+typedef std::vector<byte> row;
 
 class matrix {
 public:
@@ -45,7 +48,7 @@ public:
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-    byte **m;
+    std::vector<row> m;
     int rows,cols;
 };
 
