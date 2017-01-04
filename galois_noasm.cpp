@@ -10,13 +10,13 @@
 extern const byte mulTable[256][256];
 
 void galMulSlice(byte c, row in, row out) {
-    for (int n=0;n<in.size();n++) {
-        out[n] = mulTable[c][in[n]];
+    for (int n=0;n<in->size();n++) {
+        (*out)[n] = mulTable[c][(*in)[n]];
     }
 }
 
 void galMulSliceXor(byte c, row in, row out) {
-    for (int n=0;n<in.size();n++) {
-        out[n] ^= mulTable[c][in[n]];
+    for (int n=0;n<in->size();n++) {
+        (*out)[n] ^= mulTable[c][(*in)[n]];
     }
 }

@@ -9,7 +9,7 @@
 #include <vector>
 #include "galois.h"
 
-typedef std::vector<byte> row;
+using row = std::shared_ptr<std::vector<byte>>;
 
 class matrix {
 public:
@@ -50,6 +50,8 @@ public:
 
     std::vector<row> m;
     int rows,cols;
+
+    inline byte& at(int row , int col) { return (*(m[row]))[col]; }
 };
 
 

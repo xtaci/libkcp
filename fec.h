@@ -54,8 +54,6 @@ private:
     static const int fecExpire{30000};
 
     static const int mtuLimit {2048};
-
-    void zerobuffer();
 };
 
 

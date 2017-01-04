@@ -200,9 +200,9 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
             std::vector<row> shardVec(totalShards);
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
-                    shardVec[k] = row(FEC::mtuLimit);
+                    shardVec[k] = std::make_shared<std::vector<byte>>(2048, 0);
                     auto &pkt = rx[indices[k]];
-                    shardVec[k].assign(pkt->data, pkt->data+ pkt->sz);
+                    shardVec[k]->assign(pkt->data, pkt->data+ pkt->sz);
                 }
             }
 
@@ -228,10 +228,10 @@ FEC::calcECC(byte ** data, int offset, int count, int maxlen) {
 
     std::vector<row> shards(totalShards);
     for (int i=0;i<count;i++) {
-        shards[i] = row(data[i] + offset, data[i] + maxlen);
+        shards[i] = std::make_shared<std::vector<byte>>(data[i] + offset, data[i] + maxlen);
     }
 
-    this->enc->Encode(shards, count, maxlen - offset);
+    this->enc->Encode(shards);
     return 0;
 }
 
