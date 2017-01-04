@@ -4,8 +4,7 @@
 
 #ifndef KCP_GALOIS_NOASM_H
 #define KCP_GALOIS_NOASM_H
-#include <stddef.h>
-#include <stdint.h>
+
 #include "galois.h"
 #include "matrix.h"
 

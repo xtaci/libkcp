@@ -6,7 +6,6 @@
 #define KCP_FEC_H
 
 
-#include <cstdint>
 #include <vector>
 #include <memory>
 #include "reedsolomon.h"

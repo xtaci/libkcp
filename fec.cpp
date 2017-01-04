@@ -3,7 +3,6 @@
 //
 
 #include <err.h>
-#include <cstdlib>
 #include <sys/time.h>
 #include "fec.h"
 #include "ikcp.h"

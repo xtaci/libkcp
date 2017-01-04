@@ -3,10 +3,6 @@
 //
 
 #include "inversion_tree.h"
-#include "matrix.h"
-#include <cstdlib>
-#include <cstring>
-#include <vector>
 
 inversionTree *inversionTree::newInversionTree(int dataShards, int parityShards) {
     matrix *identity = matrix::identityMatrix(dataShards);

@@ -5,8 +5,6 @@
 #ifndef KCP_GALOIS_H
 #define KCP_GALOIS_H
 
-#include <stdint.h>
-
 typedef unsigned char byte;
 
 

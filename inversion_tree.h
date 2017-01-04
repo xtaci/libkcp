@@ -5,7 +5,6 @@
 #ifndef KCP_INVERSION_TREE_H
 #define KCP_INVERSION_TREE_H
 
-#include <cstddef>
 #include <vector>
 #include "matrix.h"
 

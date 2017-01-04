@@ -5,7 +5,6 @@
 #ifndef KCP_MATRIX_H
 #define KCP_MATRIX_H
 
-#include <stdint.h>
 #include <vector>
 #include "galois.h"
 

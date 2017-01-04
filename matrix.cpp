@@ -2,8 +2,6 @@
 // Created by 理 傅 on 2016/12/30.
 //
 
-#include <cstdlib>
-#include <cstring>
 #include "galois.h"
 #include "matrix.h"
 

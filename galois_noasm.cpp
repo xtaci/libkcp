@@ -2,10 +2,7 @@
 // Created by 理 傅 on 2016/12/30.
 //
 
-#include <stddef.h>
 #include "galois_noasm.h"
-#include "galois.h"
-#include "matrix.h"
 
 extern const byte mulTable[256][256];
 
