@@ -12,6 +12,8 @@
 class ReedSolomon {
 public:
     ReedSolomon() = default;
+    ReedSolomon &operator=(const ReedSolomon &) = default;
+
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
     // you want to use. You can reuse this encoder.
