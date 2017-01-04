@@ -11,8 +11,7 @@
 
 class ReedSolomon {
 public:
-    ReedSolomon() = default;
-    ReedSolomon &operator=(const ReedSolomon &) = default;
+
 
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
@@ -55,7 +54,7 @@ public:
     int Reconstruct(std::vector<row> &shards);
 
 private:
-    int m_dataShards;  // Number of data shards, should not be modified.
+    const int m_dataShards;  // Number of data shards, should not be modified.
     int m_parityShards; // Number of parity shards, should not be modified.
     int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
@@ -66,7 +65,9 @@ private:
     inline ReedSolomon(int dataShards, int parityShards):
             m_dataShards(dataShards),
             m_parityShards(parityShards),
-            m_totalShards(dataShards + parityShards){}
+            m_totalShards(dataShards + parityShards){
+
+    }
 
     int shardSize(std::vector<row> & shards);
 };

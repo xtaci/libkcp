@@ -70,6 +70,8 @@ fecPacket::~fecPacket() {
     }
 }
 
+FEC::FEC(ReedSolomon enc) :enc(enc) {}
+
 FEC
 FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
@@ -80,13 +82,12 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
         throw std::invalid_argument("invalid arguments");
     }
 
-    FEC fec;
+    FEC fec(ReedSolomon::New(dataShards, parityShards));
     fec.rxlimit = rxlimit;
     fec.dataShards = dataShards;
     fec.parityShards = parityShards;
     fec.totalShards = dataShards + parityShards;
     fec.paws = (0xffffffff/uint32_t(fec.totalShards) - 1) * uint32_t(fec.totalShards);
-    fec.enc = ReedSolomon::New(dataShards, parityShards);
 
     return fec;
 }
@@ -108,14 +109,14 @@ FEC::decode(char* data, size_t sz) {
 void
 FEC::markData(char *data) {
     data = encode32u(data,this->next);
-    data = encode16u(data,FEC::typeData);
+    data = encode16u(data,typeData);
     this->next++;
 }
 
 void
 FEC::markFEC(char *data) {
     data = encode32u(data,this->next);
-    data = encode16u(data,FEC::typeFEC);
+    data = encode16u(data,typeFEC);
     this->next++;
     if (this->next >= this->paws) { // paws would only occurs in markFEC
         this->next = 0;
@@ -123,11 +124,11 @@ FEC::markFEC(char *data) {
 }
 
 int
-FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
+FEC::input(fecPacket *pkt, std::vector<byte *> &recovered) {
     uint32_t now = currentMs();
-    if (now-lastCheck >= FEC::fecExpire) {
+    if (now-lastCheck >= fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
-            if (now - (*it)->ts > FEC::fecExpire) {
+            if (now - (*it)->ts > fecExpire) {
                 it = rx.erase(it);
             } else {
                 it++;
@@ -198,7 +199,7 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
             std::vector<row> shardVec(totalShards);
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
-                    shardVec[k] = std::make_shared<std::vector<byte>>(FEC::mtuLimit, 0);
+                    shardVec[k] = std::make_shared<std::vector<byte>>(mtuLimit, 0);
                     auto &pkt = rx[indices[k]];
                     shardVec[k]->assign(pkt->data, pkt->data+ pkt->sz);
                 }
