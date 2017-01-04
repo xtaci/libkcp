@@ -198,7 +198,7 @@ FEC::input(fecPacket *pkt, std::vector<byte *> *recovered) {
             std::vector<row> shardVec(totalShards);
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
-                    shardVec[k] = std::make_shared<std::vector<byte>>(2048, 0);
+                    shardVec[k] = std::make_shared<std::vector<byte>>(FEC::mtuLimit, 0);
                     auto &pkt = rx[indices[k]];
                     shardVec[k]->assign(pkt->data, pkt->data+ pkt->sz);
                 }
