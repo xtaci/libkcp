@@ -16,9 +16,17 @@ int main() {
         shards[i] = std::make_shared<std::vector<byte>>(arr, arr +1);
     }
 
+    for (int i =0;i<shards.size();i++) {
+        for (auto b : *shards[i]) {
+            std::cout << int(b) << std::endl;
+        }
+    }
+
     auto parity = fec.calcECC(shards);
     std::cout << "empty:" << parity.size() << std::endl;
     for (int i =0;i<parity.size();i++) {
-        std::cout << parity[i] << std::endl;
+        for (auto b : *parity[i]) {
+            std::cout << int(b) << std::endl;
+        }
     }
 }
