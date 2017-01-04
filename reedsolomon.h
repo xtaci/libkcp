@@ -11,8 +11,7 @@
 
 class ReedSolomon {
 public:
-
-
+    ReedSolomon(int dataShards, int parityShards);
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
     // you want to use. You can reuse this encoder.
@@ -55,20 +54,12 @@ public:
 
 private:
     const int m_dataShards;  // Number of data shards, should not be modified.
-    int m_parityShards; // Number of parity shards, should not be modified.
-    int m_totalShards; // Total number of shards. Calculated, and should not be modified.
+    const int m_parityShards; // Number of parity shards, should not be modified.
+    const int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
     matrix m;
     inversionTree tree;
     std::vector<row> parity;
-
-    inline ReedSolomon(int dataShards, int parityShards):
-            m_dataShards(dataShards),
-            m_parityShards(parityShards),
-            m_totalShards(dataShards + parityShards){
-
-    }
-
     int shardSize(std::vector<row> & shards);
 };
 
