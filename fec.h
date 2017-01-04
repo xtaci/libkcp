@@ -22,7 +22,7 @@ public:
 
 class FEC {
 public:
-    static FEC newFEC(int rxlimit, int dataShards, int parityShards)throw();
+    static FEC newFEC(int rxlimit, int dataShards, int parityShards);
     fecPacket * decode(char* data, size_t sz);
     void markData(char * data);
     void markFEC(char * data);

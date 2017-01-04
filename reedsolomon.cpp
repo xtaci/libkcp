@@ -8,7 +8,7 @@
 #include "galois_noasm.h"
 
 ReedSolomon
-ReedSolomon::New(int dataShards, int parityShards) throw() {
+ReedSolomon::New(int dataShards, int parityShards) {
     if (dataShards<=0 || parityShards <=0) {
         throw std::invalid_argument("invalid arguments");
     }

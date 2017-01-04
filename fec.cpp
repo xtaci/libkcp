@@ -71,7 +71,7 @@ fecPacket::~fecPacket() {
 }
 
 FEC
-FEC::newFEC(int rxlimit, int dataShards, int parityShards) throw() {
+FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }
