@@ -27,7 +27,7 @@ const IUINT32 IKCP_RTO_MAX = 60000;
 const IUINT32 IKCP_CMD_PUSH = 81;		// cmd: push data
 const IUINT32 IKCP_CMD_ACK  = 82;		// cmd: ack
 const IUINT32 IKCP_CMD_WASK = 83;		// cmd: window probe (ask)
-const IUINT32 IKCP_CMD_WINS = 84;		// cmd: window size (tell)
+const IUINT32 IKCP_CMD_WINS = 84;		// cmd: window empty (tell)
 const IUINT32 IKCP_ASK_SEND = 1;		// need to send IKCP_CMD_WASK
 const IUINT32 IKCP_ASK_TELL = 2;		// need to send IKCP_CMD_WINS
 const IUINT32 IKCP_WND_SND = 32;
@@ -39,7 +39,7 @@ const IUINT32 IKCP_OVERHEAD = 24;
 const IUINT32 IKCP_DEADLINK = 20;
 const IUINT32 IKCP_THRESH_INIT = 2;
 const IUINT32 IKCP_THRESH_MIN = 2;
-const IUINT32 IKCP_PROBE_INIT = 7000;		// 7 secs to probe window size
+const IUINT32 IKCP_PROBE_INIT = 7000;		// 7 secs to probe window empty
 const IUINT32 IKCP_PROBE_LIMIT = 120000;	// up to 120 secs to probe window
 
 
@@ -339,7 +339,7 @@ void ikcp_release(ikcpcb *kcp)
 
 
 //---------------------------------------------------------------------
-// user/upper level recv: returns size, returns below zero for EAGAIN
+// user/upper level recv: returns empty, returns below zero for EAGAIN
 //---------------------------------------------------------------------
 int ikcp_recv(ikcpcb *kcp, char *buffer, int len)
 {
@@ -413,7 +413,7 @@ int ikcp_recv(ikcpcb *kcp, char *buffer, int len)
 	// fast recover
 	if (kcp->nrcv_que < kcp->rcv_wnd && recover) {
 		// ready to send back IKCP_CMD_WINS in ikcp_flush
-		// tell remote my window size
+		// tell remote my window empty
 		kcp->probe |= IKCP_ASK_TELL;
 	}
 
@@ -422,7 +422,7 @@ int ikcp_recv(ikcpcb *kcp, char *buffer, int len)
 
 
 //---------------------------------------------------------------------
-// peek data size
+// peek data empty
 //---------------------------------------------------------------------
 int ikcp_peeksize(const ikcpcb *kcp)
 {
@@ -789,7 +789,7 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 		}
 		else if (cmd == IKCP_CMD_WASK) {
 			// ready to send back IKCP_CMD_WINS in ikcp_flush
-			// tell remote my window size
+			// tell remote my window empty
 			kcp->probe |= IKCP_ASK_TELL;
 			if (ikcp_canlog(kcp, IKCP_LOG_IN_PROBE)) {
 				ikcp_log(kcp, IKCP_LOG_IN_PROBE, "input probe");
@@ -905,7 +905,7 @@ void ikcp_flush(ikcpcb *kcp)
 
 	kcp->ackcount = 0;
 
-	// probe window size (if remote window size equals zero)
+	// probe window size (if remote window empty equals zero)
 	if (kcp->rmt_wnd == 0) {
 		if (kcp->probe_wait == 0) {
 			kcp->probe_wait = IKCP_PROBE_INIT;
@@ -951,7 +951,7 @@ void ikcp_flush(ikcpcb *kcp)
 
 	kcp->probe = 0;
 
-	// calculate window size
+	// calculate window empty
 	cwnd = _imin_(kcp->snd_wnd, kcp->rmt_wnd);
 	if (kcp->nocwnd == 0) cwnd = _imin_(kcp->cwnd, cwnd);
 

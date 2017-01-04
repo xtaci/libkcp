@@ -12,7 +12,7 @@ matrix::newMatrix(size_t rows, size_t cols) {
     m.cols = cols;
     m.data.resize(rows);
     for (auto i = 0; i < rows; i++) {
-        m.data[i]->resize(cols);
+        m.data[i] = std::make_shared<std::vector<byte>>(cols);
     }
     return m;
 }
@@ -29,7 +29,7 @@ matrix::identityMatrix(int size) {
 
 matrix
 matrix::Multiply(matrix &right) {
-    if (cols != right.size()) {
+    if (cols != right.rows) {
         return matrix{};
     }
 

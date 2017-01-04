@@ -43,7 +43,7 @@ public:
 
 private:
     std::vector<fecPacket> rx; // ordered receive queue
-    int rxlimit;  // queue size limit
+    int rxlimit;  // queue empty limit
     int dataShards;
     int parityShards;
     int totalShards;

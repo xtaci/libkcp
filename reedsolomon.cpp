@@ -142,7 +142,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // If the inverted matrix isn't cached in the tree yet we must
     // construct it ourselves and insert it into the tree for the
     // future.  In this way the inversion tree is lazily loaded.
-    if (dataDecodeMatrix.size() != 0) {
+    if (dataDecodeMatrix.empty()) {
         // Pull out the rows of the matrix that correspond to the
         // shards that we have and build a square matrix.  This
         // matrix could be used to generate the shards that we have
@@ -160,7 +160,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         // since this matrix maps back to the original data, it can
         // be used to create a data shard, but not a parity shard.
         auto dataDecodeMatrix = subMatrix.Invert();
-        if (dataDecodeMatrix.size() == 0) {
+        if (dataDecodeMatrix.empty()) {
             return -2;
         }
 

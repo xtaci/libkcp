@@ -27,10 +27,10 @@ public:
     // Destroy release all resource related.
     static void Destroy(UDPSession *sess);
 
-    // Read reads from kcp with buffer size sz.
+    // Read reads from kcp with buffer empty sz.
     ssize_t Read(char *buf, size_t sz) noexcept;
 
-    // Write writes into kcp with buffer size sz.
+    // Write writes into kcp with buffer empty sz.
     ssize_t Write(const char *buf, size_t sz) noexcept;
 
     // Set DSCP value

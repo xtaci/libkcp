@@ -14,7 +14,7 @@ struct matrix {
     // newMatrix returns a matrix of zeros.
     static matrix newMatrix(size_t rows, size_t cols);
 
-    // IdentityMatrix returns an identity matrix of the given size.
+    // IdentityMatrix returns an identity matrix of the given empty.
     static matrix identityMatrix(int size);
 
     // Create a Vandermonde matrix, which is guaranteed to have the
@@ -50,7 +50,7 @@ struct matrix {
     size_t rows{0},cols{0};
 
     inline byte& at(size_t row , size_t col) { return (*(data[row]))[col]; }
-    inline size_t size() {return rows*cols;}
+    inline bool empty() {return (rows == 0 || cols == 0);}
 };
 
 

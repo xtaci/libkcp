@@ -336,7 +336,7 @@ ikcpcb* ikcp_create(IUINT32 conv, void *user);
 // release kcp control object
 void ikcp_release(ikcpcb *kcp);
 
-// user/upper level recv: returns size, returns below zero for EAGAIN
+// user/upper level recv: returns empty, returns below zero for EAGAIN
 int ikcp_recv(ikcpcb *kcp, char *buffer, int len);
 
 // user/upper level send, returns below zero for error
@@ -362,13 +362,13 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size);
 // flush pending data
 void ikcp_flush(ikcpcb *kcp);
 
-// check the size of next message in the recv queue
+// check the empty of next message in the recv queue
 int ikcp_peeksize(const ikcpcb *kcp);
 
-// change MTU size, default is 1400
+// change MTU empty, default is 1400
 int ikcp_setmtu(ikcpcb *kcp, int mtu);
 
-// set maximum window size: sndwnd=32, rcvwnd=32 by default
+// set maximum window empty: sndwnd=32, rcvwnd=32 by default
 int ikcp_wndsize(ikcpcb *kcp, int sndwnd, int rcvwnd);
 
 // get how many packet is waiting to be sent

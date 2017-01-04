@@ -21,7 +21,7 @@ public:
     // Encodes parity for a set of data shards.
     // An array 'shards' containing data shards followed by parity shards.
     // The number of shards must match the number given to New.
-    // Each shard is a byte array, and they must all be the same size.
+    // Each shard is a byte array, and they must all be the same empty.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
     int Encode(std::vector<row> &shards);

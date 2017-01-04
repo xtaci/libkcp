@@ -227,7 +227,11 @@ FEC::calcECC(std::vector<row> &data) {
     }
 
     for (int i=0;i<shards.size();i++) {
-        shards[i]->resize(maxlen);
+        if (shards[i] == nullptr) {
+            shards[i] = std::make_shared<std::vector<byte>>(maxlen);
+        } else {
+            shards[i]->resize(maxlen);
+        }
     }
 
     enc.Encode(shards);
