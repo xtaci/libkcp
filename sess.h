@@ -3,6 +3,7 @@
 
 #include "ikcp.h"
 #include "io.h"
+#include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
 
@@ -20,6 +21,9 @@ public:
 
     // Dial connects to the remote server and returns UDPSession.
     static UDPSession *Dial(const char *ip, uint16_t port);
+
+    // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
+    static UDPSession *DialWithOptions(const char *ip, uint16_t port, int dataShards, int parityShards);
 
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
@@ -64,6 +68,8 @@ private:
 private:
     static const size_t mtuLimit{2048};
     static const size_t streamBufferLimit{65535};
+
+    FEC fec;
 };
 
 inline uint32_t currentMs() {

@@ -27,9 +27,12 @@ public:
 
 class FEC {
 public:
+    FEC() = default;
     FEC(ReedSolomon enc);
 
     static FEC New(int rxlimit, int dataShards, int parityShards);
+
+    inline bool isEnabled() { return dataShards > 0 && parityShards > 0 ; }
 
     // Input a FEC packet, and return recovered data if possible.
     std::vector<row_type> Input(fecPacket &pkt);

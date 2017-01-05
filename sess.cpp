@@ -38,6 +38,20 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 }
 
 UDPSession *
+UDPSession::DialWithOptions(const char *ip, uint16_t port, int dataShards, int parityShards) {
+    auto sess = UDPSession::Dial(ip, port);
+    if (sess == nullptr) {
+        return nullptr;
+    }
+
+    if (dataShards >0 && parityShards > 0) {
+        sess->fec = FEC::New(3*(dataShards + parityShards), dataShards, parityShards);
+    }
+    return sess;
+};
+
+
+UDPSession *
 UDPSession::dialIPv6(const char *ip, uint16_t port) {
     struct sockaddr_in6 saddr;
     memset(&saddr, 0, sizeof(saddr));
@@ -165,6 +179,8 @@ int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
+
+    // TODO: fec encode here
     return (int) sess->output(buf, static_cast<size_t>(len));
 }
 
