@@ -18,7 +18,7 @@ int main() {
     FEC fec = FEC::New(20, datashard, parityshard);
 
     byte arr[] = {0, 0, 0};
-    std::vector<row> shards(totalshard);
+    std::vector<row_type> shards(totalshard);
     for (int i=0;i<datashard;i++) {
         for (int j = 0;j<3;j++) {
             arr[j] = byte(rand()%255);

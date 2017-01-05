@@ -8,7 +8,7 @@
 #include <vector>
 #include "galois.h"
 
-using row = std::shared_ptr<std::vector<byte>>;
+using row_type = std::shared_ptr<std::vector<byte>>;
 
 struct matrix {
     // newMatrix returns a matrix of zeros.
@@ -46,7 +46,7 @@ struct matrix {
     //  Gaussian elimination (also known as row reduction)
     int gaussianElimination();
 
-    std::vector<row> data;
+    std::vector<row_type> data;
     size_t rows{0},cols{0};
 
     inline byte& at(size_t row , size_t col) { return (*(data[row]))[col]; }

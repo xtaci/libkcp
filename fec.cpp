@@ -115,9 +115,9 @@ FEC::MarkFEC(char *data) {
     }
 }
 
-std::vector<row>
+std::vector<row_type>
 FEC::Input(fecPacket &pkt) {
-    std::vector<row> recovered;
+    std::vector<row_type> recovered;
 
     uint32_t now = currentMs();
     if (now-lastCheck >= fecExpire) {
@@ -190,7 +190,7 @@ FEC::Input(fecPacket &pkt) {
         if (numDataShard == dataShards) { // no lost
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         } else if (numshard >= dataShards) { // recoverable
-            std::vector<row> shardVec(totalShards);
+            std::vector<row_type> shardVec(totalShards);
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
                     shardVec[k] = rx[indices[k]].data;

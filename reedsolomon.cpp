@@ -46,7 +46,7 @@ ReedSolomon::New(int dataShards, int parityShards) {
     // with the original data.
     r.tree = inversionTree::newInversionTree(dataShards, parityShards);
 
-    r.parity = std::vector<row>(parityShards);
+    r.parity = std::vector<row_type>(parityShards);
     for (int i=0;i<parityShards;i++) {
         r.parity[i] = r.m.data[dataShards+i];
     }
@@ -54,23 +54,23 @@ ReedSolomon::New(int dataShards, int parityShards) {
 }
 
 int
-ReedSolomon::Encode(std::vector<row> &shards) {
+ReedSolomon::Encode(std::vector<row_type> &shards) {
     if (shards.size() != m_totalShards) {
         return -1;
     }
 
     // Get the slice of output buffers.
-    std::vector<row> output(shards.begin() + m_dataShards, shards.end());
+    std::vector<row_type> output(shards.begin() + m_dataShards, shards.end());
 
     // Do the coding.
-    std::vector<row> input(shards.begin(), shards.begin() + this->m_dataShards);
+    std::vector<row_type> input(shards.begin(), shards.begin() + this->m_dataShards);
     codeSomeShards(parity, input , output, m_parityShards);
     return 0;
 };
 
 
 void
-ReedSolomon::codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount) {
+ReedSolomon::codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> & inputs, std::vector<row_type> & outputs, int outputCount) {
     for (int c = 0; c < m_dataShards; c++) {
         auto in = inputs[c];
         for (int iRow = 0; iRow < outputCount; iRow++) {
@@ -84,7 +84,7 @@ ReedSolomon::codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inp
 }
 
 int
-ReedSolomon::Reconstruct(std::vector<row> &shards) {
+ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     if (shards.size() != m_totalShards) {
         return -1;
     }
@@ -118,7 +118,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     //
     // Also, create an array of indices of the valid rows we do have
     // and the invalid rows we don't have up until we have enough valid rows.
-    std::vector<row> subShards(m_dataShards);
+    std::vector<row_type> subShards(m_dataShards);
     std::vector<int> validIndices(m_dataShards, 0);
     std::vector<int> invalidIndices;
     int subMatrixRow = 0;
@@ -174,8 +174,8 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // The Input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special Decode matrix we just built.
-    std::vector<row> outputs;
-    std::vector<row> matrixRows(m_parityShards);
+    std::vector<row_type> outputs;
+    std::vector<row_type> matrixRows(m_parityShards);
     int outputCount = 0;
 
     for (int iShard = 0;iShard < m_dataShards; iShard++) {
@@ -206,14 +206,14 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         }
     }
 
-    std::vector<row> ds(shards.begin(), shards.begin() + m_dataShards);
+    std::vector<row_type> ds(shards.begin(), shards.begin() + m_dataShards);
     codeSomeShards(matrixRows, shards, outputs, outputCount);
 
     return 0;
 }
 
 
-int ReedSolomon::shardSize(std::vector<row> & shards)  {
+int ReedSolomon::shardSize(std::vector<row_type> & shards)  {
     for (int i =0;i<shards.size();i++) {
         if (shards[i] != nullptr){
             return shards[i]->size();

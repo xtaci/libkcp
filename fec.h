@@ -21,7 +21,7 @@ class fecPacket {
 public:
     uint32_t seqid;
     uint16_t flag;
-    row data;
+    row_type data;
     uint32_t ts;
 };
 
@@ -32,10 +32,10 @@ public:
     static FEC New(int rxlimit, int dataShards, int parityShards);
 
     // Input a FEC packet, and return recovered data if possible.
-    std::vector<row> Input(fecPacket &pkt);
+    std::vector<row_type> Input(fecPacket &pkt);
 
     // Calc Parity Shards
-    inline int Encode(std::vector<row> &shards) { return enc.Encode(shards); }
+    inline int Encode(std::vector<row_type> &shards) { return enc.Encode(shards); }
 
     // Decode a raw array into fecPacket
     static fecPacket Decode(char *data, size_t sz);

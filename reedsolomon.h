@@ -24,7 +24,7 @@ public:
     // Each shard is a byte array, and they must all be the same empty.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
-    int Encode(std::vector<row> &shards);
+    int Encode(std::vector<row_type> &shards);
 
     // Reconstruct will recreate the missing shards, if possible.
     //
@@ -39,7 +39,7 @@ public:
     //
     // The reconstructed shard set is complete, but integrity is not verified.
     // Use the Verify function to check if data set is ok.
-    int Reconstruct(std::vector<row> &shards);
+    int Reconstruct(std::vector<row_type> &shards);
 
 private:
     const int m_dataShards;  // Number of data shards, should not be modified.
@@ -48,8 +48,8 @@ private:
 
     matrix m;
     inversionTree tree;
-    std::vector<row> parity;
-    int shardSize(std::vector<row> & shards);
+    std::vector<row_type> parity;
+    int shardSize(std::vector<row_type> & shards);
 
 
     // Multiplies a subset of rows from a coding matrix by a full set of
@@ -61,7 +61,7 @@ private:
     // The number of outputs computed, and the
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount);
+    void codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> & inputs, std::vector<row_type> & outputs, int outputCount);
 };
 
 
