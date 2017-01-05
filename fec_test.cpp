@@ -2,10 +2,14 @@
 // Created by 理 傅 on 2017/1/4.
 //
 #include <iostream>
+#include <sys/time.h>
 #include "fec.h"
 
 
 int main() {
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
     int datashard = 5;
     int parityshard = 3;
@@ -43,6 +47,7 @@ int main() {
         std::cout << std::endl;
     }
 
+    std::cout << "remove first 3 elements:" << std::endl;
     // remove first 3 element
     for (int i =0;i<shards.size();i++) {
         if (i < 3) {
@@ -60,7 +65,7 @@ int main() {
         auto recovered = fec.Input(pkt);
 
         if (recovered.size() > 0) {
-            std::cout << "recovered" << std::endl;
+            std::cout << "recovered:" << std::endl;
             for (int i =0;i<recovered.size();i++) {
                 for (auto b : *recovered[i]) {
                     std::cout << int(b)  << " ";
