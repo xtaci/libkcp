@@ -216,8 +216,3 @@ FEC::Input(fecPacket &pkt) {
 
     return recovered;
 }
-
-int
-FEC::CalcECC(std::vector<row> &shards) {
-     return enc.Encode(shards);
-}

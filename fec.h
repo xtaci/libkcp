@@ -30,11 +30,20 @@ public:
     FEC(ReedSolomon enc);
 
     static FEC New(int rxlimit, int dataShards, int parityShards);
-    std::vector<row> Input(fecPacket &pkt);
-    int CalcECC(std::vector<row> &shards);
 
+    // Input a FEC packet, and return recovered data if possible.
+    std::vector<row> Input(fecPacket &pkt);
+
+    // Calc Parity Shards
+    inline int Encode(std::vector<row> &shards) { return enc.Encode(shards); }
+
+    // Decode a raw array into fecPacket
     static fecPacket Decode(char *data, size_t sz);
+
+    // Mark raw array as typeData
     void MarkData(char *data);
+
+    // Mark raw array as typeFEC
     void MarkFEC(char *data);
 private:
     std::vector<fecPacket> rx; // ordered receive queue

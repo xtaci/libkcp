@@ -30,7 +30,7 @@ int main() {
         }
     }
 
-    auto ret = fec.CalcECC(shards);
+    auto ret = fec.Encode(shards);
     std::cout << "ret:" << ret << std::endl;
     for (int i =0;i<shards.size();i++) {
         for (auto b : *shards[i]) {
