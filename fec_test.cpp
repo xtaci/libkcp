@@ -38,9 +38,9 @@ int main() {
         }
     }
 
-    // remove first element
+    // remove first 3 element
     for (int i =0;i<shards.size();i++) {
-        if (i == 2) { // drop elements
+        if (i < 3) {
             continue;
         }
 
