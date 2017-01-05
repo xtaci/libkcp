@@ -11,7 +11,7 @@ int main() {
     int parityshard = 3;
     int totalshard = datashard + parityshard;
 
-    FEC fec = FEC::newFEC(20, datashard, parityshard);
+    FEC fec = FEC::New(20, datashard, parityshard);
 
     int arr[] = {0};
     std::vector<row> shards(totalshard);
@@ -30,7 +30,7 @@ int main() {
         }
     }
 
-    auto ret =  fec.calcECC(shards);
+    auto ret = fec.CalcECC(shards);
     std::cout << "ret:" << ret << std::endl;
     for (int i =0;i<shards.size();i++) {
         for (auto b : *shards[i]) {
@@ -52,7 +52,7 @@ int main() {
         } else {
             pkt.flag = typeFEC;
         }
-        auto recovered = fec.input(pkt);
+        auto recovered = fec.Input(pkt);
 
         if (recovered.size() > 0) {
             std::cout << "recovered" << std::endl;

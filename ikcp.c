@@ -44,7 +44,7 @@ const IUINT32 IKCP_PROBE_LIMIT = 120000;	// up to 120 secs to probe window
 
 
 //---------------------------------------------------------------------
-// encode / decode
+// encode / Decode
 //---------------------------------------------------------------------
 
 /* encode 8 bits unsigned int */
@@ -54,7 +54,7 @@ static inline char *ikcp_encode8u(char *p, unsigned char c)
 	return p;
 }
 
-/* decode 8 bits unsigned int */
+/* Decode 8 bits unsigned int */
 static inline const char *ikcp_decode8u(const char *p, unsigned char *c)
 {
 	*c = *(unsigned char*)p++;
@@ -74,7 +74,7 @@ static inline char *ikcp_encode16u(char *p, unsigned short w)
 	return p;
 }
 
-/* decode 16 bits unsigned int (lsb) */
+/* Decode 16 bits unsigned int (lsb) */
 static inline const char *ikcp_decode16u(const char *p, unsigned short *w)
 {
 #if IWORDS_BIG_ENDIAN
@@ -102,7 +102,7 @@ static inline char *ikcp_encode32u(char *p, IUINT32 l)
 	return p;
 }
 
-/* decode 32 bits unsigned int (lsb) */
+/* Decode 32 bits unsigned int (lsb) */
 static inline const char *ikcp_decode32u(const char *p, IUINT32 *l)
 {
 #if IWORDS_BIG_ENDIAN
@@ -695,7 +695,7 @@ void ikcp_parse_data(ikcpcb *kcp, IKCPSEG *newseg)
 
 
 //---------------------------------------------------------------------
-// input data
+// Input data
 //---------------------------------------------------------------------
 int ikcp_input(ikcpcb *kcp, const char *data, long size)
 {
@@ -756,7 +756,7 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 			}
 			if (ikcp_canlog(kcp, IKCP_LOG_IN_ACK)) {
 				ikcp_log(kcp, IKCP_LOG_IN_DATA, 
-					"input ack: sn=%lu rtt=%ld rto=%ld", sn, 
+					"Input ack: sn=%lu rtt=%ld rto=%ld", sn,
 					(long)_itimediff(kcp->current, ts),
 					(long)kcp->rx_rto);
 			}
@@ -764,7 +764,7 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 		else if (cmd == IKCP_CMD_PUSH) {
 			if (ikcp_canlog(kcp, IKCP_LOG_IN_DATA)) {
 				ikcp_log(kcp, IKCP_LOG_IN_DATA, 
-					"input psh: sn=%lu ts=%lu", sn, ts);
+					"Input psh: sn=%lu ts=%lu", sn, ts);
 			}
 			if (_itimediff(sn, kcp->rcv_nxt + kcp->rcv_wnd) < 0) {
 				ikcp_ack_push(kcp, sn, ts);
@@ -792,14 +792,14 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 			// tell remote my window empty
 			kcp->probe |= IKCP_ASK_TELL;
 			if (ikcp_canlog(kcp, IKCP_LOG_IN_PROBE)) {
-				ikcp_log(kcp, IKCP_LOG_IN_PROBE, "input probe");
+				ikcp_log(kcp, IKCP_LOG_IN_PROBE, "Input probe");
 			}
 		}
 		else if (cmd == IKCP_CMD_WINS) {
 			// do nothing
 			if (ikcp_canlog(kcp, IKCP_LOG_IN_WINS)) {
 				ikcp_log(kcp, IKCP_LOG_IN_WINS,
-					"input wins: %lu", (IUINT32)(wnd));
+					"Input wins: %lu", (IUINT32)(wnd));
 			}
 		}
 		else {

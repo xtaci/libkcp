@@ -29,18 +29,13 @@ class FEC {
 public:
     FEC(ReedSolomon enc);
 
-    static FEC newFEC(int rxlimit, int dataShards, int parityShards);
+    static FEC New(int rxlimit, int dataShards, int parityShards);
+    std::vector<row> Input(fecPacket &pkt);
+    int CalcECC(std::vector<row> &shards);
 
-    static fecPacket decode(char *data, size_t sz);
-
-    void markData(char *data);
-
-    void markFEC(char *data);
-
-    std::vector<row> input(fecPacket &pkt);
-
-    int calcECC(std::vector<row> &shards);
-
+    static fecPacket Decode(char *data, size_t sz);
+    void MarkData(char *data);
+    void MarkFEC(char *data);
 private:
     std::vector<fecPacket> rx; // ordered receive queue
     int rxlimit;  // queue empty limit

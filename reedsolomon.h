@@ -26,17 +26,6 @@ public:
     // will remain the same.
     int Encode(std::vector<row> &shards);
 
-    // Multiplies a subset of rows from a coding matrix by a full set of
-    // input shards to produce some output shards.
-    // 'matrixRows' is The rows from the matrix to use.
-    // 'inputs' An array of byte arrays, each of which is one input shard.
-    // The number of inputs used is determined by the length of each matrix row.
-    // outputs Byte arrays where the computed shards are stored.
-    // The number of outputs computed, and the
-    // number of matrix rows used, is determined by
-    // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount);
-
     // Reconstruct will recreate the missing shards, if possible.
     //
     // Given a list of shards, some of which contain data, fills in the
@@ -61,6 +50,18 @@ private:
     inversionTree tree;
     std::vector<row> parity;
     int shardSize(std::vector<row> & shards);
+
+
+    // Multiplies a subset of rows from a coding matrix by a full set of
+    // Input shards to produce some output shards.
+    // 'matrixRows' is The rows from the matrix to use.
+    // 'inputs' An array of byte arrays, each of which is one Input shard.
+    // The number of inputs used is determined by the length of each matrix row.
+    // outputs Byte arrays where the computed shards are stored.
+    // The number of outputs computed, and the
+    // number of matrix rows used, is determined by
+    // outputCount, which is the number of outputs to compute.
+    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount);
 };
 
 

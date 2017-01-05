@@ -113,7 +113,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
     // Pull out an array holding just the shards that
     // correspond to the rows of the submatrix.  These shards
-    // will be the input to the decoding process that re-creates
+    // will be the Input to the decoding process that re-creates
     // the missing data shards.
     //
     // Also, create an array of indices of the valid rows we do have
@@ -154,7 +154,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
         // Invert the matrix, so we can go from the encoded shards
         // back to the original data.  Then pull out the row that
-        // generates the shard that we want to decode.  Note that
+        // generates the shard that we want to Decode.  Note that
         // since this matrix maps back to the original data, it can
         // be used to create a data shard, but not a parity shard.
         dataDecodeMatrix = subMatrix.Invert();
@@ -171,9 +171,9 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
     // Re-create any data shards that were missing.
     //
-    // The input to the coding is all of the shards we actually
+    // The Input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
-    // is done using the special decode matrix we just built.
+    // is done using the special Decode matrix we just built.
     std::vector<row> outputs;
     std::vector<row> matrixRows(m_parityShards);
     int outputCount = 0;
@@ -192,7 +192,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // Now that we have all of the data shards intact, we can
     // compute any of the parity that is missing.
     //
-    // The input to the coding is ALL of the data shards, including
+    // The Input to the coding is ALL of the data shards, including
     // any that we just calculated.  The output is whichever of the
     // data shards were missing.
     outputCount = 0;

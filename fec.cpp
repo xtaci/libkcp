@@ -21,7 +21,7 @@ static inline char *encode16u(char *p, unsigned short w)
     return p;
 }
 
-/* decode 16 bits unsigned int (lsb) */
+/* Decode 16 bits unsigned int (lsb) */
 static inline char *decode16u(char *p, unsigned short *w)
 {
 #if IWORDS_BIG_ENDIAN
@@ -49,7 +49,7 @@ static inline char *encode32u(char *p, IUINT32 l)
     return p;
 }
 
-/* decode 32 bits unsigned int (lsb) */
+/* Decode 32 bits unsigned int (lsb) */
 static inline char *decode32u(char *p, IUINT32 *l)
 {
 #if IWORDS_BIG_ENDIAN
@@ -67,7 +67,7 @@ static inline char *decode32u(char *p, IUINT32 *l)
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
 
 FEC
-FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
+FEC::New(int rxlimit, int dataShards, int parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }
@@ -87,7 +87,7 @@ FEC::newFEC(int rxlimit, int dataShards, int parityShards)  {
 }
 
 fecPacket
-FEC::decode(char* data, size_t sz) {
+FEC::Decode(char *data, size_t sz) {
     fecPacket pkt;
     data = decode32u(data, &pkt.seqid);
     data = decode16u(data, &pkt.flag);
@@ -99,24 +99,24 @@ FEC::decode(char* data, size_t sz) {
 }
 
 void
-FEC::markData(char *data) {
+FEC::MarkData(char *data) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
     this->next++;
 }
 
 void
-FEC::markFEC(char *data) {
+FEC::MarkFEC(char *data) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeFEC);
     this->next++;
-    if (this->next >= this->paws) { // paws would only occurs in markFEC
+    if (this->next >= this->paws) { // paws would only occurs in MarkFEC
         this->next = 0;
     }
 }
 
 std::vector<row>
-FEC::input(fecPacket &pkt) {
+FEC::Input(fecPacket &pkt) {
     std::vector<row> recovered;
 
     uint32_t now = currentMs();
@@ -218,6 +218,6 @@ FEC::input(fecPacket &pkt) {
 }
 
 int
-FEC::calcECC(std::vector<row> &shards) {
+FEC::CalcECC(std::vector<row> &shards) {
      return enc.Encode(shards);
 }
