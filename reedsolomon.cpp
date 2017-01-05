@@ -55,27 +55,25 @@ ReedSolomon::New(int dataShards, int parityShards) {
 
 int
 ReedSolomon::Encode(std::vector<row> &shards) {
-    if (shards.size() != m_dataShards) {
+    if (shards.size() != m_totalShards) {
         return -1;
     }
 
-    std::vector<row> output(m_parityShards);
-    // Do the coding.
-    codeSomeShards(parity, shards, output);
+    // Get the slice of output buffers.
+    std::vector<row> output(shards.begin() + m_dataShards, shards.end());
 
-    // copy back
-    for (int i=0;i<m_parityShards;i++) {
-        std::swap(shards[i+m_dataShards], output[i]);
-    }
+    // Do the coding.
+    std::vector<row> input(shards.begin(), shards.begin() + this->m_dataShards);
+    codeSomeShards(parity, input , output, m_parityShards);
     return 0;
 };
 
 
 void
-ReedSolomon::codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs) {
+ReedSolomon::codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount) {
     for (int c = 0; c < m_dataShards; c++) {
         auto in = inputs[c];
-        for (int iRow = 0; iRow < outputs.size(); iRow++) {
+        for (int iRow = 0; iRow < outputCount; iRow++) {
             if (c == 0) {
                 galMulSlice((*matrixRows[iRow])[c], in, outputs[iRow]);
             } else {
@@ -176,20 +174,20 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // The input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special decode matrix we just built.
-    std::vector<row> outputs(m_parityShards);
+    std::vector<row> outputs;
     std::vector<row> matrixRows(m_parityShards);
     int outputCount = 0;
 
     for (int iShard = 0;iShard < m_dataShards; iShard++) {
         if (shards[iShard]->size() == 0) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
-            outputs[outputCount] = shards[iShard];
+            outputs.push_back(shards[iShard]);
             matrixRows[outputCount] = dataDecodeMatrix.data[iShard];
             outputCount++;
         }
     }
 
-    codeSomeShards(matrixRows, subShards, outputs);
+    codeSomeShards(matrixRows, subShards, outputs, outputCount);
 
     // Now that we have all of the data shards intact, we can
     // compute any of the parity that is missing.
@@ -198,15 +196,18 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // any that we just calculated.  The output is whichever of the
     // data shards were missing.
     outputCount = 0;
+    outputs.clear();
     for (int iShard = 0;iShard < m_dataShards; iShard++) {
         if (shards[iShard]->size() == 0) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
-            outputs[outputCount] = shards[iShard];
+            outputs.push_back(shards[iShard]);
             matrixRows[outputCount] = parity[iShard-m_dataShards];
             outputCount++;
         }
     }
-    codeSomeShards(matrixRows, shards, outputs);
+
+    std::vector<row> ds(shards.begin(), shards.begin() + m_dataShards);
+    codeSomeShards(matrixRows, shards, outputs, outputCount);
 
     return 0;
 }

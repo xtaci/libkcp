@@ -39,7 +39,7 @@ public:
 
     int input(fecPacket & pkt, std::vector<row> &recovered);
 
-    std::vector<row> calcECC(std::vector<row> &data);
+    int calcECC(std::vector<row> &shards);
 
 private:
     std::vector<fecPacket> rx; // ordered receive queue

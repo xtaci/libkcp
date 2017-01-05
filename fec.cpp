@@ -214,28 +214,7 @@ FEC::input(fecPacket &pkt, std::vector<row> &recovered) {
     return 0;
 }
 
-std::vector<row>
-FEC::calcECC(std::vector<row> &data) {
-    std::vector<row> shards(totalShards);
-
-    unsigned long maxlen = 0;
-    for (int i=0;i<dataShards;i++) {
-        shards[i] = data[i];
-        if (maxlen < data[i]->size()) {
-            maxlen = data[i]->size();
-        }
-    }
-
-    for (int i=0;i<shards.size();i++) {
-        if (shards[i] == nullptr) {
-            shards[i] = std::make_shared<std::vector<byte>>(maxlen);
-        } else {
-            shards[i]->resize(maxlen);
-        }
-    }
-
-    enc.Encode(shards);
-    return std::vector<row>(shards.begin()+dataShards, shards.end());
+int
+FEC::calcECC(std::vector<row> &shards) {
+     return enc.Encode(shards);
 }
-
-

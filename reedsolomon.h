@@ -35,7 +35,7 @@ public:
     // The number of outputs computed, and the
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs);
+    void codeSomeShards(std::vector<row> &matrixRows, std::vector<row> & inputs, std::vector<row> & outputs, int outputCount);
 
     // Reconstruct will recreate the missing shards, if possible.
     //
