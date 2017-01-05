@@ -31,8 +31,8 @@ End
 The ```Read/Write/Update``` functions of libkcp are guaranteed to be ***non-blocking***.       
 *```Read/Write/Update``` 函数保证是* ***非阻塞*** *的调用。*       
 
-Please read ```main.cpp``` for library usage.        
-*阅读```main.cpp``` 学习使用方法。*   
+Please read ```kcp_test.cpp``` for library usage.        
+*阅读```kcp_test.cpp``` 学习使用方法。*   
 
 ## ***Demo***
 start echo server(golang)       
