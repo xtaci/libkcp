@@ -99,16 +99,17 @@ FEC::Decode(char *data, size_t sz) {
 }
 
 void
-FEC::MarkData(char *data) {
+FEC::MarkData(char *data, uint16_t sz) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
+    encode16u(data,sz);
     this->next++;
 }
 
 void
 FEC::MarkFEC(char *data) {
     data = encode32u(data,this->next);
-    data = encode16u(data,typeFEC);
+    encode16u(data,typeFEC);
     this->next++;
     if (this->next >= this->paws) { // paws would only occurs in MarkFEC
         this->next = 0;
@@ -215,4 +216,21 @@ FEC::Input(fecPacket &pkt) {
     }
 
     return recovered;
+}
+
+
+int FEC::Encode(std::vector<row_type> &shards) {
+    // resize elements with 0 appending
+    size_t max = 0;
+    for ( auto s : shards) {
+        if (s->size() > max) {
+            max = s->size();
+        }
+    }
+
+    for ( auto s : shards) {
+        s->resize(max);
+    }
+
+    return enc.Encode(shards);
 }

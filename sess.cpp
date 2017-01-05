@@ -46,6 +46,9 @@ UDPSession::DialWithOptions(const char *ip, uint16_t port, int dataShards, int p
 
     if (dataShards >0 && parityShards > 0) {
         sess->fec = FEC::New(3*(dataShards + parityShards), dataShards, parityShards);
+        sess->shards.resize(dataShards + parityShards);
+        sess->dataShards = dataShards;
+        sess->parityShards = parityShards;
     }
     return sess;
 };
@@ -111,7 +114,26 @@ UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, UDPSession::mtuLimit, 0);
         if (n > 0) {
-            ikcp_input(m_kcp, static_cast<const char *>(m_buf), n);
+            if (fec.isEnabled()) {
+                auto pkt = fec.Decode(m_buf, n);
+                if (pkt.flag == typeData) {
+                    auto ptr = pkt.data->data();
+                    ikcp_input(m_kcp, (char *)(ptr+ 2), pkt.data->size() - 2);
+                }
+
+                auto recovered = fec.Input(pkt);
+                if (recovered.size() > 0) {
+                    std::cout << "recovered:" << std::endl;
+                    for (int i =0;i<recovered.size();i++) {
+                        for (auto b : *recovered[i]) {
+                            std::cout << int(b)  << " ";
+                        }
+                        std::cout << std::endl;
+                    }
+                }
+            } else {
+                ikcp_input(m_kcp, (char *)(m_buf), n);
+            }
         } else {
             break;
         }
@@ -180,8 +202,37 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
 
-    // TODO: fec encode here
-    return (int) sess->output(buf, static_cast<size_t>(len));
+    if (sess->fec.isEnabled()) {
+        // extend to len + fecHeaderSizePlus2
+        memcpy(sess->m_buf+fecHeaderSizePlus2, buf, len);
+        sess->fec.MarkData(sess->m_buf, len);
+        sess->output(sess->m_buf, len + fecHeaderSizePlus2);
+    } else {
+        sess->output(buf, static_cast<size_t>(len));
+    }
+
+    if (sess->fec.isEnabled()) {
+        sess->shards[sess->pkt_idx] =
+                std::make_shared<std::vector<byte>>(sess->m_buf + fecHeaderSize, sess->m_buf + len + fecHeaderSizePlus2);
+
+        sess->pkt_idx++;
+        if (sess->pkt_idx % sess->dataShards  == 0 ) {
+            for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
+                sess->shards[i] = nullptr;
+            }
+
+            auto ret = sess->fec.Encode(sess->shards);
+            if (ret == 0 ) {
+                for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
+                    memcpy(sess->m_buf+fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
+                    sess->fec.MarkFEC(sess->m_buf);
+                    sess->output(sess->m_buf, sess->shards[i]->size());
+                }
+            }
+        }
+    }
+
+    return 0;
 }
 
 ssize_t

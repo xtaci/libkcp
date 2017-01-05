@@ -9,7 +9,7 @@ import (
 const port = ":9999"
 
 func ListenTest() (*kcp.Listener, error) {
-	return kcp.ListenWithOptions(port, nil, 0, 0)
+	return kcp.ListenWithOptions(port, nil, 5, 3)
 }
 
 func server() {
@@ -39,7 +39,7 @@ func handle_client(conn *kcp.UDPSession) {
 			panic(err)
 		}
 		count++
-		fmt.Println("received:", buf[:n])
+		fmt.Println("received:", string(buf[:n]))
 		conn.Write(buf[:n])
 	}
 }

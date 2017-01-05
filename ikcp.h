@@ -357,7 +357,7 @@ void ikcp_update(ikcpcb *kcp, IUINT32 current);
 IUINT32 ikcp_check(const ikcpcb *kcp, IUINT32 current);
 
 // when you received a low level packet (eg. UDP packet), call it
-int ikcp_input(ikcpcb *kcp, const char *data, long size);
+int ikcp_input(ikcpcb *kcp, char *data, long size);
 
 // flush pending data
 void ikcp_flush(ikcpcb *kcp);

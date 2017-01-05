@@ -38,13 +38,13 @@ public:
     std::vector<row_type> Input(fecPacket &pkt);
 
     // Calc Parity Shards
-    inline int Encode(std::vector<row_type> &shards) { return enc.Encode(shards); }
+    int Encode(std::vector<row_type> &shards);
 
     // Decode a raw array into fecPacket
     static fecPacket Decode(char *data, size_t sz);
 
     // Mark raw array as typeData
-    void MarkData(char *data);
+    void MarkData(char *data, uint16_t sz);
 
     // Mark raw array as typeFEC
     void MarkFEC(char *data);
