@@ -13,29 +13,34 @@ int main() {
 
     FEC fec = FEC::New(20, datashard, parityshard);
 
-    int arr[] = {0};
+    byte arr[] = {0, 0, 0};
     std::vector<row> shards(totalshard);
     for (int i=0;i<datashard;i++) {
-        arr[0] = i;
-        shards[i] = std::make_shared<std::vector<byte>>(arr, arr +1);
+        for (int j = 0;j<3;j++) {
+            arr[j] = byte(rand()%255);
+        }
+        shards[i] = std::make_shared<std::vector<byte>>(arr, arr +3);
     }
 
     for (int i=datashard;i<totalshard;i++) {
-        shards[i] = std::make_shared<std::vector<byte>>(1);
+        shards[i] = std::make_shared<std::vector<byte>>(3);
     }
 
+    std::cout << "shards to encode:" <<  std::endl;
     for (int i =0;i<shards.size();i++) {
         for (auto b : *shards[i]) {
-            std::cout << int(b) << std::endl;
+            std::cout << int(b)  << " ";
         }
+        std::cout << std::endl;
     }
 
     auto ret = fec.Encode(shards);
-    std::cout << "ret:" << ret << std::endl;
+    std::cout << "encoded:" << std::endl;
     for (int i =0;i<shards.size();i++) {
         for (auto b : *shards[i]) {
-            std::cout << int(b) << std::endl;
+            std::cout << int(b)  << " ";
         }
+        std::cout << std::endl;
     }
 
     // remove first 3 element
@@ -58,8 +63,9 @@ int main() {
             std::cout << "recovered" << std::endl;
             for (int i =0;i<recovered.size();i++) {
                 for (auto b : *recovered[i]) {
-                    std::cout << int(b) << std::endl;
+                    std::cout << int(b)  << " ";
                 }
+                std::cout << std::endl;
             }
         }
     }
