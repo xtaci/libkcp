@@ -4,6 +4,7 @@
 #include <iostream>
 #include "fec.h"
 
+
 int main() {
 
     int datashard = 5;
@@ -36,4 +37,31 @@ int main() {
             std::cout << int(b) << std::endl;
         }
     }
+
+    // remove first element
+    for (int i =0;i<shards.size();i++) {
+        if (i == 2) { // drop elements
+            continue;
+        }
+
+        fecPacket pkt;
+        pkt.data = shards[i];
+        pkt.seqid = i;
+        if (i < 5) {
+            pkt.flag = typeData;
+        } else {
+            pkt.flag = typeFEC;
+        }
+        auto recovered = fec.input(pkt);
+
+        if (recovered.size() > 0) {
+            std::cout << "recovered" << std::endl;
+            for (int i =0;i<recovered.size();i++) {
+                for (auto b : *recovered[i]) {
+                    std::cout << int(b) << std::endl;
+                }
+            }
+        }
+    }
 }
+

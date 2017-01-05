@@ -115,8 +115,10 @@ FEC::markFEC(char *data) {
     }
 }
 
-int
-FEC::input(fecPacket &pkt, std::vector<row> &recovered) {
+std::vector<row>
+FEC::input(fecPacket &pkt) {
+    std::vector<row> recovered;
+
     uint32_t now = currentMs();
     if (now-lastCheck >= fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
@@ -134,7 +136,7 @@ FEC::input(fecPacket &pkt, std::vector<row> &recovered) {
     int insertIdx = 0;
     for (int i=n;i>=0;i--) {
         if (pkt.seqid == rx[i].seqid) {
-            return 0;
+            return recovered;
         } else if (pkt.seqid > rx[i].seqid) {
             insertIdx = i + 1;
             break;
@@ -195,7 +197,8 @@ FEC::input(fecPacket &pkt, std::vector<row> &recovered) {
                 }
             }
 
-            if (int ret = enc.Reconstruct(shardVec) && ret== 0 ){
+            auto ret = enc.Reconstruct(shardVec);
+            if (ret== 0){
                 for (int k =0;k<dataShards;k++) {
                     if (indices[k] == -1) {
                         recovered.push_back(shardVec[k]);
@@ -211,7 +214,7 @@ FEC::input(fecPacket &pkt, std::vector<row> &recovered) {
         rx.erase(rx.begin());
     }
 
-    return 0;
+    return recovered;
 }
 
 int

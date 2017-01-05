@@ -37,7 +37,7 @@ public:
 
     void markFEC(char *data);
 
-    int input(fecPacket & pkt, std::vector<row> &recovered);
+    std::vector<row> input(fecPacket &pkt);
 
     int calcECC(std::vector<row> &shards);
 

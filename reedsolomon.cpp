@@ -95,7 +95,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     // nothing to do.
     int numberPresent = 0;
     for (int i = 0; i < m_totalShards; i++) {
-        if (shards[i]->size() != 0) {
+        if (shards[i] != nullptr) {
             numberPresent++;
         }
     }
@@ -124,7 +124,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     int subMatrixRow = 0;
 
     for (int matrixRow = 0; matrixRow < m_totalShards && subMatrixRow < m_dataShards; matrixRow++) {
-        if (shards[matrixRow]->size() != 0) {
+        if (shards[matrixRow] != nullptr) {
             subShards[subMatrixRow] = shards[matrixRow];
             validIndices[subMatrixRow] = matrixRow;
             subMatrixRow++;
@@ -157,7 +157,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
         // generates the shard that we want to decode.  Note that
         // since this matrix maps back to the original data, it can
         // be used to create a data shard, but not a parity shard.
-        auto dataDecodeMatrix = subMatrix.Invert();
+        dataDecodeMatrix = subMatrix.Invert();
         if (dataDecodeMatrix.empty()) {
             return -2;
         }
@@ -179,7 +179,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     int outputCount = 0;
 
     for (int iShard = 0;iShard < m_dataShards; iShard++) {
-        if (shards[iShard]->size() == 0) {
+        if (shards[iShard] == nullptr) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
             outputs.push_back(shards[iShard]);
             matrixRows[outputCount] = dataDecodeMatrix.data[iShard];
@@ -198,7 +198,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
     outputCount = 0;
     outputs.clear();
     for (int iShard = 0;iShard < m_dataShards; iShard++) {
-        if (shards[iShard]->size() == 0) {
+        if (shards[iShard] == nullptr) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
             outputs.push_back(shards[iShard]);
             matrixRows[outputCount] = parity[iShard-m_dataShards];
@@ -215,7 +215,7 @@ ReedSolomon::Reconstruct(std::vector<row> &shards) {
 
 int ReedSolomon::shardSize(std::vector<row> & shards)  {
     for (int i =0;i<shards.size();i++) {
-        if (shards[i]->size() != 0){
+        if (shards[i] != nullptr){
             return shards[i]->size();
         }
     }
