@@ -139,9 +139,20 @@ FEC::Input(fecPacket &pkt) {
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         } else if (numshard >= dataShards) { // recoverable
             std::vector<row_type> shardVec(totalShards);
+            int maxlen = 0;
             for (int k=0;k<totalShards;k++){
                 if (indices[k] != -1) {
                     shardVec[k] = rx[indices[k]].data;
+                    if (shardVec[k]->size() > maxlen) {
+                        maxlen = shardVec[k]->size();
+                    }
+                }
+            }
+
+            // equally resized
+            for (int i=0;i<shardVec.size();i++) {
+                if (shardVec[i] != nullptr) {
+                    shardVec[i]->resize(maxlen);
                 }
             }
 

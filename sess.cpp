@@ -135,8 +135,6 @@ UDPSession::Update(uint32_t current) noexcept {
                             } else {
                                 std::cout << "ikcp_input succeed for recovered packet:" << sz << ","  << n << std::endl;
                             }
-                        } else {
-                            std::cout << "abnormal size for recovered packet:" << sz << std::endl;
                         }
                     }
                 }
