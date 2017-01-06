@@ -2,7 +2,6 @@
 // Created by 理 傅 on 2017/1/1.
 //
 
-#include <cstdlib>
 #include <vector>
 #include "reedsolomon.h"
 #include "galois_noasm.h"
