@@ -116,6 +116,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 auto pkt = fec.Decode(m_buf, n);
                 if (pkt.flag == typeData) {
                     auto ptr = pkt.data->data();
+                    // we have 2B size 
                     ikcp_input(m_kcp, (char *)(ptr+ 2), pkt.data->size() - 2);
                 }
 
