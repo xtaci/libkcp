@@ -227,7 +227,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
                     memcpy(sess->m_buf+fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                     sess->fec.MarkFEC(sess->m_buf);
-                    sess->output(sess->m_buf, sess->shards[i]->size());
+                    sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
                 }
             }
             sess->pkt_idx = 0;
