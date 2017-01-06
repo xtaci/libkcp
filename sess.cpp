@@ -96,14 +96,10 @@ UDPSession::createSession(int sockfd) {
     UDPSession *sess = new(UDPSession);
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
-    sess->m_buf = (char *) malloc(UDPSession::mtuLimit);
-    sess->m_streambuf = (char *) malloc(UDPSession::streamBufferLimit);
     sess->m_kcp->output = sess->out_wrapper;
 
-    if (sess->m_kcp == nullptr || sess->m_buf == nullptr || sess->m_streambuf == nullptr) {
-        if (nullptr != sess->m_kcp) { ikcp_release(sess->m_kcp); }
-        if (nullptr != sess->m_buf) { free(sess->m_buf); }
-        if (nullptr != sess->m_streambuf) { free(sess->m_streambuf); }
+    if (sess->m_kcp == nullptr ) {
+        ikcp_release(sess->m_kcp);
         return nullptr;
     }
     return sess;
@@ -113,7 +109,7 @@ UDPSession::createSession(int sockfd) {
 void
 UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
-        ssize_t n = recv(m_sockfd, m_buf, UDPSession::mtuLimit, 0);
+        ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n > 0) {
             if (fec.isEnabled()) {
                 auto pkt = fec.Decode(m_buf, n);
@@ -128,7 +124,7 @@ UDPSession::Update(uint32_t current) noexcept {
                     for (int i =0;i<recovered.size();i++) {
                         auto ptr = recovered[i]->data();
                         uint16_t sz;
-                        decode16u((char*)ptr, &sz);
+                        decode16u(ptr, &sz);
                         ikcp_input(m_kcp, (char *)(ptr+ 2), sz);
                     }
                 }
@@ -147,8 +143,6 @@ UDPSession::Destroy(UDPSession *sess) {
     if (nullptr == sess) return;
     if (0 != sess->m_sockfd) { close(sess->m_sockfd); }
     if (nullptr != sess->m_kcp) { ikcp_release(sess->m_kcp); }
-    if (nullptr != sess->m_buf) { free(sess->m_buf); }
-    if (nullptr != sess->m_streambuf) { free(sess->m_streambuf); }
     delete sess;
 }
 
@@ -176,7 +170,7 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     if (psz <= sz) {
         return (ssize_t) ikcp_recv(m_kcp, buf, int(sz));
     } else {
-        ikcp_recv(m_kcp, m_streambuf, UDPSession::streamBufferLimit);
+        ikcp_recv(m_kcp, (char*)m_streambuf, sizeof(m_streambuf));
         memcpy(buf, m_streambuf, sz);
         m_streambufsiz = psz - sz;
         memmove(m_streambuf, m_streambuf + sz, psz - sz);
@@ -203,10 +197,11 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
 
-    if (sess->fec.isEnabled()) {
+    if (sess->fec.isEnabled()) {    // append FEC header
         // extend to len + fecHeaderSizePlus2
-        memcpy(sess->m_buf+fecHeaderSizePlus2, buf, len);
-        sess->fec.MarkData(sess->m_buf, len);
+        // i.e. 4B seqid + 2B flag + 2B size
+        memcpy(sess->m_buf+fecHeaderSizePlus2, buf, static_cast<size_t>(len));
+        sess->fec.MarkData(sess->m_buf, static_cast<size_t>(len));
         sess->output(sess->m_buf, len + fecHeaderSizePlus2);
     } else {
         sess->output(buf, static_cast<size_t>(len));

@@ -33,7 +33,7 @@ FEC::New(int rxlimit, int dataShards, int parityShards)  {
 }
 
 fecPacket
-FEC::Decode(char *data, size_t sz) {
+FEC::Decode(byte *data, size_t sz) {
     fecPacket pkt;
     data = decode32u(data, &pkt.seqid);
     data = decode16u(data, &pkt.flag);
@@ -45,7 +45,7 @@ FEC::Decode(char *data, size_t sz) {
 }
 
 void
-FEC::MarkData(char *data, uint16_t sz) {
+FEC::MarkData(byte *data, uint16_t sz) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
     encode16u(data,sz);
@@ -53,7 +53,7 @@ FEC::MarkData(char *data, uint16_t sz) {
 }
 
 void
-FEC::MarkFEC(char *data) {
+FEC::MarkFEC(byte *data) {
     data = encode32u(data,this->next);
     encode16u(data,typeFEC);
     this->next++;

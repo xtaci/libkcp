@@ -30,20 +30,20 @@
 #endif
 
 /* encode 16 bits unsigned int (lsb) */
-inline char *encode16u(char *p, unsigned short w)
+inline byte *encode16u(byte *p, uint16_t w)
 {
 #if IWORDS_BIG_ENDIAN
-    *(unsigned char*)(p + 0) = (w & 255);
-	*(unsigned char*)(p + 1) = (w >> 8);
+    *(byte*)(p + 0) = (w & 255);
+	*(byte*)(p + 1) = (w >> 8);
 #else
-    *(unsigned short*)(p) = w;
+    *(byte*)(p) = w;
 #endif
     p += 2;
     return p;
 }
 
 /* Decode 16 bits unsigned int (lsb) */
-inline char *decode16u(char *p, unsigned short *w)
+inline byte *decode16u(byte *p, uint16_t *w)
 {
 #if IWORDS_BIG_ENDIAN
     *w = *(const unsigned char*)(p + 1);
@@ -56,7 +56,7 @@ inline char *decode16u(char *p, unsigned short *w)
 }
 
 /* encode 32 bits unsigned int (lsb) */
-inline char *encode32u(char *p, uint32_t l)
+inline byte *encode32u(byte *p, uint32_t l)
 {
 #if IWORDS_BIG_ENDIAN
     *(unsigned char*)(p + 0) = (unsigned char)((l >>  0) & 0xff);
@@ -71,7 +71,7 @@ inline char *encode32u(char *p, uint32_t l)
 }
 
 /* Decode 32 bits unsigned int (lsb) */
-inline char *decode32u(char *p, uint32_t *l)
+inline byte *decode32u(byte *p, uint32_t *l)
 {
 #if IWORDS_BIG_ENDIAN
     *l = *(const unsigned char*)(p + 3);

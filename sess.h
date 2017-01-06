@@ -11,9 +11,15 @@ class UDPSession : public ReadWriter {
 private:
     int m_sockfd{0};
     ikcpcb *m_kcp{nullptr};
-    char *m_buf{nullptr};
-    char *m_streambuf{nullptr};
+    byte m_buf[2048];
+    byte m_streambuf[65535];
     size_t m_streambufsiz{0};
+
+    FEC fec;
+    uint32_t pkt_idx{0};
+    std::vector<row_type> shards;
+    size_t dataShards{0};
+    size_t parityShards{0};
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -65,15 +71,7 @@ private:
 
     static UDPSession *createSession(int sockfd);
 
-private:
-    static const size_t mtuLimit{2048};
-    static const size_t streamBufferLimit{65535};
 
-    FEC fec;
-    uint32_t pkt_idx{0};
-    std::vector<row_type> shards;
-    size_t dataShards{0};
-    size_t parityShards{0};
 };
 
 inline uint32_t currentMs() {

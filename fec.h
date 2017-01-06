@@ -15,7 +15,6 @@ const size_t fecHeaderSizePlus2{fecHeaderSize + 2};
 const uint16_t typeData = 0xf1;
 const uint16_t typeFEC = 0xf2;
 const int fecExpire = 30000;
-const int mtuLimit = 2048;
 
 class fecPacket {
 public:
@@ -41,13 +40,13 @@ public:
     int Encode(std::vector<row_type> &shards);
 
     // Decode a raw array into fecPacket
-    static fecPacket Decode(char *data, size_t sz);
+    static fecPacket Decode(byte *data, size_t sz);
 
     // Mark raw array as typeData
-    void MarkData(char *data, uint16_t sz);
+    void MarkData(byte *data, uint16_t sz);
 
     // Mark raw array as typeFEC
-    void MarkFEC(char *data);
+    void MarkFEC(byte *data);
 private:
     std::vector<fecPacket> rx; // ordered receive queue
     int rxlimit;  // queue empty limit
