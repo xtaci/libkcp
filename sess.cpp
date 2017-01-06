@@ -1,4 +1,5 @@
 #include "sess.h"
+#include "encoding.h"
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/fcntl.h>
@@ -122,13 +123,13 @@ UDPSession::Update(uint32_t current) noexcept {
                 }
 
                 auto recovered = fec.Input(pkt);
+
                 if (recovered.size() > 0) {
-                    std::cout << "recovered:" << std::endl;
                     for (int i =0;i<recovered.size();i++) {
-                        for (auto b : *recovered[i]) {
-                            std::cout << int(b)  << " ";
-                        }
-                        std::cout << std::endl;
+                        auto ptr = recovered[i]->data();
+                        uint16_t sz;
+                        decode16u((char*)ptr, &sz);
+                        ikcp_input(m_kcp, (char *)(ptr+ 2), sz);
                     }
                 }
             } else {
@@ -216,7 +217,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 std::make_shared<std::vector<byte>>(sess->m_buf + fecHeaderSize, sess->m_buf + len + fecHeaderSizePlus2);
 
         sess->pkt_idx++;
-        if (sess->pkt_idx % sess->dataShards  == 0 ) {
+        if (sess->pkt_idx == sess->dataShards) {
             for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
                 sess->shards[i] = nullptr;
             }
@@ -229,6 +230,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                     sess->output(sess->m_buf, sess->shards[i]->size());
                 }
             }
+            sess->pkt_idx = 0;
         }
     }
 

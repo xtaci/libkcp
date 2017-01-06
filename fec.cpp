@@ -4,65 +4,11 @@
 
 #include <err.h>
 #include <sys/time.h>
+#include <iostream>
 #include "fec.h"
 #include "ikcp.h"
 #include "sess.h"
-
-/* encode 16 bits unsigned int (lsb) */
-static inline char *encode16u(char *p, unsigned short w)
-{
-#if IWORDS_BIG_ENDIAN
-    *(unsigned char*)(p + 0) = (w & 255);
-	*(unsigned char*)(p + 1) = (w >> 8);
-#else
-    *(unsigned short*)(p) = w;
-#endif
-    p += 2;
-    return p;
-}
-
-/* Decode 16 bits unsigned int (lsb) */
-static inline char *decode16u(char *p, unsigned short *w)
-{
-#if IWORDS_BIG_ENDIAN
-    *w = *(const unsigned char*)(p + 1);
-	*w = *(const unsigned char*)(p + 0) + (*w << 8);
-#else
-    *w = *(const unsigned short*)p;
-#endif
-    p += 2;
-    return p;
-}
-
-/* encode 32 bits unsigned int (lsb) */
-static inline char *encode32u(char *p, IUINT32 l)
-{
-#if IWORDS_BIG_ENDIAN
-    *(unsigned char*)(p + 0) = (unsigned char)((l >>  0) & 0xff);
-	*(unsigned char*)(p + 1) = (unsigned char)((l >>  8) & 0xff);
-	*(unsigned char*)(p + 2) = (unsigned char)((l >> 16) & 0xff);
-	*(unsigned char*)(p + 3) = (unsigned char)((l >> 24) & 0xff);
-#else
-    *(IUINT32*)p = l;
-#endif
-    p += 4;
-    return p;
-}
-
-/* Decode 32 bits unsigned int (lsb) */
-static inline char *decode32u(char *p, IUINT32 *l)
-{
-#if IWORDS_BIG_ENDIAN
-    *l = *(const unsigned char*)(p + 3);
-	*l = *(const unsigned char*)(p + 2) + (*l << 8);
-	*l = *(const unsigned char*)(p + 1) + (*l << 8);
-	*l = *(const unsigned char*)(p + 0) + (*l << 8);
-#else
-    *l = *(const IUINT32*)p;
-#endif
-    p += 4;
-    return p;
-}
+#include "encoding.h"
 
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
 
@@ -131,6 +77,7 @@ FEC::Input(fecPacket &pkt) {
         }
         lastCheck = now;
     }
+
 
     // insertion
     int n = this->rx.size() -1;
@@ -222,14 +169,18 @@ FEC::Input(fecPacket &pkt) {
 int FEC::Encode(std::vector<row_type> &shards) {
     // resize elements with 0 appending
     size_t max = 0;
-    for ( auto s : shards) {
-        if (s->size() > max) {
+    for ( auto &s : shards) {
+        if (s != nullptr && s->size() > max) {
             max = s->size();
         }
     }
 
-    for ( auto s : shards) {
-        s->resize(max);
+    for ( auto &s : shards) {
+        if (s == nullptr) {
+            s = std::make_shared<std::vector<byte>>(max);
+        } else {
+            s->resize(max);
+        }
     }
 
     return enc.Encode(shards);

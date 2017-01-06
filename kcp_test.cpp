@@ -10,7 +10,7 @@ int main() {
     gettimeofday(&time, NULL);
     srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
-    UDPSession *sess = UDPSession::DialWithOptions("127.0.0.1", 9999, 5,3);
+    UDPSession *sess = UDPSession::DialWithOptions("127.0.0.1", 9999, 1,1);
     sess->NoDelay(1, 20, 2, 1);
     sess->WndSize(128, 128);
     sess->SetMtu(1400);
@@ -27,6 +27,7 @@ int main() {
         nsent += strlen(buf);
     }
 
+    sleep(1);
     for (;;) {
         sess->Update(iclock());
         memset(buf, 0, 128);
@@ -38,6 +39,7 @@ int main() {
         if (nsent == nrecv) break;
     }
     UDPSession::Destroy(sess);
+    fflush( stdout );
 }
 
 
