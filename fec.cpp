@@ -40,7 +40,7 @@ FEC::Decode(byte *data, size_t sz) {
     struct timeval time;
     gettimeofday(&time, NULL);
     pkt.ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
-    pkt.data = std::make_shared<std::vector<byte>>(data, data+sz);
+    pkt.data = std::make_shared<std::vector<byte>>(data, data+sz - fecHeaderSize);
     return pkt;
 }
 
@@ -48,7 +48,7 @@ void
 FEC::MarkData(byte *data, uint16_t sz) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
-    encode16u(data,sz);
+    encode16u(data,sz + 2); // including size itself
     this->next++;
 }
 

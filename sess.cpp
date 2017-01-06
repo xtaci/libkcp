@@ -116,7 +116,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 auto pkt = fec.Decode(m_buf, n);
                 if (pkt.flag == typeData) {
                     auto ptr = pkt.data->data();
-                    // we have 2B size
+                    // we have 2B size, ignore for typeData
                     ikcp_input(m_kcp, (char *)(ptr+ 2), pkt.data->size() - 2);
                 }
 
@@ -128,7 +128,16 @@ UDPSession::Update(uint32_t current) noexcept {
                         auto ptr = recovered[i]->data();
                         uint16_t sz;
                         decode16u(ptr, &sz);
-                        ikcp_input(m_kcp, (char *)(ptr+ 2), sz);
+                        if (sz <= recovered[i]->size()) {
+                            auto ret = ikcp_input(m_kcp, (char *) (ptr + 2), sz-2);
+                            if (ret != 0) {
+                                std::cout << "ikcp_input failed for recovered packet:" << ret << std::endl;
+                            } else {
+                                std::cout << "ikcp_input succeed for recovered packet:" << sz << ","  << n << std::endl;
+                            }
+                        } else {
+                            std::cout << "abnormal size for recovered packet:" << sz << std::endl;
+                        }
                     }
                 }
             } else {
@@ -207,11 +216,13 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         sess->fec.MarkData(sess->m_buf, static_cast<size_t>(len));
         sess->output(sess->m_buf, len + fecHeaderSizePlus2);
 
-        // FEC caculation
+        // FEC calculation
         // copy "2B size + data" to shards
         auto slen = len + 2;
         sess->shards[sess->pkt_idx] = std::make_shared<std::vector<byte>>(slen);
         sess->shards[sess->pkt_idx]->assign(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
+
+        std::cout << "out_wrapper data packet size:" << len + fecHeaderSizePlus2 << std::endl;
 
         // count number of data shards
         sess->pkt_idx++;
@@ -221,10 +232,11 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 // send parity shards
                 for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
                     // append header to parity shards
-                    // i.e. fecHeaderSize + data(including size)
+                    // i.e. fecHeaderSize + data(2B size included)
                     memcpy(sess->m_buf+fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                     sess->fec.MarkFEC(sess->m_buf);
                     sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
+                    std::cout << "out_wrapper parity packet size:" <<  sess->shards[i]->size() + fecHeaderSize << std::endl;
                 }
             }
 

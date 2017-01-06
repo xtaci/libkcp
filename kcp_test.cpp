@@ -24,20 +24,14 @@ int main() {
     for (int i = 0; i < 10; i++) {
         sprintf(buf, "message:%d", i);
         sess->Write(buf, strlen(buf));
-        nsent += strlen(buf);
-    }
-
-    sleep(1);
-    for (;;) {
         sess->Update(iclock());
         memset(buf, 0, 128);
         ssize_t n = sess->Read(buf, 128);
         if (n > 0) { printf("%s\n", buf); }
-        nrecv += n;
-
-        usleep(33000);
-        if (nsent == nrecv) break;
+        sleep(1);
     }
+
+
     UDPSession::Destroy(sess);
     fflush( stdout );
 }
