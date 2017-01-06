@@ -169,9 +169,9 @@ FEC::Input(fecPacket &pkt) {
 int FEC::Encode(std::vector<row_type> &shards) {
     // resize elements with 0 appending
     size_t max = 0;
-    for ( auto &s : shards) {
-        if (s != nullptr && s->size() > max) {
-            max = s->size();
+    for (int i = 0;i<dataShards;i++) {
+        if (shards[i]->size() > max) {
+            max = shards[i]->size();
         }
     }
 

@@ -112,15 +112,17 @@ UDPSession::Update(uint32_t current) noexcept {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n > 0) {
             if (fec.isEnabled()) {
+                // decode FEC packet
                 auto pkt = fec.Decode(m_buf, n);
                 if (pkt.flag == typeData) {
                     auto ptr = pkt.data->data();
                     ikcp_input(m_kcp, (char *)(ptr+ 2), pkt.data->size() - 2);
                 }
 
+                // input to FEC, and see if we can recover data.
                 auto recovered = fec.Input(pkt);
 
-                if (recovered.size() > 0) {
+                if (recovered.size() > 0) { // some data recovered
                     for (int i =0;i<recovered.size();i++) {
                         auto ptr = recovered[i]->data();
                         uint16_t sz;
@@ -203,32 +205,34 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         memcpy(sess->m_buf+fecHeaderSizePlus2, buf, static_cast<size_t>(len));
         sess->fec.MarkData(sess->m_buf, static_cast<size_t>(len));
         sess->output(sess->m_buf, len + fecHeaderSizePlus2);
-    } else {
-        sess->output(buf, static_cast<size_t>(len));
-    }
 
-    if (sess->fec.isEnabled()) {
-        sess->shards[sess->pkt_idx] =
-                std::make_shared<std::vector<byte>>(sess->m_buf + fecHeaderSize, sess->m_buf + len + fecHeaderSizePlus2);
+        // FEC caculation
+        // copy "2B size + data" to shards
+        auto slen = len + 2;
+        sess->shards[sess->pkt_idx] = std::make_shared<std::vector<byte>>(slen);
+        sess->shards[sess->pkt_idx]->assign(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
 
+        // count number of data shards
         sess->pkt_idx++;
-        if (sess->pkt_idx == sess->dataShards) {
-            for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
-                sess->shards[i] = nullptr;
-            }
-
+        if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
             auto ret = sess->fec.Encode(sess->shards);
             if (ret == 0 ) {
+                // send parity shards
                 for (size_t i = sess->dataShards;i<sess->dataShards+sess->parityShards;i++) {
+                    // append header to parity shards
+                    // i.e. fecHeaderSize + data(including size)
                     memcpy(sess->m_buf+fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                     sess->fec.MarkFEC(sess->m_buf);
                     sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
                 }
             }
+
+            // reset counting
             sess->pkt_idx = 0;
         }
+    } else { // No FEC, just send raw bytes,
+        sess->output(buf, static_cast<size_t>(len));
     }
-
     return 0;
 }
 
