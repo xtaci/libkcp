@@ -12,7 +12,8 @@ struct inversionNode {
     struct matrix m_matrix;
     std::vector<std::shared_ptr<inversionNode>> m_children;
     struct matrix getInvertedMatrix(std::vector<int> & invalidIndices, int parent);
-    void insertInvertedMatrix(std::vector<int> & invalidIndices, struct matrix &matrix, size_t shards, int parent);
+
+    void insertInvertedMatrix(std::vector<int> &invalidIndices, struct matrix &matrix, size_t shards, int parent);
 };
 
 class inversionTree {

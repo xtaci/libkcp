@@ -47,10 +47,11 @@ struct matrix {
     int gaussianElimination();
 
     std::vector<row_type> data;
-    size_t rows{0},cols{0};
+    size_t rows{0}, cols{0};
 
-    inline byte& at(size_t row , size_t col) { return (*(data[row]))[col]; }
-    inline bool empty() {return (rows == 0 || cols == 0);}
+    inline byte &at(size_t row, size_t col) { return (*(data[row]))[col]; }
+
+    inline bool empty() { return (rows == 0 || cols == 0); }
 };
 
 

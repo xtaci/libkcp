@@ -12,7 +12,9 @@
 class ReedSolomon {
 public:
     ReedSolomon() = default;
+
     ReedSolomon(size_t dataShards, size_t parityShards);
+
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
     // you want to use. You can reuse this encoder.
@@ -50,7 +52,8 @@ private:
     matrix m;
     inversionTree tree;
     std::vector<row_type> parity;
-    int shardSize(std::vector<row_type> & shards);
+
+    int shardSize(std::vector<row_type> &shards);
 
 
     // Multiplies a subset of rows from a coding matrix by a full set of
@@ -62,9 +65,10 @@ private:
     // The number of outputs computed, and the
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
-    void codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> & inputs, std::vector<row_type> & outputs, int outputCount);
+    void
+    codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> &inputs, std::vector<row_type> &outputs,
+                   int outputCount);
 };
-
 
 
 #endif //KCP_REEDSOLOMON_H

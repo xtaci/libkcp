@@ -13,7 +13,7 @@ inversionTree inversionTree::newInversionTree(size_t dataShards, size_t paritySh
 
 
 matrix
-inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
+inversionTree::GetInvertedMatrix(std::vector<int> &invalidIndices) {
     if (invalidIndices.size() == 0) {
         return m_root.m_matrix;
     }
@@ -22,14 +22,14 @@ inversionTree::GetInvertedMatrix(std::vector<int> & invalidIndices) {
 }
 
 int
-inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix & matrix, size_t shards) {
+inversionTree::InsertInvertedMatrix(std::vector<int> &invalidIndices, matrix &matrix, size_t shards) {
     // If no invalid indices were given then we are done because the
     // m_root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
         return -1;
     }
 
-    if(!matrix.IsSquare()) {
+    if (!matrix.IsSquare()) {
         return -2;
     }
 
@@ -42,7 +42,7 @@ inversionTree::InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix & 
 }
 
 matrix
-inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) {
+inversionNode::getInvertedMatrix(std::vector<int> &invalidIndices, int parent) {
     // Get the child node to search next from the list of m_children.  The
     // list of m_children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
@@ -50,7 +50,7 @@ inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) 
     // so when searching through the list of m_children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    auto node = m_children[firstIndex-parent];
+    auto node = m_children[firstIndex - parent];
 
     // If the child node doesn't exist in the list yet, fail fast by
     // returning, so we can construct and insert the proper inverted matrix.
@@ -64,8 +64,8 @@ inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) 
         // Search recursively on the child node by passing in the invalid indices
         // with the first index popped off the front.  Also the parent index to
         // pass down is the first index plus one.
-        std::vector<int> subvector(invalidIndices.begin() +1,invalidIndices.end());
-        return getInvertedMatrix(subvector,firstIndex+1);
+        std::vector<int> subvector(invalidIndices.begin() + 1, invalidIndices.end());
+        return getInvertedMatrix(subvector, firstIndex + 1);
     }
 
     // If there aren't any more invalid indices to search, we've found our
@@ -76,7 +76,11 @@ inversionNode::getInvertedMatrix(std::vector<int> & invalidIndices, int parent) 
 }
 
 void
-inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, struct matrix &matrix, size_t shards, int parent){
+inversionNode::insertInvertedMatrix(
+        std::vector<int> &invalidIndices,
+        struct matrix &matrix,
+        size_t shards,
+        int parent) {
     // As above, get the child node to search next from the list of m_children.
     // The list of m_children starts relative to the parent index passed in
     // because the indices of invalid rows is sorted (by default).  As we
@@ -84,7 +88,7 @@ inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, struct ma
     // so when searching through the list of m_children, use that first invalid
     // index to find the child node.
     int firstIndex = invalidIndices[0];
-    auto node = m_children[firstIndex-parent];
+    auto node = m_children[firstIndex - parent];
 
     // If the child node doesn't exist in the list yet, create a new
     // node because we have the writer lock and add it to the list
@@ -108,8 +112,8 @@ inversionNode::insertInvertedMatrix(std::vector<int> & invalidIndices, struct ma
         // the invalid indices with the first index popped off the front.
         // Also the total number of shards and parent index are passed down
         // which is equal to the first index plus one.
-        std::vector<int> subvector(invalidIndices.begin() +1,invalidIndices.end());
-        insertInvertedMatrix(subvector, matrix, shards, firstIndex+1);
+        std::vector<int> subvector(invalidIndices.begin() + 1, invalidIndices.end());
+        insertInvertedMatrix(subvector, matrix, shards, firstIndex + 1);
     } else {
         this->m_matrix = matrix;
     }
