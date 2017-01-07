@@ -217,10 +217,8 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         // FEC calculation
         // copy "2B size + data" to shards
         auto slen = len + 2;
-        sess->shards[sess->pkt_idx] = std::make_shared<std::vector<byte>>();
-        sess->shards[sess->pkt_idx]->assign(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
-
-        std::cout << "out_wrapper data packet size:" << len + fecHeaderSizePlus2 << std::endl;
+        sess->shards[sess->pkt_idx] =
+                std::make_shared<std::vector<byte>>(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
 
         // count number of data shards
         sess->pkt_idx++;
@@ -234,7 +232,6 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                     memcpy(sess->m_buf+fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                     sess->fec.MarkFEC(sess->m_buf);
                     sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
-                    std::cout << "out_wrapper parity packet size:" <<  sess->shards[i]->size() + fecHeaderSize << std::endl;
                 }
             }
 
