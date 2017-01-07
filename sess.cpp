@@ -129,12 +129,8 @@ UDPSession::Update(uint32_t current) noexcept {
                         uint16_t sz;
                         decode16u(ptr, &sz);
                         if (sz <= recovered[i]->size()) {
-                            auto ret = ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
-                            if (ret != 0) {
-                                std::cout << "ikcp_input failed for recovered packet:" << ret << std::endl;
-                            } else {
-                                std::cout << "ikcp_input succeed for recovered packet:" << sz << "," << n << std::endl;
-                            }
+                            // input proper data to kcp
+                            ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
                         }
                     }
                 }
