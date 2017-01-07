@@ -12,7 +12,7 @@ using row_type = std::shared_ptr<std::vector<byte>>;
 
 struct matrix {
     // newMatrix returns a matrix of zeros.
-    static matrix newMatrix(size_t rows, size_t cols);
+    static matrix newMatrix(int rows, int cols);
 
     // IdentityMatrix returns an identity matrix of the given empty.
     static matrix identityMatrix(int size);
@@ -20,7 +20,7 @@ struct matrix {
     // Create a Vandermonde matrix, which is guaranteed to have the
     // property that any subset of rows that forms a square matrix
     // is invertible.
-    static matrix vandermonde(size_t rows, size_t cols);
+    static matrix vandermonde(int rows, int cols);
 
     // Multiply multiplies this matrix (the one on the left) by another
     // matrix (the one on the right) and returns a new matrix with the result.
@@ -47,9 +47,9 @@ struct matrix {
     int gaussianElimination();
 
     std::vector<row_type> data;
-    size_t rows{0}, cols{0};
+    int rows{0}, cols{0};
 
-    inline byte &at(size_t row, size_t col) { return (*(data[row]))[col]; }
+    inline byte &at(int row, int col) { return (*(data[row]))[col]; }
 
     inline bool empty() { return (rows == 0 || cols == 0); }
 };

@@ -6,7 +6,6 @@
 #include <sys/time.h>
 #include <iostream>
 #include "fec.h"
-#include "ikcp.h"
 #include "sess.h"
 #include "encoding.h"
 
@@ -48,7 +47,7 @@ void
 FEC::MarkData(byte *data, uint16_t sz) {
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
-    encode16u(data,sz + 2); // including size itself
+    encode16u(data,static_cast<uint16_t>(sz + 2)); // including size itself
     this->next++;
 }
 
@@ -80,7 +79,7 @@ FEC::Input(fecPacket &pkt) {
 
 
     // insertion
-    int n = this->rx.size() -1;
+    auto n = this->rx.size() -1;
     int insertIdx = 0;
     for (int i=n;i>=0;i--) {
         if (pkt.seqid == rx[i].seqid) {
@@ -94,34 +93,36 @@ FEC::Input(fecPacket &pkt) {
     rx.insert(rx.begin()+insertIdx, pkt);
 
     // shard range for current packet
-    int shardBegin = pkt.seqid - pkt.seqid%totalShards;
-    int shardEnd = shardBegin + totalShards - 1;
+    auto shardBegin = pkt.seqid - pkt.seqid%totalShards;
+    auto shardEnd = shardBegin + totalShards - 1;
 
     // max search range in ordered queue for current shard
-    int searchBegin = insertIdx - pkt.seqid%totalShards;
+    auto searchBegin = insertIdx - int(pkt.seqid%totalShards);
     if (searchBegin < 0) {
         searchBegin = 0;
     }
 
-    int searchEnd = searchBegin + totalShards - 1;
+    auto searchEnd = searchBegin + totalShards - 1;
     if (searchEnd >= rx.size()) {
         searchEnd = rx.size()-1;
     }
 
     if (searchEnd > searchBegin && searchEnd-searchBegin+1 >= dataShards) {
-        int numshard = 0;
-        int numDataShard = 0;
-        int first = -1;
-        int maxlen = 0;
+        unsigned long numshard = 0;
+        unsigned long numDataShard = 0;
+        int first = 0;
+        size_t maxlen = 0;
 
-        std::vector<int> indices(totalShards, -1);
+        std::vector<row_type> shardVec(totalShards);
+        std::vector<bool> shardflag(totalShards, false);
 
-        for (int i = searchBegin; i <= searchEnd; i++) {
+        for (auto i = searchBegin; i <= searchEnd; i++) {
             auto seqid = rx[i].seqid;
             if (seqid > shardEnd) {
                 break;
             } else if (seqid >= shardBegin) {
-                indices[seqid%totalShards] = i;
+                shardVec[seqid%totalShards] = rx[i].data;
+                shardflag[seqid%totalShards] = true;
                 numshard++;
                 if (rx[i].flag == typeData) {
                     numDataShard++;
@@ -138,17 +139,6 @@ FEC::Input(fecPacket &pkt) {
         if (numDataShard == dataShards) { // no lost
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
         } else if (numshard >= dataShards) { // recoverable
-            std::vector<row_type> shardVec(totalShards);
-            int maxlen = 0;
-            for (int k=0;k<totalShards;k++){
-                if (indices[k] != -1) {
-                    shardVec[k] = rx[indices[k]].data;
-                    if (shardVec[k]->size() > maxlen) {
-                        maxlen = shardVec[k]->size();
-                    }
-                }
-            }
-
             // equally resized
             for (int i=0;i<shardVec.size();i++) {
                 if (shardVec[i] != nullptr) {
@@ -156,10 +146,11 @@ FEC::Input(fecPacket &pkt) {
                 }
             }
 
+            // reconstruct shards
             auto ret = enc.Reconstruct(shardVec);
             if (ret== 0){
                 for (int k =0;k<dataShards;k++) {
-                    if (indices[k] == -1) {
+                    if (!shardflag[k]) {
                         recovered.push_back(shardVec[k]);
                     }
                 }

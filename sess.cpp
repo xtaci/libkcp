@@ -113,7 +113,7 @@ UDPSession::Update(uint32_t current) noexcept {
         if (n > 0) {
             if (fec.isEnabled()) {
                 // decode FEC packet
-                auto pkt = fec.Decode(m_buf, n);
+                auto pkt = fec.Decode(m_buf, static_cast<size_t>(n));
                 if (pkt.flag == typeData) {
                     auto ptr = pkt.data->data();
                     // we have 2B size, ignore for typeData
@@ -216,14 +216,14 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         // extend to len + fecHeaderSizePlus2
         // i.e. 4B seqid + 2B flag + 2B size
         memcpy(sess->m_buf + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
-        sess->fec.MarkData(sess->m_buf, static_cast<size_t>(len));
+        sess->fec.MarkData(sess->m_buf, static_cast<uint16_t>(len));
         sess->output(sess->m_buf, len + fecHeaderSizePlus2);
 
         // FEC calculation
         // copy "2B size + data" to shards
         auto slen = len + 2;
         sess->shards[sess->pkt_idx] =
-                std::make_shared<std::vector<byte>>(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
+                std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize], &sess->m_buf[fecHeaderSize + slen]);
 
         // count number of data shards
         sess->pkt_idx++;
