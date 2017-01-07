@@ -47,7 +47,7 @@ UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, si
 
     if (dataShards >0 && parityShards > 0) {
         sess->fec = FEC::New(3*(dataShards + parityShards), dataShards, parityShards);
-        sess->shards.resize(dataShards + parityShards);
+        sess->shards.resize(dataShards + parityShards, nullptr);
         sess->dataShards = dataShards;
         sess->parityShards = parityShards;
     }

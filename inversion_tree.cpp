@@ -6,7 +6,7 @@
 
 inversionTree inversionTree::newInversionTree(size_t dataShards, size_t parityShards) {
     inversionTree tree;
-    tree.m_root.m_children.resize(dataShards + parityShards);
+    tree.m_root.m_children.resize(dataShards + parityShards, nullptr);
     tree.m_root.m_matrix = matrix::identityMatrix(dataShards);
     return tree;
 }
@@ -99,7 +99,7 @@ inversionNode::insertInvertedMatrix(
         // invalid indices is sorted, so only this length of errors
         // are possible in the tree.
         auto node = std::make_shared<inversionNode>();
-        node->m_children.resize(shards - firstIndex);
+        node->m_children.resize(shards - firstIndex, nullptr);
         m_children[firstIndex - parent] = node;
     }
 
@@ -118,8 +118,3 @@ inversionNode::insertInvertedMatrix(
         this->m_matrix = matrix;
     }
 }
-
-
-
-
-

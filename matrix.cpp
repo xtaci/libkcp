@@ -10,7 +10,7 @@ matrix::newMatrix(size_t rows, size_t cols) {
     matrix m;
     m.rows = rows;
     m.cols = cols;
-    m.data.resize(rows);
+    m.data.resize(rows, nullptr);
     for (auto i = 0; i < rows; i++) {
         m.data[i] = std::make_shared<std::vector<byte>>(cols);
     }

@@ -152,7 +152,7 @@ FEC::Input(fecPacket &pkt) {
             // equally resized
             for (int i=0;i<shardVec.size();i++) {
                 if (shardVec[i] != nullptr) {
-                    shardVec[i]->resize(maxlen);
+                    shardVec[i]->resize(maxlen, 0);
                 }
             }
 
@@ -190,7 +190,7 @@ int FEC::Encode(std::vector<row_type> &shards) {
         if (s == nullptr) {
             s = std::make_shared<std::vector<byte>>(max);
         } else {
-            s->resize(max);
+            s->resize(max, 0);
         }
     }
 
