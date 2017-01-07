@@ -12,12 +12,12 @@
 class ReedSolomon {
 public:
     ReedSolomon() = default;
-    ReedSolomon(int dataShards, int parityShards);
+    ReedSolomon(size_t dataShards, size_t parityShards);
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
     // you want to use. You can reuse this encoder.
     // Note that the maximum number of data shards is 256.
-    static ReedSolomon New(int dataShards, int parityShards);
+    static ReedSolomon New(size_t dataShards, size_t parityShards);
 
     // Encodes parity for a set of data shards.
     // An array 'shards' containing data shards followed by parity shards.

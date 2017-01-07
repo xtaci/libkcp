@@ -29,7 +29,7 @@ public:
     FEC() = default;
     FEC(ReedSolomon enc);
 
-    static FEC New(int rxlimit, int dataShards, int parityShards);
+    static FEC New(size_t rxlimit, size_t dataShards, size_t parityShards);
 
     inline bool isEnabled() { return dataShards > 0 && parityShards > 0 ; }
 
@@ -49,10 +49,10 @@ public:
     void MarkFEC(byte *data);
 private:
     std::vector<fecPacket> rx; // ordered receive queue
-    int rxlimit;  // queue empty limit
-    int dataShards;
-    int parityShards;
-    int totalShards;
+    size_t rxlimit;  // queue empty limit
+    size_t dataShards;
+    size_t parityShards;
+    size_t totalShards;
     uint32_t next{0}; // next seqid
     ReedSolomon enc;
     uint32_t paws;  // Protect Against Wrapped Sequence numbers

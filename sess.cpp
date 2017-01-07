@@ -39,7 +39,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 }
 
 UDPSession *
-UDPSession::DialWithOptions(const char *ip, uint16_t port, int dataShards, int parityShards) {
+UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards) {
     auto sess = UDPSession::Dial(ip, port);
     if (sess == nullptr) {
         return nullptr;

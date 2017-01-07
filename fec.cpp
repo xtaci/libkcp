@@ -13,7 +13,7 @@
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
 
 FEC
-FEC::New(int rxlimit, int dataShards, int parityShards)  {
+FEC::New(size_t rxlimit, size_t dataShards, size_t parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }

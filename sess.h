@@ -29,7 +29,7 @@ public:
     static UDPSession *Dial(const char *ip, uint16_t port);
 
     // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
-    static UDPSession *DialWithOptions(const char *ip, uint16_t port, int dataShards, int parityShards);
+    static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards);
 
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
