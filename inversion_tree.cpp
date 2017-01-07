@@ -4,7 +4,7 @@
 
 #include "inversion_tree.h"
 
-inversionTree inversionTree::newInversionTree(size_t dataShards, size_t parityShards) {
+inversionTree inversionTree::newInversionTree(int dataShards, int parityShards) {
     inversionTree tree;
     tree.m_root.m_children.resize(dataShards + parityShards, nullptr);
     tree.m_root.m_matrix = matrix::identityMatrix(dataShards);
@@ -22,7 +22,7 @@ inversionTree::GetInvertedMatrix(std::vector<int> &invalidIndices) {
 }
 
 int
-inversionTree::InsertInvertedMatrix(std::vector<int> &invalidIndices, matrix &matrix, size_t shards) {
+inversionTree::InsertInvertedMatrix(std::vector<int> &invalidIndices, matrix &matrix, int shards) {
     // If no invalid indices were given then we are done because the
     // m_root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
@@ -79,7 +79,7 @@ void
 inversionNode::insertInvertedMatrix(
         std::vector<int> &invalidIndices,
         struct matrix &matrix,
-        size_t shards,
+        int shards,
         int parent) {
     // As above, get the child node to search next from the list of m_children.
     // The list of m_children starts relative to the parent index passed in

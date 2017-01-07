@@ -12,7 +12,7 @@
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
 
 FEC
-FEC::New(size_t rxlimit, size_t dataShards, size_t parityShards)  {
+FEC::New(int rxlimit, int dataShards, int parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }
@@ -108,8 +108,8 @@ FEC::Input(fecPacket &pkt) {
     }
 
     if (searchEnd > searchBegin && searchEnd-searchBegin+1 >= dataShards) {
-        unsigned long numshard = 0;
-        unsigned long numDataShard = 0;
+        int numshard = 0;
+        int numDataShard = 0;
         int first = 0;
         size_t maxlen = 0;
 

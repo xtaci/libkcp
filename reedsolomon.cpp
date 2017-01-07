@@ -6,7 +6,7 @@
 #include "reedsolomon.h"
 #include "galois_noasm.h"
 
-ReedSolomon::ReedSolomon(size_t dataShards, size_t parityShards) :
+ReedSolomon::ReedSolomon(int dataShards, int parityShards) :
         m_dataShards(dataShards),
         m_parityShards(parityShards),
         m_totalShards(dataShards + parityShards) {
@@ -14,7 +14,7 @@ ReedSolomon::ReedSolomon(size_t dataShards, size_t parityShards) :
 }
 
 ReedSolomon
-ReedSolomon::New(size_t dataShards, size_t parityShards) {
+ReedSolomon::New(int dataShards, int parityShards) {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }
