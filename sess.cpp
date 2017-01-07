@@ -120,21 +120,30 @@ UDPSession::Update(uint32_t current) noexcept {
                     ikcp_input(m_kcp, (char *) (ptr + 2), pkt.data->size() - 2);
                 }
 
-                // input to FEC, and see if we can recover data.
-                auto recovered = fec.Input(pkt);
+                // allow FEC packet processing with correct flags.
+                if (pkt.flag == typeData || pkt.flag == typeFEC) {
+                    // input to FEC, and see if we can recover data.
+                    auto recovered = fec.Input(pkt);
 
-                if (recovered.size() > 0) { // some data recovered
-                    for (int i = 0; i < recovered.size(); i++) {
-                        auto ptr = recovered[i]->data();
-                        uint16_t sz;
-                        decode16u(ptr, &sz);
-                        if (sz <= recovered[i]->size()) {
-                            // input proper data to kcp
-                            ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
+                    // we have some data recovered.
+                    for (auto &r : recovered) {
+                        // recovered data has at least 2B size.
+                        if (r->size() > 2) {
+                            auto ptr = r->data();
+                            // decode packet size, which is also recovered.
+                            uint16_t sz;
+                            decode16u(ptr, &sz);
+
+                            // the recovered packet size must be in the correct range.
+                            if (sz >= 2 && sz <= r->size()) {
+                                // input proper data to kcp
+                                ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
+                                // std::cout << "sz:" << sz << std::endl;
+                            }
                         }
                     }
                 }
-            } else {
+            } else { // fec disabled
                 ikcp_input(m_kcp, (char *) (m_buf), n);
             }
         } else {
