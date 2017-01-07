@@ -53,4 +53,3 @@ $go run kcpserver.go
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.    *需要C++11进行编译。*       
-2. Make sure you are using ```Listen()``` function in kcp-go as server listener.   *兼容服务器端默认参数，请确保使用标准```Listen()```函数在服务器端监听。*
