@@ -217,7 +217,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         // FEC calculation
         // copy "2B size + data" to shards
         auto slen = len + 2;
-        sess->shards[sess->pkt_idx] = std::make_shared<std::vector<byte>>(slen);
+        sess->shards[sess->pkt_idx] = std::make_shared<std::vector<byte>>();
         sess->shards[sess->pkt_idx]->assign(sess->m_buf + fecHeaderSize, sess->m_buf + fecHeaderSize + slen);
 
         std::cout << "out_wrapper data packet size:" << len + fecHeaderSizePlus2 << std::endl;
