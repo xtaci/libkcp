@@ -240,7 +240,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 }
             }
 
-            // reset counting
+            // reset indexing
             sess->pkt_idx = 0;
         }
     } else { // No FEC, just send raw bytes,
