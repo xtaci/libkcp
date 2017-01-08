@@ -27,7 +27,7 @@ public:
     // Each shard is a byte array, and they must all be the same empty.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
-    int Encode(std::vector<row_type> &shards);
+    void Encode(std::vector<row_type> &shards);
 
     // Reconstruct will recreate the missing shards, if possible.
     //
@@ -42,7 +42,7 @@ public:
     //
     // The reconstructed shard set is complete, but integrity is not verified.
     // Use the Verify function to check if data set is ok.
-    int Reconstruct(std::vector<row_type> &shards);
+    void Reconstruct(std::vector<row_type> &shards);
 
 private:
     int m_dataShards;  // Number of data shards, should not be modified.

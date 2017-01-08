@@ -38,7 +38,7 @@ int main() {
         std::cout << std::endl;
     }
 
-    auto ret = fec.Encode(shards);
+    fec.Encode(shards);
     std::cout << "encoded:" << std::endl;
     for (int i =0;i<shards.size();i++) {
         for (auto b : *shards[i]) {

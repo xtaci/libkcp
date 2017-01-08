@@ -228,16 +228,14 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         // count number of data shards
         sess->pkt_idx++;
         if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
-            auto ret = sess->fec.Encode(sess->shards);
-            if (ret == 0) {
-                // send parity shards
-                for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
-                    // append header to parity shards
-                    // i.e. fecHeaderSize + data(2B size included)
-                    memcpy(sess->m_buf + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
-                    sess->fec.MarkFEC(sess->m_buf);
-                    sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
-                }
+            sess->fec.Encode(sess->shards);
+            // send parity shards
+            for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
+                // append header to parity shards
+                // i.e. fecHeaderSize + data(2B size included)
+                memcpy(sess->m_buf + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
+                sess->fec.MarkFEC(sess->m_buf);
+                sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
             }
 
             // reset indexing

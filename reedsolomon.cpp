@@ -16,11 +16,11 @@ ReedSolomon::ReedSolomon(int dataShards, int parityShards) :
 ReedSolomon
 ReedSolomon::New(int dataShards, int parityShards) {
     if (dataShards <= 0 || parityShards <= 0) {
-        throw std::invalid_argument("invalid arguments");
+        throw std::invalid_argument("cannot create Encoder with zero or less data/parity shards");
     }
 
     if (dataShards + parityShards > 255) {
-        throw std::invalid_argument("invalid arguments");
+        throw std::invalid_argument("cannot create Encoder with 255 or more data+parity shards");
     }
 
     ReedSolomon r(dataShards, parityShards);
@@ -52,10 +52,10 @@ ReedSolomon::New(int dataShards, int parityShards) {
     return r;
 }
 
-int
+void
 ReedSolomon::Encode(std::vector<row_type> &shards) {
     if (shards.size() != m_totalShards) {
-        return -1;
+        throw std::invalid_argument("too few shards given");
     }
 
     // Get the slice of output buffers.
@@ -64,7 +64,6 @@ ReedSolomon::Encode(std::vector<row_type> &shards) {
     // Do the coding.
     std::vector<row_type> input(shards.begin(), shards.begin() + this->m_dataShards);
     codeSomeShards(parity, input, output, m_parityShards);
-    return 0;
 };
 
 
@@ -83,10 +82,10 @@ ReedSolomon::codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_t
     }
 }
 
-int
+void
 ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     if (shards.size() != m_totalShards) {
-        return -1;
+        throw std::invalid_argument("too few shards given");
     }
 
     auto shardSize = this->shardSize(shards);
@@ -103,12 +102,12 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     if (numberPresent == m_totalShards) {
         // Cool.  All of the shards data data.  We don't
         // need to do anything.
-        return -2;
+        return;
     }
 
     // More complete sanity check
     if (numberPresent < m_dataShards) {
-        return -3;
+        throw std::invalid_argument("too few shards given");
     }
 
     // Pull out an array holding just the shards that
@@ -159,13 +158,13 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
         // be used to create a data shard, but not a parity shard.
         dataDecodeMatrix = subMatrix.Invert();
         if (dataDecodeMatrix.empty()) {
-            return -2;
+            throw std::runtime_error("cannot get matrix invert");
         }
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
         if (int ret = tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards) && ret != 0) {
-            return -3;
+            throw std::runtime_error("cannot insert matrix invert");
         }
     }
 
@@ -208,8 +207,6 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
 
     std::vector<row_type> ds(shards.begin(), shards.begin() + m_dataShards);
     codeSomeShards(matrixRows, shards, outputs, outputCount);
-
-    return 0;
 }
 
 

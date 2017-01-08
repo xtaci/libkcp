@@ -147,12 +147,10 @@ FEC::Input(fecPacket &pkt) {
             }
 
             // reconstruct shards
-            auto ret = enc.Reconstruct(shardVec);
-            if (ret== 0){
-                for (int k =0;k<dataShards;k++) {
-                    if (!shardflag[k]) {
-                        recovered.push_back(shardVec[k]);
-                    }
+            enc.Reconstruct(shardVec);
+            for (int k =0;k<dataShards;k++) {
+                if (!shardflag[k]) {
+                    recovered.push_back(shardVec[k]);
                 }
             }
             rx.erase(rx.begin()+first, rx.begin() + first+numshard);
@@ -168,7 +166,7 @@ FEC::Input(fecPacket &pkt) {
 }
 
 
-int FEC::Encode(std::vector<row_type> &shards) {
+void FEC::Encode(std::vector<row_type> &shards) {
     // resize elements with 0 appending
     size_t max = 0;
     for (int i = 0;i<dataShards;i++) {
@@ -185,5 +183,5 @@ int FEC::Encode(std::vector<row_type> &shards) {
         }
     }
 
-    return enc.Encode(shards);
+    enc.Encode(shards);
 }

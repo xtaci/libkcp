@@ -37,7 +37,7 @@ public:
     std::vector<row_type> Input(fecPacket &pkt);
 
     // Calc Parity Shards
-    int Encode(std::vector<row_type> &shards);
+    void Encode(std::vector<row_type> &shards);
 
     // Decode a raw array into fecPacket
     static fecPacket Decode(byte *data, size_t sz);
