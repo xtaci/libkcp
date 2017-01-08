@@ -7,6 +7,10 @@
 
 matrix
 matrix::newMatrix(int rows, int cols) {
+    if (rows <= 0 || cols <= 0) {
+        throw std::invalid_argument("invalid arguments");
+    }
+
     matrix m;
     m.rows = rows;
     m.cols = cols;
