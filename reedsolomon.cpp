@@ -58,6 +58,8 @@ ReedSolomon::Encode(std::vector<row_type> &shards) {
         throw std::invalid_argument("too few shards given");
     }
 
+    checkShards(shards, false);
+
     // Get the slice of output buffers.
     std::vector<row_type> output(shards.begin() + m_dataShards, shards.end());
 
@@ -87,6 +89,9 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     if (shards.size() != m_totalShards) {
         throw std::invalid_argument("too few shards given");
     }
+
+    // Check arguments
+    checkShards(shards,true);
 
     auto shardSize = this->shardSize(shards);
 
@@ -208,8 +213,27 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     codeSomeShards(matrixRows, shards, outputs, outputCount);
 }
 
+void
+ReedSolomon::checkShards(std::vector<row_type> &shards, bool nilok) {
+    auto size = shardSize(shards);
+    if (size == 0) {
+        throw std::invalid_argument("no shard data");
+    }
 
-int ReedSolomon::shardSize(std::vector<row_type> &shards) {
+    for (int i = 0; i < shards.size(); i++) {
+        if (shards[i] == nullptr) {
+            if (!nilok) {
+                throw std::invalid_argument("shard sizes does not match");
+            }
+        } else if (shards[i]->size() != size) {
+            throw std::invalid_argument("shard sizes does not match");
+        }
+    }
+}
+
+
+int
+ReedSolomon::shardSize(std::vector<row_type> &shards) {
     for (int i = 0; i < shards.size(); i++) {
         if (shards[i] != nullptr) {
             return shards[i]->size();

@@ -68,6 +68,11 @@ private:
     void
     codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> &inputs, std::vector<row_type> &outputs,
                    int outputCount);
+
+    // checkShards will check if shards are the same size
+    // or 0, if allowed. An error is returned if this fails.
+    // An error is also returned if all shards are size 0.
+    void checkShards(std::vector<row_type> &shardse, bool nilok) ;
 };
 
 
