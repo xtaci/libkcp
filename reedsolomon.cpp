@@ -62,7 +62,7 @@ ReedSolomon::Encode(std::vector<row_type> &shards) {
     std::vector<row_type> output(shards.begin() + m_dataShards, shards.end());
 
     // Do the coding.
-    std::vector<row_type> input(shards.begin(), shards.begin() + this->m_dataShards);
+    std::vector<row_type> input(shards.begin(), shards.begin() + m_dataShards);
     codeSomeShards(parity, input, output, m_parityShards);
 };
 
