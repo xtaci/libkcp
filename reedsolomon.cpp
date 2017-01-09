@@ -145,7 +145,7 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
         // matrix could be used to generate the shards that we have
         // from the original data.
         auto subMatrix = matrix::newMatrix(m_dataShards, m_dataShards);
-        for (int subMatrixRow = 0; subMatrixRow < validIndices.size(); subMatrixRow++) {
+        for (subMatrixRow = 0; subMatrixRow < validIndices.size(); subMatrixRow++) {
             for (int c = 0; c < m_dataShards; c++) {
                 subMatrix.at(subMatrixRow, c) = m.at(validIndices[subMatrixRow], c);
             };
@@ -163,7 +163,8 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
 
         // Cache the inverted matrix in the tree for future use keyed on the
         // indices of the invalid rows.
-        if (int ret = tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards) && ret != 0) {
+        int ret = tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, m_totalShards);
+        if (ret != 0) {
             throw std::runtime_error("cannot insert matrix invert");
         }
     }
@@ -204,8 +205,6 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
             outputCount++;
         }
     }
-
-    std::vector<row_type> ds(shards.begin(), shards.begin() + m_dataShards);
     codeSomeShards(matrixRows, shards, outputs, outputCount);
 }
 
