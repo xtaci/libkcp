@@ -4,8 +4,8 @@
 [2]: https://github.com/skywind3000/kcp
 [3]: https://travis-ci.org/xtaci/libkcp.svg?branch=master
 [4]: https://travis-ci.org/xtaci/libkcp
-kcp client session library for iOS/Android, compatible with [kcp-go](https://github.com/xtaci/kcp-go).    
-*kcp 客户端库，可用于iOS/Android, 与[kcp-go](https://github.com/xtaci/kcp-go)兼容。*        
+FEC enhanced kcp client session library for iOS/Android, compatible with [kcp-go](https://github.com/xtaci/kcp-go).    
+*FEC增强的kcp 客户端库，可用于iOS/Android, 与[kcp-go](https://github.com/xtaci/kcp-go)兼容。*    
 
 ## ***Features***
 1. Optimized for Real-Time Strategy Game.    *针对实时游戏优化设计。*
