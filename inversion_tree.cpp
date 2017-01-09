@@ -72,7 +72,7 @@ inversionNode::getInvertedMatrix(std::vector<int> &invalidIndices, int parent) {
     // node.  Return it, however keep in mind that the matrix could still be
     // nil because intermediary nodes in the tree are created sometimes with
     // their inversion matrices uninitialized.
-    return m_matrix;
+    return node->m_matrix;
 }
 
 void
@@ -115,6 +115,6 @@ inversionNode::insertInvertedMatrix(
         std::vector<int> v(invalidIndices.begin() + 1, invalidIndices.end());
         node->insertInvertedMatrix(v, matrix, shards, firstIndex + 1);
     } else {
-        this->m_matrix = matrix;
+        node->m_matrix = matrix;
     }
 }
