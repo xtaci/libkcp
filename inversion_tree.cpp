@@ -2,6 +2,7 @@
 // Created by 理 傅 on 2017/1/1.
 //
 
+#include <iostream>
 #include "inversion_tree.h"
 
 inversionTree inversionTree::newInversionTree(int dataShards, int parityShards) {
@@ -72,6 +73,7 @@ inversionNode::getInvertedMatrix(std::vector<int> &invalidIndices, int parent) {
     // node.  Return it, however keep in mind that the matrix could still be
     // nil because intermediary nodes in the tree are created sometimes with
     // their inversion matrices uninitialized.
+    // std::cout << "return cached matrix:" << std::endl;
     return node->m_matrix;
 }
 
