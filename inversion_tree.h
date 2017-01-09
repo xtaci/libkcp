@@ -31,7 +31,7 @@ public:
     // keyed by the indices of invalid rows.  The total number of shards
     // is required for creating the proper length lists of child nodes for
     // each node.
-    int InsertInvertedMatrix(std::vector<int> & invalidIndices, matrix &matrix, int shards);
+    int InsertInvertedMatrix(std::vector<int> & invalidIndices, struct matrix &matrix, int shards);
 
 private:
     inversionNode m_root;

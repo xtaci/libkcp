@@ -23,7 +23,7 @@ int main() {
         for (int j = 0;j<3;j++) {
             arr[j] = byte(rand()%255);
         }
-        shards[i] = std::make_shared<std::vector<byte>>(arr, arr +3);
+        shards[i] = std::make_shared<std::vector<byte>>(arr, &arr[3]);
     }
 
     for (int i=datashard;i<totalshard;i++) {

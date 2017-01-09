@@ -22,7 +22,7 @@ inversionTree::GetInvertedMatrix(std::vector<int> &invalidIndices) {
 }
 
 int
-inversionTree::InsertInvertedMatrix(std::vector<int> &invalidIndices, matrix &matrix, int shards) {
+inversionTree::InsertInvertedMatrix(std::vector<int> &invalidIndices, struct matrix &matrix, int shards) {
     // If no invalid indices were given then we are done because the
     // m_root node is already set with the identity matrix.
     if (invalidIndices.size() == 0) {
