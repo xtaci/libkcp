@@ -65,7 +65,7 @@ inversionNode::getInvertedMatrix(std::vector<int> &invalidIndices, int parent) {
         // with the first index popped off the front.  Also the parent index to
         // pass down is the first index plus one.
         std::vector<int> v(invalidIndices.begin() + 1, invalidIndices.end());
-        return getInvertedMatrix(v, firstIndex + 1);
+        return node->getInvertedMatrix(v, firstIndex + 1);
     }
 
     // If there aren't any more invalid indices to search, we've found our
@@ -113,7 +113,7 @@ inversionNode::insertInvertedMatrix(
         // Also the total number of shards and parent index are passed down
         // which is equal to the first index plus one.
         std::vector<int> v(invalidIndices.begin() + 1, invalidIndices.end());
-        insertInvertedMatrix(v, matrix, shards, firstIndex + 1);
+        node->insertInvertedMatrix(v, matrix, shards, firstIndex + 1);
     } else {
         this->m_matrix = matrix;
     }
