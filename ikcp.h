@@ -298,7 +298,7 @@ struct IKCPCB
 	void *user;
 	char *buffer;
 	int fastresend;
-	int nocwnd;
+	int nocwnd, stream;
 	int logmask;
 	int (*output)(const char *buf, int len, struct IKCPCB *kcp, void *user);
 	void (*writelog)(const char *log, struct IKCPCB *kcp, void *user);
@@ -336,7 +336,11 @@ ikcpcb* ikcp_create(IUINT32 conv, void *user);
 // release kcp control object
 void ikcp_release(ikcpcb *kcp);
 
-// user/upper level recv: returns empty, returns below zero for EAGAIN
+// set output callback, which will be invoked by kcp
+void ikcp_setoutput(ikcpcb *kcp, int (*output)(const char *buf, int len, 
+	ikcpcb *kcp, void *user));
+
+// user/upper level recv: returns size, returns below zero for EAGAIN
 int ikcp_recv(ikcpcb *kcp, char *buffer, int len);
 
 // user/upper level send, returns below zero for error
@@ -362,13 +366,13 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size);
 // flush pending data
 void ikcp_flush(ikcpcb *kcp);
 
-// check the empty of next message in the recv queue
+// check the size of next message in the recv queue
 int ikcp_peeksize(const ikcpcb *kcp);
 
-// change MTU empty, default is 1400
+// change MTU size, default is 1400
 int ikcp_setmtu(ikcpcb *kcp, int mtu);
 
-// set maximum window empty: sndwnd=32, rcvwnd=32 by default
+// set maximum window size: sndwnd=32, rcvwnd=32 by default
 int ikcp_wndsize(ikcpcb *kcp, int sndwnd, int rcvwnd);
 
 // get how many packet is waiting to be sent
@@ -388,6 +392,9 @@ void ikcp_log(ikcpcb *kcp, int mask, const char *fmt, ...);
 
 // setup allocator
 void ikcp_allocator(void* (*new_malloc)(size_t), void (*new_free)(void*));
+
+// read conv
+IUINT32 ikcp_getconv(const void *ptr);
 
 
 #ifdef __cplusplus
