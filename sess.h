@@ -2,12 +2,11 @@
 #define KCP_SESS_H
 
 #include "ikcp.h"
-#include "io.h"
 #include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
 
-class UDPSession : public ReadWriter {
+class UDPSession  {
 private:
     int m_sockfd{0};
     ikcpcb *m_kcp{nullptr};
