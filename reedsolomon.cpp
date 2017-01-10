@@ -201,13 +201,11 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     // any that we just calculated.  The output is whichever of the
     // data shards were missing.
     outputCount = 0;
-    outputs.clear();
-    matrixRows.clear();
     for (int iShard = m_dataShards; iShard < m_totalShards; iShard++) {
         if (shards[iShard] == nullptr) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
-            outputs.push_back(shards[iShard]);
-            matrixRows.push_back(parity[iShard - m_dataShards]);
+            outputs[outputCount] = shards[iShard];
+            matrixRows[outputCount] = parity[iShard - m_dataShards];
             outputCount++;
         }
     }
