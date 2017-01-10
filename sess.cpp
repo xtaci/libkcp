@@ -207,6 +207,15 @@ UDPSession::SetDSCP(int iptos) noexcept {
     return setsockopt(this->m_sockfd, IPPROTO_IP, IP_TOS, &iptos, sizeof(iptos));
 }
 
+void
+UDPSession::SetStreamMode(bool enable) noexcept {
+    if (enable) {
+        this->m_kcp->stream = 1;
+    } else {
+        this->m_kcp->stream = 0;
+    }
+}
+
 int
 UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);

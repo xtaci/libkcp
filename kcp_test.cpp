@@ -13,6 +13,7 @@ int main() {
     sess->NoDelay(1, 20, 2, 1);
     sess->WndSize(128, 128);
     sess->SetMtu(1400);
+    sess->SetStreamMode(true);
     printf("setdscp: %d\n",sess->SetDSCP(46));
 
     assert(sess != nullptr);

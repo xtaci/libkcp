@@ -46,6 +46,9 @@ public:
     // Set DSCP value
     int SetDSCP(int dscp) noexcept;
 
+    // SetStreamMode toggles the stream mode on/off
+    void SetStreamMode(bool enable) noexcept;
+
     // Wrappers for kcp control
     inline int NoDelay(int nodelay, int interval, int resend, int nc) {
         return ikcp_nodelay(m_kcp, nodelay, interval, resend, nc);
