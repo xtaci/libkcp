@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <iostream>
 #include "reedsolomon.h"
 #include "galois_noasm.h"
 
@@ -179,19 +180,18 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     // The Input to the coding is all of the shards we actually
     // have, and the output is the missing data shards.  The computation
     // is done using the special Decode matrix we just built.
-    std::vector<row_type> outputs;
+    std::vector<row_type> outputs(m_parityShards);
     std::vector<row_type> matrixRows(m_parityShards);
     int outputCount = 0;
 
     for (int iShard = 0; iShard < m_dataShards; iShard++) {
         if (shards[iShard] == nullptr) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
-            outputs.push_back(shards[iShard]);
+            outputs[outputCount] = shards[iShard];
             matrixRows[outputCount] = dataDecodeMatrix.data[iShard];
             outputCount++;
         }
     }
-
     codeSomeShards(matrixRows, subShards, outputs, outputCount);
 
     // Now that we have all of the data shards intact, we can
@@ -202,11 +202,12 @@ ReedSolomon::Reconstruct(std::vector<row_type> &shards) {
     // data shards were missing.
     outputCount = 0;
     outputs.clear();
-    for (int iShard = 0; iShard < m_dataShards; iShard++) {
+    matrixRows.clear();
+    for (int iShard = m_dataShards; iShard < m_totalShards; iShard++) {
         if (shards[iShard] == nullptr) {
             shards[iShard] = std::make_shared<std::vector<byte>>(shardSize);
             outputs.push_back(shards[iShard]);
-            matrixRows[outputCount] = parity[iShard - m_dataShards];
+            matrixRows.push_back(parity[iShard - m_dataShards]);
             outputCount++;
         }
     }

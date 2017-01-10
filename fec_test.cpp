@@ -47,9 +47,9 @@ int main() {
         std::cout << std::endl;
     }
 
-    std::cout << "remove 3 elements:" << std::endl;
+    std::cout << "remove  2 datashards & 1 parityshards:" << std::endl;
     for (int i = 0; i < shards.size(); i++) {
-        if (i < 3) {
+        if (i < 2 || i == 5) {
             continue;
         }
 
@@ -103,9 +103,9 @@ int main() {
         std::cout << std::endl;
     }
 
-    std::cout << "remove first 3 elements:" << std::endl;
+    std::cout << "remove  2 datashards & 1 parityshards:" << std::endl;
     for (int i = 0; i < shards.size(); i++) {
-        if (i < 3) {
+        if (i < 2 || i == 5) {
             continue;
         }
 
