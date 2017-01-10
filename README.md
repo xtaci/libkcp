@@ -6,6 +6,8 @@
 [4]: https://travis-ci.org/xtaci/libkcp
 FEC enhanced KCP client session library for iOS/Android, compatible with [kcp-go](https://github.com/xtaci/kcp-go).    
 
+![logo](logo.png)
+
 ## ***Features***
 1. Optimized for Real-Time Strategy Game.
 2. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.
