@@ -7,11 +7,6 @@
 
 typedef unsigned char byte;
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 byte galAdd(byte a, byte b);
 
 byte galSub(byte a, byte b);
@@ -28,7 +23,4 @@ byte galDivide(byte a, byte b);
 // The result will be the same as multiplying a times itself n times.
 byte galExp(byte a, byte b);
 
-#ifdef __cplusplus
-}
-#endif
 #endif //KCP_GALOIS_H

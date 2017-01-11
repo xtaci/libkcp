@@ -2,6 +2,7 @@
 // Created by 理 傅 on 2016/12/30.
 //
 
+#include <stdexcept>
 #include "galois.h"
 
 extern const int fieldSize;
@@ -26,11 +27,10 @@ byte galDivide(byte a, byte b) {
         return 0;
     }
 
-    /*
-    if b == 0 {
-        panic("Argument 'divisor' is 0")
+    if (b == 0) {
+        throw std::invalid_argument("Argument 'divisor' is 0");
     }
-     */
+
     int logA = logTable[a];
     int logB = logTable[b];
     int logResult = logA - logB;
