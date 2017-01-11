@@ -30,12 +30,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession *sess = UDPSession::createSession(sockfd);
-    if (sess == nullptr) {
-        close(sockfd);
-        return nullptr;
-    }
-    return sess;
+    return UDPSession::createSession(sockfd);
 }
 
 UDPSession *
@@ -74,12 +69,7 @@ UDPSession::dialIPv6(const char *ip, uint16_t port) {
         return nullptr;
     }
 
-    UDPSession *sess = UDPSession::createSession(sockfd);
-    if (sess == nullptr) {
-        close(sockfd);
-        return nullptr;
-    }
-    return sess;
+    return UDPSession::createSession(sockfd);
 }
 
 UDPSession *

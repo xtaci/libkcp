@@ -14,26 +14,29 @@ int main() {
     sess->WndSize(128, 128);
     sess->SetMtu(1400);
     sess->SetStreamMode(true);
-    printf("setdscp: %d\n",sess->SetDSCP(46));
+    sess->SetDSCP(46);
 
     assert(sess != nullptr);
-    ssize_t nsent = {0};
-    ssize_t nrecv = {0};
+    ssize_t nsent = 0;
+    ssize_t nrecv = 0;
     char *buf = (char *) malloc(128);
 
     for (int i = 0; i < 10; i++) {
         sprintf(buf, "message:%d", i);
-        sess->Write(buf, strlen(buf));
+        auto sz = strlen(buf);
+        sess->Write(buf, sz);
         sess->Update(iclock());
         memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf, 128);
-        if (n > 0) { printf("%s\n", buf); }
-        sleep(1);
+        ssize_t n = 0;
+        do {
+            n = sess->Read(buf, 128);
+            if (n > 0) { printf("%s\n", buf); }
+            usleep(33000);
+            sess->Update(iclock());
+        } while(n==0);
     }
 
-
     UDPSession::Destroy(sess);
-    fflush( stdout );
 }
 
 
