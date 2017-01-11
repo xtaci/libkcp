@@ -72,7 +72,7 @@ private:
     // checkShards will check if shards are the same size
     // or 0, if allowed. An error is returned if this fails.
     // An error is also returned if all shards are size 0.
-    void checkShards(std::vector<row_type> &shardse, bool nilok) ;
+    void checkShards(std::vector<row_type> &shards, bool nilok) ;
 };
 
 
