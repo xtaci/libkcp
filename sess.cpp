@@ -97,10 +97,6 @@ UDPSession::createSession(int sockfd) {
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_kcp->output = sess->out_wrapper;
-
-    if (sess->m_kcp == nullptr) {
-        return nullptr;
-    }
     return sess;
 }
 
