@@ -99,7 +99,6 @@ UDPSession::createSession(int sockfd) {
     sess->m_kcp->output = sess->out_wrapper;
 
     if (sess->m_kcp == nullptr) {
-        ikcp_release(sess->m_kcp);
         return nullptr;
     }
     return sess;
