@@ -42,7 +42,7 @@ public:
     // Decode a raw array into fecPacket
     static fecPacket Decode(byte *data, size_t sz);
 
-    // Mark raw array as typeData
+    // Mark raw array as typeData, and write correct size.
     void MarkData(byte *data, uint16_t sz);
 
     // Mark raw array as typeFEC
