@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <sys/time.h>
+#include <cstring>
 #include "sess.h"
 
 IUINT32 iclock();
