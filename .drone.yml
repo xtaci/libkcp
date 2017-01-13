@@ -1,5 +1,5 @@
 build:
-  image: 192.168.1.220:5000/cmake
+  image: walberla/buildenv-ubuntu-clang
   commands:
     - cmake .
     - make
