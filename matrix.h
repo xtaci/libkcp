@@ -6,6 +6,7 @@
 #define KCP_MATRIX_H
 
 #include <vector>
+#include <memory>
 #include "galois.h"
 
 using row_type = std::shared_ptr<std::vector<byte>>;
