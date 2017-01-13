@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <stdint.h>
 #include <memory>
 #include "reedsolomon.h"
 
