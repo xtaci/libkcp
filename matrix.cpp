@@ -4,6 +4,7 @@
 
 #include "galois.h"
 #include "matrix.h"
+#include <stdexcept>
 
 matrix
 matrix::newMatrix(int rows, int cols) {

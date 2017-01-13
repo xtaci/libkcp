@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <stdexcept>
 #include <iostream>
 #include "reedsolomon.h"
 #include "galois_noasm.h"
