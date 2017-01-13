@@ -5,6 +5,7 @@
 #include <err.h>
 #include <sys/time.h>
 #include <iostream>
+#include <stdexcept>
 #include "fec.h"
 #include "sess.h"
 #include "encoding.h"
