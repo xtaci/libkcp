@@ -1,5 +1,5 @@
 build:
-  image: walberla/buildenv-ubuntu-clang
+  image: walberla/buildenv-ubuntu-clang:3.6
   commands:
     - cmake .
     - make
