@@ -13,7 +13,7 @@ FEC enhanced KCP client session library for iOS/Android, compatible with [kcp-go
 2. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.
 
 ## ***Usage***
-libkcp has designed as a ***Frame-Driven*** library, the main loop was supposed as:       
+libkcp has been designed as a ***Frame-Driven*** library, the main loop was supposed as:       
 ```
 GameInit()
 NetworkInit()
