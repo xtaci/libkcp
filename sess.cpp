@@ -136,7 +136,8 @@ UDPSession::Update(uint32_t current) noexcept {
             break;
         }
     }
-    ikcp_update(m_kcp, current);
+    m_kcp->current = current;
+    ikcp_flush(m_kcp);
 }
 
 void

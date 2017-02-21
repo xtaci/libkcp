@@ -921,8 +921,9 @@ void ikcp_flush(ikcpcb *kcp)
 	int lost = 0;
 	IKCPSEG seg;
 
-	// 'ikcp_update' haven't been called. 
-	if (kcp->updated == 0) return;
+	// 'ikcp_update' haven't been called.
+	// if (kcp->updated == 0) return;
+    // NOTICE: controlled by frame ticker
 
 	seg.conv = kcp->conv;
 	seg.cmd = IKCP_CMD_ACK;
