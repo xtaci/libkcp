@@ -9,18 +9,19 @@ FEC enhanced KCP client session library for iOS/Android, compatible with [kcp-go
 <img src="logo.png" alt="libkcp" height="300px" />
 
 ## ***Features***
-1. Optimized for Real-Time Strategy Game.
-2. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.
+1. Optimized for ***Online Games***.
+1. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.
+1. [FEC(Forward Error Correction)](https://en.wikipedia.org/wiki/Forward_error_correction) Support with [Reed-Solomon Codes](https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction)
 
 ## ***Usage***
 libkcp has been designed as a ***Frame-Driven*** library, the main loop was supposed as:       
 ```
 GameInit()
 NetworkInit()
-While(not gameover) Do      // e.g:  A 30FPS Game
-       Network.Read()
-       Network.Write()
-       Network.Update()
+While (!isGameOver) Do      // e.g:  A 30FPS Game
+       LibKCP.Read()
+       LibKCP.Write()
+       LibKCP.Update()
        Game.Logic()
        Game.Render()
        Wait(33ms)   // clock
@@ -39,7 +40,7 @@ $go run kcpserver.go
 compile and run libkcp(Best with CLion), and watch output.      
 
 ## ***Caveats***
-1. Packet level encryption has not implemented yet.
+1. Packet level encryption has not been implemented yet.
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.
