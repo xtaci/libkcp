@@ -64,7 +64,7 @@ inline byte *encode32u(byte *p, uint32_t l)
 	*(unsigned char*)(p + 2) = (unsigned char)((l >> 16) & 0xff);
 	*(unsigned char*)(p + 3) = (unsigned char)((l >> 24) & 0xff);
 #else
-    *(int32_t*)p = l;
+    *(uint32_t*)p = l;
 #endif
     p += 4;
     return p;
@@ -79,7 +79,7 @@ inline byte *decode32u(byte *p, uint32_t *l)
 	*l = *(const unsigned char*)(p + 1) + (*l << 8);
 	*l = *(const unsigned char*)(p + 0) + (*l << 8);
 #else
-    *l = *(const int32_t*)p;
+    *l = *(const uint32_t*)p;
 #endif
     p += 4;
     return p;
