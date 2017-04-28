@@ -43,11 +43,20 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J7M-j6-ZsU">
-                                <rect key="frame" x="117" y="255" width="30" height="30"/>
+                                <rect key="frame" x="104" y="255" width="127" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Go"/>
+                                <state key="normal" title="connect"/>
                                 <connections>
                                     <action selector="go:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iav-NN-ITA"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rIw-4S-j7c">
+                                <rect key="frame" x="90" y="327" width="127" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="send"/>
+                                <connections>
+                                    <action selector="go:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0Ep-jK-Rjv"/>
+                                    <action selector="send:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zGh-1P-6eg"/>
                                 </connections>
                             </button>
                         </subviews>

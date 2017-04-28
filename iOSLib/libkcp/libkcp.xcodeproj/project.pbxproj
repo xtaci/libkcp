@@ -36,11 +36,10 @@
 		692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3701EB2F191006A4B9D /* libc++.tbd */; };
 		69C757811EB2F96D00139321 /* libkcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* libkcp.framework */; };
 		69C757821EB2F96D00139321 /* libkcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* libkcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; };
+		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69FFC6A11EB30985008A030D /* SFKcpTun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC69F1EB30985008A030D /* SFKcpTun.mm */; };
-		69FFC6A51EB309E8008A030D /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; };
+		69FFC6A51EB309E8008A030D /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69FFC6A61EB309E8008A030D /* TunConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC6A41EB309E8008A030D /* TunConfig.m */; };
-		69FFC6A71EB316D5008A030D /* kcp_test.mm in Sources */ = {isa = PBXBuildFile; fileRef = 692AE36B1EB2EF91006A4B9D /* kcp_test.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -366,7 +365,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69FFC6A71EB316D5008A030D /* kcp_test.mm in Sources */,
 				692AE35E1EB2EF83006A4B9D /* ViewController.mm in Sources */,
 				692AE35B1EB2EF83006A4B9D /* AppDelegate.mm in Sources */,
 				692AE3581EB2EF83006A4B9D /* main.m in Sources */,

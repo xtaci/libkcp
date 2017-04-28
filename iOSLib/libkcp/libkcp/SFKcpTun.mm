@@ -45,7 +45,7 @@ IUINT32 iclock() {
         self.config = c;
         self.server = ip;
         self.port = port;
-        
+        [self startUDPSession];
     }
     return self;
 }
@@ -59,10 +59,13 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     
     assert(sess != nullptr);
-
+    [self run];
 }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
 {
+    if (sess != nil) {
+        UDPSession::Destroy(sess);
+    }
     sess = UDPSession::DialWithOptions(ip.UTF8String, port, self.config.dataShards,self.config.parityShards);
     sess->NoDelay(self.config.nodelay, self.config.interval, self.config.resend, self.config.nc);
     sess->WndSize(self.config.sndwnd, self.config.rcvwnd);
@@ -71,7 +74,7 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     
     assert(sess != nullptr);
-
+    [self run];
 }
 -(void)shutdownUDPSession
 {
@@ -86,12 +89,24 @@ IUINT32 iclock() {
     sess->Update(iclock());
 }
 -(void)run{
+    //不能一直读,需要timer 
     dispatch_queue_t q = dispatch_queue_create("com.abigt.kcp", nil);
     dispatch_async(q, ^{
-        char *buf = (char *) malloc(128);
-        memset(buf, 0, 128);
-        ssize_t n = sess->Read(buf, 128);
-        sess->Update(iclock());
+        for(;;){
+            if (sess == nil) {
+                break;
+            }
+            char *buf = (char *) malloc(4096);
+            memset(buf, 0, 4096);
+            ssize_t n = sess->Read(buf, 4096);
+            sess->Update(iclock());
+            if (n > 0 ){
+                NSData *d = [NSData dataWithBytes:buf length:n];
+                [self.delegate didRecevied:d];
+            }
+            free(buf);
+        }
+       
     });
 }
 @end

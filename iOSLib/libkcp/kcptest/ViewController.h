@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "test.h"
-@interface ViewController : UIViewController
+#import "libkcp.h"
+@interface ViewController : UIViewController<SFKcpTunDelegate>
 
 
 @end
