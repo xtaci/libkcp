@@ -1,0 +1,4 @@
+/Users/yarshure/github/libkcp/CMakeFiles/rebuild_cache.dir
+/Users/yarshure/github/libkcp/CMakeFiles/edit_cache.dir
+/Users/yarshure/github/libkcp/CMakeFiles/fec_test.dir
+/Users/yarshure/github/libkcp/CMakeFiles/kcp_test.dir
