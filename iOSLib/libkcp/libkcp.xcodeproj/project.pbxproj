@@ -98,8 +98,7 @@
 		692AE3621EB2EF83006A4B9D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		692AE3651EB2EF83006A4B9D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		692AE3671EB2EF83006A4B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		692AE36B1EB2EF91006A4B9D /* kcp_test.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = kcp_test.mm; path = ../../../kcp_test.mm; sourceTree = "<group>"; };
-		692AE36E1EB2F07B006A4B9D /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kcp_test.cpp; path = ../../../kcp_test.cpp; sourceTree = "<group>"; };
 		692AE3701EB2F191006A4B9D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
 		69FFC69F1EB30985008A030D /* SFKcpTun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SFKcpTun.mm; path = libkcp/SFKcpTun.mm; sourceTree = SOURCE_ROOT; };
@@ -178,8 +177,7 @@
 		692AE3551EB2EF83006A4B9D /* kcptest */ = {
 			isa = PBXGroup;
 			children = (
-				692AE36B1EB2EF91006A4B9D /* kcp_test.mm */,
-				692AE36E1EB2F07B006A4B9D /* test.h */,
+				692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */,
 				692AE3591EB2EF83006A4B9D /* AppDelegate.h */,
 				692AE35A1EB2EF83006A4B9D /* AppDelegate.mm */,
 				692AE35C1EB2EF83006A4B9D /* ViewController.h */,
