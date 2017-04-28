@@ -6,12 +6,12 @@
 
 IUINT32 iclock();
 
-int kcptest(const char *addr,int port) {
+int main() {
     struct timeval time;
     gettimeofday(&time, NULL);
     srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
-    UDPSession *sess = UDPSession::DialWithOptions(addr, port, 2,2);
+    UDPSession *sess = UDPSession::DialWithOptions("127.0.0.1", 9999, 2,2);
     sess->NoDelay(1, 20, 2, 1);
     sess->WndSize(128, 128);
     sess->SetMtu(1400);
@@ -39,9 +39,27 @@ int kcptest(const char *addr,int port) {
     }
 
     UDPSession::Destroy(sess);
-    return  0 ;
 }
 
 
+void
+itimeofday(long *sec, long *usec) {
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    if (sec) *sec = time.tv_sec;
+    if (usec) *usec = time.tv_usec;
+}
+
+IUINT64 iclock64(void) {
+    long s, u;
+    IUINT64 value;
+    itimeofday(&s, &u);
+    value = ((IUINT64) s) * 1000 + (u / 1000);
+    return value;
+}
+
+IUINT32 iclock() {
+    return (IUINT32) (iclock64() & 0xfffffffful);
+}
 
 

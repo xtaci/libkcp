@@ -39,6 +39,10 @@ IUINT32 iclock() {
 @end
 
 @implementation SFKcpTun
+{
+    dispatch_source_t _timer;
+    dispatch_queue_t queue ;
+}
 -(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port
 {
     if (self = [super init]){
@@ -90,12 +94,40 @@ IUINT32 iclock() {
 }
 -(void)run{
     //不能一直读,需要timer 
-    dispatch_queue_t q = dispatch_queue_create("com.abigt.kcp", nil);
-    dispatch_async(q, ^{
-        for(;;){
-            if (sess == nil) {
-                break;
-            }
+//    dispatch_queue_t q = dispatch_queue_create("com.abigt.kcp", nil);
+//    dispatch_async(q, ^{
+//        for(;;){
+//            if (sess == nil) {
+//                break;
+//            }
+//            char *buf = (char *) malloc(4096);
+//            memset(buf, 0, 4096);
+//            ssize_t n = sess->Read(buf, 4096);
+//            sess->Update(iclock());
+//            if (n > 0 ){
+//                NSData *d = [NSData dataWithBytes:buf length:n];
+//                [self.delegate didRecevied:d];
+//            }
+//            free(buf);
+//        }
+//       
+//    });
+    // Create a dispatch source that'll act as a timer on the concurrent queue
+    // You'll need to store this somewhere so you can suspend and remove it later on
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_source_t dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,
+                                                              queue);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+    
+    // Setup params for creation of a recurring timer
+    double interval = 33.0;
+    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, 0);
+    uint64_t intervalTime = (int64_t)(interval * NSEC_PER_MSEC);
+    dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
+    
+    // Attach the block you want to run on the timer fire
+    dispatch_source_set_event_handler(dispatchSource, ^{
+        // Your code here
+        if (sess != nil) {
             char *buf = (char *) malloc(4096);
             memset(buf, 0, 4096);
             ssize_t n = sess->Read(buf, 4096);
@@ -106,7 +138,18 @@ IUINT32 iclock() {
             }
             free(buf);
         }
-       
+        
     });
+    
+    // Start the timer
+    dispatch_resume(dispatchSource);
+    _timer = dispatchSource;
+    // ----
+    
+    // When you want to stop the timer, you need to suspend the source
+    //dispatch_suspend(dispatchSource);
+    
+    // If on iOS5 and/or using MRC, you'll need to release the source too
+    //dispatch_release(dispatchSource);
 }
 @end
