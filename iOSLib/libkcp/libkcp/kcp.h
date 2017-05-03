@@ -15,7 +15,7 @@ FOUNDATION_EXPORT double libkcpVersionNumber;
 FOUNDATION_EXPORT const unsigned char libkcpVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like
-#import <libkcp/Tunconfig.h>
-#import <libkcp/SFKcptun.h>
+#import <kcp/Tunconfig.h>
+#import <kcp/SFKcptun.h>
 
 

@@ -49,6 +49,7 @@ IUINT32 iclock() {
         self.config = c;
         self.server = ip;
         self.port = port;
+        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         [self startUDPSession];
     }
     return self;
@@ -89,15 +90,27 @@ IUINT32 iclock() {
     
     assert(sess != nullptr);
 
-    sess->Write((char *)data.bytes, data.length);
-    sess->Update(iclock());
+    size_t tosend =  data.length;
+    size_t sended = 0 ;
+    char *ptr = (char *)data.bytes;
+    while (sended < tosend) {
+        
+        
+        size_t sendt = sess->Write(ptr, data.length - sended);
+        sended += sendt ;
+        ptr += sended;
+        NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+        sess->Update(iclock());
+    }
+    NSLog(@"KCPTun sent %zu",sended);
+    
 }
 -(void)run{
     //
     //
     // Create a dispatch source that'll act as a timer on the concurrent queue
     // You'll need to store this somewhere so you can suspend and remove it later on
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+   //
     dispatch_source_t dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,
                                                               queue);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
     

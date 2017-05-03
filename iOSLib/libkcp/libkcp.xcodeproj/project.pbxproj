@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		692AE3261EB2EE59006A4B9D /* libkcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3241EB2EE59006A4B9D /* libkcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		692AE3261EB2EE59006A4B9D /* kcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3241EB2EE59006A4B9D /* kcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		692AE32D1EB2EE98006A4B9D /* fec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32C1EB2EE98006A4B9D /* fec.cpp */; };
 		692AE32F1EB2EEB0006A4B9D /* ikcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32E1EB2EEB0006A4B9D /* ikcp.c */; };
 		692AE3311EB2EEBD006A4B9D /* sess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3301EB2EEBD006A4B9D /* sess.cpp */; };
@@ -32,10 +32,10 @@
 		692AE3611EB2EF83006A4B9D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 692AE35F1EB2EF83006A4B9D /* Main.storyboard */; };
 		692AE3631EB2EF83006A4B9D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 692AE3621EB2EF83006A4B9D /* Assets.xcassets */; };
 		692AE3661EB2EF83006A4B9D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 692AE3641EB2EF83006A4B9D /* LaunchScreen.storyboard */; };
-		692AE36D1EB2EF9C006A4B9D /* libkcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* libkcp.framework */; };
+		692AE36D1EB2EF9C006A4B9D /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
 		692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3701EB2F191006A4B9D /* libc++.tbd */; };
-		69C757811EB2F96D00139321 /* libkcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* libkcp.framework */; };
-		69C757821EB2F96D00139321 /* libkcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* libkcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		69C757811EB2F96D00139321 /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
+		69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69FFC6A11EB30985008A030D /* SFKcpTun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC69F1EB30985008A030D /* SFKcpTun.mm */; };
 		69FFC6A51EB309E8008A030D /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -59,7 +59,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				69C757821EB2F96D00139321 /* libkcp.framework in Embed Frameworks */,
+				69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,8 +67,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		692AE3211EB2EE59006A4B9D /* libkcp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libkcp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		692AE3241EB2EE59006A4B9D /* libkcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libkcp.h; sourceTree = "<group>"; };
+		692AE3211EB2EE59006A4B9D /* kcp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = kcp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		692AE3241EB2EE59006A4B9D /* kcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcp.h; sourceTree = "<group>"; };
 		692AE3251EB2EE59006A4B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		692AE32C1EB2EE98006A4B9D /* fec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fec.cpp; path = ../../../fec.cpp; sourceTree = "<group>"; };
 		692AE32E1EB2EEB0006A4B9D /* ikcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ikcp.c; path = ../../../ikcp.c; sourceTree = "<group>"; };
@@ -119,8 +119,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */,
-				69C757811EB2F96D00139321 /* libkcp.framework in Frameworks */,
-				692AE36D1EB2EF9C006A4B9D /* libkcp.framework in Frameworks */,
+				69C757811EB2F96D00139321 /* kcp.framework in Frameworks */,
+				692AE36D1EB2EF9C006A4B9D /* kcp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +141,7 @@
 		692AE3221EB2EE59006A4B9D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				692AE3211EB2EE59006A4B9D /* libkcp.framework */,
+				692AE3211EB2EE59006A4B9D /* kcp.framework */,
 				692AE3541EB2EF83006A4B9D /* kcptest.app */,
 			);
 			name = Products;
@@ -168,7 +168,7 @@
 				692AE3301EB2EEBD006A4B9D /* sess.cpp */,
 				692AE32E1EB2EEB0006A4B9D /* ikcp.c */,
 				692AE32C1EB2EE98006A4B9D /* fec.cpp */,
-				692AE3241EB2EE59006A4B9D /* libkcp.h */,
+				692AE3241EB2EE59006A4B9D /* kcp.h */,
 				692AE3251EB2EE59006A4B9D /* Info.plist */,
 			);
 			path = libkcp;
@@ -233,7 +233,7 @@
 				692AE3371EB2EEEF006A4B9D /* reedsolomon.h in Headers */,
 				692AE3481EB2EF1C006A4B9D /* fec.h in Headers */,
 				692AE3331EB2EEE6006A4B9D /* sess.h in Headers */,
-				692AE3261EB2EE59006A4B9D /* libkcp.h in Headers */,
+				692AE3261EB2EE59006A4B9D /* kcp.h in Headers */,
 				692AE33B1EB2EEF9006A4B9D /* matrix.h in Headers */,
 				692AE3411EB2EF11006A4B9D /* ikcp.h in Headers */,
 				692AE34D1EB2EF1C006A4B9D /* galois.h in Headers */,
@@ -243,9 +243,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		692AE3201EB2EE59006A4B9D /* libkcp */ = {
+		692AE3201EB2EE59006A4B9D /* kcp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "libkcp" */;
+			buildConfigurationList = 692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "kcp" */;
 			buildPhases = (
 				692AE31C1EB2EE59006A4B9D /* Sources */,
 				692AE31D1EB2EE59006A4B9D /* Frameworks */,
@@ -256,9 +256,9 @@
 			);
 			dependencies = (
 			);
-			name = libkcp;
+			name = kcp;
 			productName = libkcp;
-			productReference = 692AE3211EB2EE59006A4B9D /* libkcp.framework */;
+			productReference = 692AE3211EB2EE59006A4B9D /* kcp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		692AE3531EB2EF83006A4B9D /* kcptest */ = {
@@ -314,7 +314,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				692AE3201EB2EE59006A4B9D /* libkcp */,
+				692AE3201EB2EE59006A4B9D /* kcp */,
 				692AE3531EB2EF83006A4B9D /* kcptest */,
 			);
 		};
@@ -374,7 +374,7 @@
 /* Begin PBXTargetDependency section */
 		69C757841EB2F96D00139321 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 692AE3201EB2EE59006A4B9D /* libkcp */;
+			target = 692AE3201EB2EE59006A4B9D /* kcp */;
 			targetProxy = 69C757831EB2F96D00139321 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -509,7 +509,7 @@
 				INFOPLIST_FILE = libkcp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.squash.libkcp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -527,7 +527,7 @@
 				INFOPLIST_FILE = libkcp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.squash.libkcp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -569,7 +569,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "libkcp" */ = {
+		692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "kcp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				692AE32A1EB2EE59006A4B9D /* Debug */,
