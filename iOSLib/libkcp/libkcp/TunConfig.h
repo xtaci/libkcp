@@ -25,4 +25,9 @@
 
 @property (nonatomic) int iptos;
 
+@property (nonatomic) int keepAliveInterval;
+@property (nonatomic) int keepAliveTimeout;
+@property (strong,nonatomic) NSData *key; //pkbdf2Key driven
+//"aes, aes-128, aes-192, salsa20, blowfish, twofish, cast5, 3des, tea, xtea, xor, none",
+@property (strong,nonatomic) NSString *crypt;
 @end

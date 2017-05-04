@@ -34,6 +34,9 @@
 		692AE3661EB2EF83006A4B9D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 692AE3641EB2EF83006A4B9D /* LaunchScreen.storyboard */; };
 		692AE36D1EB2EF9C006A4B9D /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
 		692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3701EB2F191006A4B9D /* libc++.tbd */; };
+		695165F51EBB2663008DCF66 /* BlockCrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695165F31EBB2663008DCF66 /* BlockCrypt.cpp */; };
+		695165F61EBB2663008DCF66 /* BlockCrypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 695165F41EBB2663008DCF66 /* BlockCrypt.h */; };
+		695165F91EBB32D2008DCF66 /* Crypt.mm in Sources */ = {isa = PBXBuildFile; fileRef = 695165F81EBB32D2008DCF66 /* Crypt.mm */; };
 		69C757811EB2F96D00139321 /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
 		69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -100,6 +103,10 @@
 		692AE3671EB2EF83006A4B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kcp_test.cpp; path = ../../../kcp_test.cpp; sourceTree = "<group>"; };
 		692AE3701EB2F191006A4B9D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		695165F31EBB2663008DCF66 /* BlockCrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlockCrypt.cpp; sourceTree = "<group>"; };
+		695165F41EBB2663008DCF66 /* BlockCrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockCrypt.h; sourceTree = "<group>"; };
+		695165F71EBB32D2008DCF66 /* Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Crypt.h; path = libkcp/Crypt.h; sourceTree = SOURCE_ROOT; };
+		695165F81EBB32D2008DCF66 /* Crypt.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Crypt.mm; path = libkcp/Crypt.mm; sourceTree = SOURCE_ROOT; };
 		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
 		69FFC69F1EB30985008A030D /* SFKcpTun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SFKcpTun.mm; path = libkcp/SFKcpTun.mm; sourceTree = SOURCE_ROOT; };
 		69FFC6A31EB309E8008A030D /* TunConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TunConfig.h; path = libkcp/TunConfig.h; sourceTree = "<group>"; };
@@ -130,7 +137,7 @@
 		692AE3171EB2EE59006A4B9D = {
 			isa = PBXGroup;
 			children = (
-				69FFC6A21EB3098C008A030D /* tun_smux */,
+				69FFC6A21EB3098C008A030D /* tun */,
 				692AE3231EB2EE59006A4B9D /* libkcp */,
 				692AE3551EB2EF83006A4B9D /* kcptest */,
 				692AE3221EB2EE59006A4B9D /* Products */,
@@ -170,6 +177,8 @@
 				692AE32C1EB2EE98006A4B9D /* fec.cpp */,
 				692AE3241EB2EE59006A4B9D /* kcp.h */,
 				692AE3251EB2EE59006A4B9D /* Info.plist */,
+				695165F31EBB2663008DCF66 /* BlockCrypt.cpp */,
+				695165F41EBB2663008DCF66 /* BlockCrypt.h */,
 			);
 			path = libkcp;
 			sourceTree = "<group>";
@@ -177,6 +186,8 @@
 		692AE3551EB2EF83006A4B9D /* kcptest */ = {
 			isa = PBXGroup;
 			children = (
+				695165F71EBB32D2008DCF66 /* Crypt.h */,
+				695165F81EBB32D2008DCF66 /* Crypt.mm */,
 				692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */,
 				692AE3591EB2EF83006A4B9D /* AppDelegate.h */,
 				692AE35A1EB2EF83006A4B9D /* AppDelegate.mm */,
@@ -207,7 +218,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		69FFC6A21EB3098C008A030D /* tun_smux */ = {
+		69FFC6A21EB3098C008A030D /* tun */ = {
 			isa = PBXGroup;
 			children = (
 				69FFC69E1EB30985008A030D /* SFKcpTun.h */,
@@ -215,7 +226,7 @@
 				69FFC6A31EB309E8008A030D /* TunConfig.h */,
 				69FFC6A41EB309E8008A030D /* TunConfig.m */,
 			);
-			name = tun_smux;
+			name = tun;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -237,6 +248,7 @@
 				692AE33B1EB2EEF9006A4B9D /* matrix.h in Headers */,
 				692AE3411EB2EF11006A4B9D /* ikcp.h in Headers */,
 				692AE34D1EB2EF1C006A4B9D /* galois.h in Headers */,
+				695165F61EBB2663008DCF66 /* BlockCrypt.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +304,7 @@
 					692AE3201EB2EE59006A4B9D = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 745WQDK4L7;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 					692AE3531EB2EF83006A4B9D = {
@@ -354,6 +367,7 @@
 				692AE32D1EB2EE98006A4B9D /* fec.cpp in Sources */,
 				692AE34B1EB2EF1C006A4B9D /* galois_table.c in Sources */,
 				69FFC6A11EB30985008A030D /* SFKcpTun.mm in Sources */,
+				695165F51EBB2663008DCF66 /* BlockCrypt.cpp in Sources */,
 				692AE3311EB2EEBD006A4B9D /* sess.cpp in Sources */,
 				692AE3361EB2EEEF006A4B9D /* reedsolomon.cpp in Sources */,
 			);
@@ -365,6 +379,7 @@
 			files = (
 				692AE35E1EB2EF83006A4B9D /* ViewController.mm in Sources */,
 				692AE35B1EB2EF83006A4B9D /* AppDelegate.mm in Sources */,
+				695165F91EBB32D2008DCF66 /* Crypt.mm in Sources */,
 				692AE3581EB2EF83006A4B9D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -500,6 +515,7 @@
 		692AE32A1EB2EE59006A4B9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 745WQDK4L7;
@@ -512,12 +528,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		692AE32B1EB2EE59006A4B9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 745WQDK4L7;
@@ -530,6 +549,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

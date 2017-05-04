@@ -56,7 +56,14 @@ IUINT32 iclock() {
 }
 -(void)startUDPSession
 {
-    sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
+    if (self.config.key.length > 0){
+        
+        BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
+    }else {
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
+    }
+    
     sess->NoDelay(self.config.nodelay, self.config.interval, self.config.resend, self.config.nc);
     sess->WndSize(self.config.sndwnd, self.config.rcvwnd);
     sess->SetMtu(self.config.mtu);
@@ -71,7 +78,15 @@ IUINT32 iclock() {
     if (sess != nil) {
         UDPSession::Destroy(sess);
     }
-    sess = UDPSession::DialWithOptions(ip.UTF8String, port, self.config.dataShards,self.config.parityShards);
+    if (self.config.key.length > 0){
+        
+        BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
+    }else {
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
+    }
+    
+  
     sess->NoDelay(self.config.nodelay, self.config.interval, self.config.resend, self.config.nc);
     sess->WndSize(self.config.sndwnd, self.config.rcvwnd);
     sess->SetMtu(self.config.mtu);
@@ -85,6 +100,10 @@ IUINT32 iclock() {
 {
     UDPSession::Destroy(sess);
 
+}
+-(void)keepAlive{
+    //kcptun need
+    //s.writeFrame(newFrame(cmdNOP, 0))
 }
 -(void)input:(NSData*)data{
     

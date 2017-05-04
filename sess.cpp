@@ -49,7 +49,16 @@ UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, si
     }
     return sess;
 };
-
+// DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption with block
+UDPSession*
+UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards,BlockCrypt *block){
+    auto sess = UDPSession::DialWithOptions(ip, port, dataShards, parityShards);
+    if (sess == nullptr) {
+        return nullptr;
+    }
+    sess->block = block;
+    return sess;
+}
 
 UDPSession *
 UDPSession::dialIPv6(const char *ip, uint16_t port) {

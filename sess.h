@@ -5,7 +5,7 @@
 #include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
-
+#import "BlockCrypt.h"
 class UDPSession  {
 private:
     int m_sockfd{0};
@@ -19,6 +19,7 @@ private:
     std::vector<row_type> shards;
     size_t dataShards{0};
     size_t parityShards{0};
+    BlockCrypt *block;
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -30,6 +31,8 @@ public:
     // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
     static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards);
 
+    // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption with block
+    static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards,BlockCrypt *block);
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
 
