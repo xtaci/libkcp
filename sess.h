@@ -20,6 +20,7 @@ private:
     size_t dataShards{0};
     size_t parityShards{0};
     BlockCrypt *block;
+ 
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -36,6 +37,8 @@ public:
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
 
+    //kcpInput go UDPpsession
+    void KcpInPut(char *buffer, size_t len) noexcept;
     // Destroy release all resource related.
     static void Destroy(UDPSession *sess);
 

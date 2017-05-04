@@ -9,16 +9,18 @@
 #ifndef BlockCrypt_hpp
 #define BlockCrypt_hpp
 #import <CommonCrypto/CommonCrypto.h>
+
 #include <stdio.h>
 class BlockCrypt  {
 private:
-    CCCryptorRef *send_ctx;
-    CCCryptorRef *recv_ctx;
+    CCCryptorRef send_ctx;
+    CCCryptorRef recv_ctx;
 public:
     static BlockCrypt* blockWith(const void* key,const char* crypt);
     // output udp packet
-    char *encrypt(const void *buffer, size_t length,size_t *outlen);
-    char *decrypt(const void *buffer, size_t length,size_t *outlen);
+    void encrypt(void *buffer, size_t length,size_t *outlen);
+    void decrypt(void *buffer, size_t length,size_t *outlen);
+    uint8_t *ramdonBytes(size_t len);
 private:
     BlockCrypt() = default;
     

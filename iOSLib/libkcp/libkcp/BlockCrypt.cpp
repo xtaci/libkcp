@@ -7,12 +7,14 @@
 //
 
 #include "BlockCrypt.h"
+#import <Security/Security.h>
+#include <Security/SecRandom.h>
 const  uint8_t iv[] =  {167, 115, 79, 156, 18, 172, 27, 1, 164, 21, 242, 193, 252, 120, 230, 107};
 BlockCrypt*
 BlockCrypt::blockWith(const void* key,const char* crypto){
     BlockCrypt *block = new (BlockCrypt);
     
-    const void *ckey = key;
+    
     const void *ivPtr = iv;
     size_t keyLen = 0;
     if (strcmp(crypto,"aes") == 0){
@@ -23,11 +25,27 @@ BlockCrypt::blockWith(const void* key,const char* crypto){
         keyLen = 24;
     }
 
-    CCCryptorStatus st = CCCryptorCreate(kCCEncrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, block->send_ctx);
+   
+    CCCryptorStatus st = CCCryptorCreateWithMode(
+                            kCCEncrypt,
+                            kCCModeCFB,
+                            kCCAlgorithmAES,
+                            ccNoPadding,
+                            ivPtr, key, keyLen,
+                            NULL, 0, 0, 0,
+                            &(block->send_ctx));
+  
     if (st != kCCSuccess){
         printf("send_ctx create error\n");
     }
-    st = CCCryptorCreate(kCCDecrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, block->recv_ctx);
+    st =  CCCryptorCreateWithMode(
+                                  kCCDecrypt,
+                                  kCCModeCFB,
+                                  kCCAlgorithmAES,
+                                  ccNoPadding,
+                                  ivPtr, key, keyLen,
+                                  NULL, 0, 0, 0,
+                                  &(block->recv_ctx));
     if (st != kCCSuccess){
         printf("recv_ctx create error \n");
     }
@@ -36,47 +54,58 @@ BlockCrypt::blockWith(const void* key,const char* crypto){
     
 }
 // output udp packet
-char *
-BlockCrypt::encrypt(const void *buffer, size_t length,size_t *outlen)
+void 
+BlockCrypt::encrypt(void *buffer, size_t length,size_t *outlen)
 {
     
     size_t len = length + kCCBlockSizeAES128;
     
     void *dataOut = malloc(len);
     
-    CCCryptorStatus st  = CCCryptorUpdate(*send_ctx, buffer, length, dataOut, len, outlen);
+    CCCryptorStatus st  = CCCryptorUpdate(send_ctx, buffer, length, dataOut, len, outlen);
     if (st != kCCSuccess){
         printf("encrypt data error");
-        return  (char*)dataOut;
+       
     }else {
-        ;
-        return (char*)dataOut;
+        memcpy(buffer, dataOut, *outlen);
+        
     }
-    
+    free(dataOut);
 }
-char *
-BlockCrypt::decrypt(const void *buffer, size_t length,size_t *outlen)
+void
+BlockCrypt::decrypt(void *buffer, size_t length,size_t *outlen)
 {
     size_t len = length + kCCBlockSizeAES128;
     
     void *dataOut = malloc(len);
     
-    CCCryptorStatus st  = CCCryptorUpdate(*recv_ctx, buffer, length, dataOut, len, outlen);
+    CCCryptorStatus st  = CCCryptorUpdate(recv_ctx, buffer, length, dataOut, len, outlen);
     if (st != kCCSuccess){
         printf("encrypt data error");
-        return  (char*)dataOut;
+        
     }else {
-        ;
-        return (char*)dataOut;
+        memcpy(buffer, dataOut, *outlen);
     }
+    free(dataOut);
 }
 void
 BlockCrypt::Destroy(BlockCrypt *block) {
     if (block->send_ctx != NULL) {
-        CCCryptorRelease(*block->send_ctx);
+        CCCryptorRelease(block->send_ctx);
     }
     if (block->recv_ctx != NULL) {
-        CCCryptorRelease(*block->recv_ctx);
+        CCCryptorRelease(block->recv_ctx);
     }
     delete block;
+}
+uint8_t *
+BlockCrypt::ramdonBytes(size_t len){
+    
+    uint8_t *ptr = (uint8_t *)malloc(len);
+    // Gen random bytes
+    if  (SecRandomCopyBytes(kSecRandomDefault, len, (uint8_t *)ptr) == 0){
+        return ptr;
+    }
+    free(ptr);
+    return nil;
 }

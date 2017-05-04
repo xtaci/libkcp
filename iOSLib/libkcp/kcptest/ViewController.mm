@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-
+#import "BlockCrypt.h"
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *addr;
 @property (weak, nonatomic) IBOutlet UITextField *port;
@@ -19,7 +19,22 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    [self testCrypto];
     // Do any additional setup after loading the view, typically from a nib.
+}
+- (void)testCrypto{
+    NSData *s = [@"0123456789ABCDEF0123456789ABCDEF" dataUsingEncoding:NSUTF8StringEncoding];
+    BlockCrypt *block = BlockCrypt::blockWith(s.bytes, "aes");
+//    size_t outlen = 0;
+//     block->encrypt(s.bytes, 32, &outlen);
+//    NSData *outData = [NSData dataWithBytes:outbuffer length:outlen];
+//    NSLog(@"%@",outData);
+//    
+//    size_t xlen = 0;
+//    char *xx = block->decrypt(outbuffer, outlen, &xlen);
+//    NSData *org = [NSData dataWithBytes:xx length:xlen];
+//    NSLog(@"%@ \n %@",org,s);
+    
 }
 - (IBAction)go:(id)sender {
     //kcptest(, );
