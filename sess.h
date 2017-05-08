@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #import "BlockCrypt.h"
+void
+dump(char *tag, char *text, int len);
 class UDPSession  {
 private:
     int m_sockfd{0};

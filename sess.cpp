@@ -21,7 +21,15 @@ const size_t mtuLimit = 1500;
 
 // FEC keeps rxFECMulti* (dataShard+parityShard) ordered packets in memory
 const size_t rxFECMulti = 3;
-
+void
+dump(char *tag,  char *text, int len)
+{
+    int i;
+    printf("%s: ", tag);
+    for (i = 0; i < len; i++)
+        printf("0x%02x ", (uint8_t)text[i]);
+    printf("\n");
+}
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
@@ -269,6 +277,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
     //test no cover
+    dump("UDPSession", (char *)buf, len);
     if (sess->fec.isEnabled()) {    // append FEC header
         BlockCrypt *block = sess->block;
         if ( block != NULL){
@@ -313,7 +322,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                     byte *ptr = (byte *)malloc(ecclen + cryptHeaderSize);
                     
                     
-                    uint8_t *nonce = block->ramdonBytes(nonceSize);
+                    uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
                     memcpy(ptr, nonce, nonceSize);
                     
                     int32_t sum =  crc32(ptr +  cryptHeaderSize  , ecclen );
@@ -329,7 +338,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
             }
             
             
-            uint8_t *nonce = block->ramdonBytes(nonceSize);
+            uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
             memcpy(sess->m_buf, nonce, nonceSize);
             int32_t sum =  crc32(sess->m_buf +  cryptHeaderSize  ,len +  fecHeaderSizePlus2);
             memcpy(sess->m_buf + nonceSize, &sum, nonceSize);
@@ -352,9 +361,19 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
             
             // extend to len + fecHeaderSizePlus2
             // i.e. 4B seqid + 2B flag + 2B size
+            char header[20];
+            memset(header, 0, 20);
+            
+            uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
+            memcpy(header, nonce, nonceSize);
+           // sess->output(nonce, nonceSize);
             
             memcpy(sess->m_buf + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
             sess->fec.MarkData(sess->m_buf, static_cast<uint16_t>(len));
+            
+            int32_t sum =  crc32(sess->m_buf  ,len +  fecHeaderSizePlus2);
+            memcpy(header + nonceSize, &sum, 4);
+            sess->output(header, nonceSize + crcSize );
             sess->output(sess->m_buf, len + fecHeaderSizePlus2);
             
             // FEC calculation

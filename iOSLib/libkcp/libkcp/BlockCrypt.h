@@ -20,7 +20,7 @@ public:
     // output udp packet
     void encrypt(void *buffer, size_t length,size_t *outlen);
     void decrypt(void *buffer, size_t length,size_t *outlen);
-    uint8_t *ramdonBytes(size_t len);
+    static uint8_t *ramdonBytes(size_t len);
 private:
     BlockCrypt() = default;
     
