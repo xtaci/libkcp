@@ -24,11 +24,13 @@ static NSString *saltxor = @"sH3CIVoF#rWLtJo6";
         }else {
             keyLen = 24;
         }
-        CCCryptorStatus st = CCCryptorCreate(kCCEncrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, self.send_ctx);
+        CCCryptorRef s = self.send_ctx;
+        CCCryptorStatus st = CCCryptorCreate(kCCEncrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, &s);
         if (st != kCCSuccess){
             NSLog(@"send_ctx create error");
         }
-        st = CCCryptorCreate(kCCDecrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, self.recv_ctx);
+        CCCryptorRef r = self.send_ctx;
+        st = CCCryptorCreate(kCCDecrypt, kCCAlgorithmDES, 0, ckey, keyLen, ivPtr, &r);
         if (st != kCCSuccess){
             NSLog(@"recv_ctx create error");
         }
@@ -42,7 +44,7 @@ static NSString *saltxor = @"sH3CIVoF#rWLtJo6";
     int outLen = 0;
     NSMutableData *o = [NSMutableData dataWithLength:len];
     void *dataOut =(void *) o.bytes;
-    CCCryptorStatus st  = CCCryptorUpdate(*(self.send_ctx), dataIn, data.length, dataOut, len, &len);
+    CCCryptorStatus st  = CCCryptorUpdate(self.send_ctx, dataIn, data.length, dataOut, len, &len);
     if (st != kCCSuccess){
         NSLog(@"encrypt data error");
         return  nil;
@@ -58,7 +60,7 @@ static NSString *saltxor = @"sH3CIVoF#rWLtJo6";
     int outLen = 0;
     NSMutableData *o = [NSMutableData dataWithLength:len];
     void *dataOut =(void *) o.bytes;
-    CCCryptorStatus st  = CCCryptorUpdate(*(self.recv_ctx), dataIn, data.length, dataOut, len, &len);
+    CCCryptorStatus st  = CCCryptorUpdate(self.recv_ctx, dataIn, data.length, dataOut, len, &len);
     if (st != kCCSuccess){
         NSLog(@"encrypt data error");
         return  nil;
@@ -66,5 +68,11 @@ static NSString *saltxor = @"sH3CIVoF#rWLtJo6";
         o.length = outLen;
         return o;
     }
+}
+-(void)dealloc
+{
+    CCCryptorRelease(self.send_ctx);
+    CCCryptorRelease(self.recv_ctx);
+    //super.dealloc();
 }
 @end

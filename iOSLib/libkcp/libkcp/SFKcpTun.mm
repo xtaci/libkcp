@@ -69,7 +69,6 @@ IUINT32 iclock() {
     sess->SetMtu(self.config.mtu);
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
-    
     assert(sess != nullptr);
     [self run];
 }
@@ -101,10 +100,7 @@ IUINT32 iclock() {
     UDPSession::Destroy(sess);
 
 }
--(void)keepAlive{
-    //kcptun need
-    //s.writeFrame(newFrame(cmdNOP, 0))
-}
+
 -(void)input:(NSData*)data{
     
     assert(sess != nullptr);
