@@ -25,9 +25,19 @@ void
 dump(char *tag,  char *text, int len)
 {
     int i;
-    printf("%s: ", tag);
-    for (i = 0; i < len; i++)
-        printf("%02x ", (uint8_t)text[i]);
+    printf("%s: \n", tag);
+    for (i = 0; i < len; i++){
+        if ((i % 16) == 0 && i != 0){
+            printf("\n");
+        }
+        if ((i % 4) == 0 && ((i%16) != 0)){
+            printf(" ");
+            
+        }
+        printf("%02x", (uint8_t)text[i]);
+        
+        
+    }
     printf("\n");
 }
 
@@ -132,13 +142,16 @@ void
 UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
+        
         if (n > 0) {
+            dump("UDP Update", (char*)m_buf, n);
             //change by abigt
             bool dataValid = false;
             size_t outlen = n;
+            //size_t orgsize = n;
             char *out = (char *)m_buf;
             //nonceSize = 16
-            outlen -= nonceSize;
+            //outlen -= nonceSize;
             out += nonceSize;
             uint32_t sum = 0;
             if (block != NULL) {
@@ -163,10 +176,10 @@ UDPSession::Update(uint32_t current) noexcept {
                 
             }
             if (outlen != n) {
-                printf("decrypt error");
+                printf("decrypt error outlen= %lu n = %lu\n",outlen,n);
             }
             if (dataValid == true) {
-                memmove(m_buf, m_buf + cryptHeaderSize, cryptHeaderSize);
+                memmove(m_buf, m_buf + cryptHeaderSize, n-cryptHeaderSize);
                 KcpInPut(n - cryptHeaderSize);
             }
             
@@ -289,7 +302,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
     //test no cover
-    dump("UDPSession", (char *)buf, len);
+    dump("UDPSession kcp packet", (char *)buf, len);
     if (sess->fec.isEnabled()) {    // append FEC header
         BlockCrypt *block = sess->block;
         
@@ -376,7 +389,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
 
 ssize_t
 UDPSession::output(const void *buffer, size_t length) {
-    dump("UDPSession", (char *)buffer, length);
+    dump("UDPSession write socket", (char *)buffer, length);
     ssize_t n = send(m_sockfd, buffer, length, 0);
     if (n != length) {
         printf("not full send\n");

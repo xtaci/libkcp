@@ -145,6 +145,7 @@ IUINT32 iclock() {
             sess->Update(iclock());
             if (n > 0 ){
                 NSData *d = [NSData dataWithBytes:buf length:n];
+                NSLog(@"##### kcp recv  %@",d);
                 [self.delegate didRecevied:d];
             }
             free(buf);
