@@ -40,7 +40,7 @@ public:
     void Update(uint32_t current) noexcept;
 
     //kcpInput go UDPpsession
-    void KcpInPut(char *buffer, size_t len) noexcept;
+    void KcpInPut(size_t len) noexcept;
     // Destroy release all resource related.
     static void Destroy(UDPSession *sess);
 

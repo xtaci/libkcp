@@ -134,29 +134,41 @@ UDPSession::Update(uint32_t current) noexcept {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n > 0) {
             //change by abigt
-            //bool dataValid = false;
-            
+            bool dataValid = false;
+            size_t outlen = n;
+            char *out = (char *)m_buf;
+            //nonceSize = 16
+            outlen -= nonceSize;
+            out += nonceSize;
+            uint32_t sum = 0;
             if (block != NULL) {
-                size_t outlen = 0;
-                block->decrypt(m_buf, n, &outlen);
-                char *out = (char *)m_buf;
-                //nonceSize = 16
-                outlen -= nonceSize;
-                out += nonceSize;
                 
-                uint32_t sum = 0;
+                block->decrypt(m_buf, n, &outlen);
+                
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
                 int32_t checksum = crc32((uint8_t *)out, crcSize);
                 if (checksum == sum){
-                   
-                    KcpInPut((char *)m_buf, n - nonceSize - crcSize);
+                    dataValid = true;
                     
                 }
             }else {
-                KcpInPut((char *)m_buf, n);
+                
+                memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
+                out += crcSize;
+                int32_t checksum = crc32((uint8_t *)out, crcSize);
+                if (checksum == sum){
+                    dataValid = true;
+                }
+                
             }
-            
+            if (outlen != n) {
+                printf("decrypt error");
+            }
+            if (dataValid == true) {
+                memmove(m_buf, m_buf + cryptHeaderSize, cryptHeaderSize);
+                KcpInPut(n - cryptHeaderSize);
+            }
             
         } else {
             break;
@@ -166,7 +178,7 @@ UDPSession::Update(uint32_t current) noexcept {
     ikcp_flush(m_kcp);
 }
 void
-UDPSession::KcpInPut(char *buffer,size_t len) noexcept {
+UDPSession::KcpInPut(size_t len) noexcept {
     if (fec.isEnabled()) {
         // decode FEC packet
         auto pkt = fec.Decode(m_buf, static_cast<size_t>(len));
