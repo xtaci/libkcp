@@ -27,7 +27,7 @@ dump(char *tag,  char *text, int len)
     int i;
     printf("%s: ", tag);
     for (i = 0; i < len; i++)
-        printf("0x%02x ", (uint8_t)text[i]);
+        printf("%02x ", (uint8_t)text[i]);
     printf("\n");
 }
 
@@ -361,39 +361,54 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
             
             // extend to len + fecHeaderSizePlus2
             // i.e. 4B seqid + 2B flag + 2B size
-            char header[20];
-            memset(header, 0, 20);
+            //crypto none also add nonce and crc
             
             uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
-            memcpy(header, nonce, nonceSize);
-           // sess->output(nonce, nonceSize);
             
-            memcpy(sess->m_buf + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
-            sess->fec.MarkData(sess->m_buf, static_cast<uint16_t>(len));
+            memcpy(sess->m_buf, nonce, nonceSize);
+           
+            byte *ptr = sess->m_buf + cryptHeaderSize;
             
-            int32_t sum =  crc32(sess->m_buf  ,len +  fecHeaderSizePlus2);
-            memcpy(header + nonceSize, &sum, 4);
-            sess->output(header, nonceSize + crcSize );
-            sess->output(sess->m_buf, len + fecHeaderSizePlus2);
+            memcpy(ptr + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
+            sess->fec.MarkData(ptr, static_cast<uint16_t>(len));
+            
+            int32_t sum =  crc32(ptr  ,len +  fecHeaderSizePlus2);
+            memcpy(sess->m_buf + nonceSize, &sum, 4);
+            //dump("UDPSession header", (char *)header, nonceSize + crcSize);
+            //sess->output(header, nonceSize + crcSize );
+            sess->output(sess->m_buf, len + fecHeaderSizePlus2 + cryptHeaderSize);
+            
             
             // FEC calculation
             // copy "2B size + data" to shards
             auto slen = len + 2;
             sess->shards[sess->pkt_idx] =
-            std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize], &sess->m_buf[fecHeaderSize + slen]);
+            std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize + cryptHeaderSize], &sess->m_buf[fecHeaderSize + cryptHeaderSize + slen]);
             
             // count number of data shards
             sess->pkt_idx++;
             if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
                 sess->fec.Encode(sess->shards);
                 // send parity shards
+                //should add nonce and crc?
+                
                 for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
                     // append header to parity shards
                     // i.e. fecHeaderSize + data(2B size included)
-                    memcpy(sess->m_buf + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
-                    sess->fec.MarkFEC(sess->m_buf);
+                    // add nonce and crc
+                    uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
+                    
+                    memcpy(sess->m_buf, nonce, nonceSize);
+                    
+                    
+                    memcpy(ptr + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
+                    sess->fec.MarkFEC(ptr);
+                    
+                    int32_t sum =  crc32(ptr  ,sess->shards[i]->size()  +  fecHeaderSize);
+                    memcpy(sess->m_buf + nonceSize, &sum, 4);
+                    
                     //go version write ecc to remote?
-                    sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize);
+                    sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize + cryptHeaderSize);
                 }
                 
                 // reset indexing
@@ -412,6 +427,10 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
 
 ssize_t
 UDPSession::output(const void *buffer, size_t length) {
+    dump("UDPSession", (char *)buffer, length);
     ssize_t n = send(m_sockfd, buffer, length, 0);
+    if (n != length) {
+        printf("not full send\n");
+    }
     return n;
 }
