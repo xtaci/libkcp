@@ -12,6 +12,9 @@
 const  uint8_t iv[] =  {167, 115, 79, 156, 18, 172, 27, 1, 164, 21, 242, 193, 252, 120, 230, 107};
 BlockCrypt*
 BlockCrypt::blockWith(const void* key,const char* crypto){
+    if (strcmp(crypto, "none")) {
+        return NULL;
+    }
     BlockCrypt *block = new (BlockCrypt);
     
     

@@ -280,142 +280,79 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     dump("UDPSession", (char *)buf, len);
     if (sess->fec.isEnabled()) {    // append FEC header
         BlockCrypt *block = sess->block;
-        if ( block != NULL){
-            size_t headerSize = cryptHeaderSize + fecHeaderSizePlus2;
-            
-            
-            memcpy(sess->m_buf + headerSize, buf, static_cast<size_t>(len));
-            sess->fec.MarkData(sess->m_buf + cryptHeaderSize, static_cast<uint16_t>(len));
-            
-            //sess->m_buf reset after write?
-            //send ecc?
-            // extend to len + fecHeaderSizePlus2
-            // i.e. 4B seqid + 2B flag + 2B size
-            
-            // FEC calculation
-            // copy "2B size + data" to shards
-            auto slen = len + 2;
-            size_t newfecHeaderSize = fecHeaderSize + cryptHeaderSize;
-            sess->shards[sess->pkt_idx] =
-            std::make_shared<std::vector<byte>>(&sess->m_buf[newfecHeaderSize], &sess->m_buf[newfecHeaderSize + slen]);
-            
-            // count number of data shards
-            sess->pkt_idx++;
-            byte  *ecc[128];
-            size_t ecclenArray[128];
-            int index = 0 ;
-            //create ecc?
-            if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
-                sess->fec.Encode(sess->shards);
-                // send parity shards
-                for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
-                    // append header to parity shards
-                    // i.e. fecHeaderSize + data(2B size included)
-                    memcpy(sess->m_buf + newfecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
-                    sess->fec.MarkFEC(sess->m_buf);
-                    //go version write ecc to remote?
-                    //sess->output(sess->m_buf+cryptHeaderSize, sess->shards[i]->size() + newfecHeaderSize);
-                    //
-                    
-                    size_t ecclen = sess->shards[i]->size() + fecHeaderSize ;
-                    
-                    byte *ptr = (byte *)malloc(ecclen + cryptHeaderSize);
-                    
-                    
-                    uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
-                    memcpy(ptr, nonce, nonceSize);
-                    
-                    int32_t sum =  crc32(ptr +  cryptHeaderSize  , ecclen );
-                    memcpy(ptr + nonceSize, &sum, nonceSize);
-                    memcpy(ptr + cryptHeaderSize, sess->m_buf+cryptHeaderSize, ecclen);
-                    ecclenArray[index] = ecclen + cryptHeaderSize;
-                    ecc[index] = ptr;
-                    index++;
-                }
-                
-                // reset indexing
-                sess->pkt_idx = 0;
-            }
-            
-            
-            uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
-            memcpy(sess->m_buf, nonce, nonceSize);
-            int32_t sum =  crc32(sess->m_buf +  cryptHeaderSize  ,len +  fecHeaderSizePlus2);
-            memcpy(sess->m_buf + nonceSize, &sum, nonceSize);
-            size_t outlen = 0;
-            block->encrypt(sess->m_buf , len + headerSize, &outlen);
+        
+        
+        // extend to len + fecHeaderSizePlus2
+        // i.e. 4B seqid + 2B flag + 2B size
+        //crypto none also add nonce and crc
+        
+        uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
+        
+        memcpy(sess->m_buf, nonce, nonceSize);
+        
+        byte *ptr = sess->m_buf + cryptHeaderSize;
+        
+        memcpy(ptr + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
+        sess->fec.MarkData(ptr, static_cast<uint16_t>(len));
+        
+        int32_t sum =  crc32(ptr  ,len +  fecHeaderSizePlus2);
+        memcpy(sess->m_buf + nonceSize, &sum, 4);
+        //dump("UDPSession header", (char *)header, nonceSize + crcSize);
+        //sess->output(header, nonceSize + crcSize );
+        
+        
+        
+        // FEC calculation
+        // copy "2B size + data" to shards
+        auto slen = len + 2;
+        sess->shards[sess->pkt_idx] =
+        std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize + cryptHeaderSize], &sess->m_buf[fecHeaderSize + cryptHeaderSize + slen]);
+        size_t outlen = 0;
+        if (block != NULL) {
+            block->encrypt(sess->m_buf, len + fecHeaderSizePlus2 + cryptHeaderSize, &outlen);
             sess->output(sess->m_buf, outlen);
-            
-            //flush ecc
-            for (int i = 0 ;i< index;i++){
-                byte *ptr = ecc[i];
-                block->encrypt(ptr , ecclenArray[index], &outlen);
-                sess->output(ptr, outlen);
-                free(ptr);
-                //need add nonce and crc?
-            }
-            
-            
-            
         }else {
-            
-            // extend to len + fecHeaderSizePlus2
-            // i.e. 4B seqid + 2B flag + 2B size
-            //crypto none also add nonce and crc
-            
-            uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
-            
-            memcpy(sess->m_buf, nonce, nonceSize);
-           
-            byte *ptr = sess->m_buf + cryptHeaderSize;
-            
-            memcpy(ptr + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
-            sess->fec.MarkData(ptr, static_cast<uint16_t>(len));
-            
-            int32_t sum =  crc32(ptr  ,len +  fecHeaderSizePlus2);
-            memcpy(sess->m_buf + nonceSize, &sum, 4);
-            //dump("UDPSession header", (char *)header, nonceSize + crcSize);
-            //sess->output(header, nonceSize + crcSize );
             sess->output(sess->m_buf, len + fecHeaderSizePlus2 + cryptHeaderSize);
+        }
+        
+        
+        // count number of data shards
+        sess->pkt_idx++;
+        if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
+            sess->fec.Encode(sess->shards);
+            // send parity shards
+            //should add nonce and crc?
             
-            
-            // FEC calculation
-            // copy "2B size + data" to shards
-            auto slen = len + 2;
-            sess->shards[sess->pkt_idx] =
-            std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize + cryptHeaderSize], &sess->m_buf[fecHeaderSize + cryptHeaderSize + slen]);
-            
-            // count number of data shards
-            sess->pkt_idx++;
-            if (sess->pkt_idx == sess->dataShards) { // we've collected enough data shards
-                sess->fec.Encode(sess->shards);
-                // send parity shards
-                //should add nonce and crc?
+            for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
+                // append header to parity shards
+                // i.e. fecHeaderSize + data(2B size included)
+                // add nonce and crc
+                uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
                 
-                for (size_t i = sess->dataShards; i < sess->dataShards + sess->parityShards; i++) {
-                    // append header to parity shards
-                    // i.e. fecHeaderSize + data(2B size included)
-                    // add nonce and crc
-                    uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
-                    
-                    memcpy(sess->m_buf, nonce, nonceSize);
-                    
-                    
-                    memcpy(ptr + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
-                    sess->fec.MarkFEC(ptr);
-                    
-                    int32_t sum =  crc32(ptr  ,sess->shards[i]->size()  +  fecHeaderSize);
-                    memcpy(sess->m_buf + nonceSize, &sum, 4);
-                    
-                    //go version write ecc to remote?
+                memcpy(sess->m_buf, nonce, nonceSize);
+                
+                
+                memcpy(ptr + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
+                sess->fec.MarkFEC(ptr);
+                
+                int32_t sum =  crc32(ptr  ,sess->shards[i]->size()  +  fecHeaderSize);
+                memcpy(sess->m_buf + nonceSize, &sum, 4);
+                
+                //go version write ecc to remote?
+                if (block != NULL) {
+                    block->encrypt(sess->m_buf, sess->shards[i]->size() + fecHeaderSize + cryptHeaderSize, &outlen);
+                    sess->output(sess->m_buf,outlen);
+                }else {
                     sess->output(sess->m_buf, sess->shards[i]->size() + fecHeaderSize + cryptHeaderSize);
                 }
                 
-                // reset indexing
-                sess->pkt_idx = 0;
             }
+            
+            // reset indexing
+            sess->pkt_idx = 0;
         }
-
+        
+        
         
         
     } else { // No FEC, just send raw bytes,
