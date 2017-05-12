@@ -160,7 +160,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
-                int32_t checksum = crc32((uint8_t *)out, cryptHeaderSize);
+                int32_t checksum = crc32((uint8_t *)out, n-cryptHeaderSize);
                 if (checksum == sum){
                     dataValid = true;
                     

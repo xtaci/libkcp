@@ -163,7 +163,7 @@ IUINT32 iclock() {
                     });
                     
                 }else {
-                    NSLog(@"##### kcp recv  null\n");
+                    //NSLog(@"##### kcp recv  null\n");
                 }
                 free(buf);
             }
