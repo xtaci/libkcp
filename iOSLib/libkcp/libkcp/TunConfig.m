@@ -12,17 +12,17 @@
 
 - (instancetype)init{
     if (self = [super init]){
-        self.dataShards = 2;
-        self.parityShards = 2;
+        self.dataShards = 10;
+        self.parityShards = 3;
         
-        self.nodelay = 1;
-        self.interval = 20;
+        self.nodelay = 0;
+        self.interval = 30;
         self.resend = 2;
         self.nc = 1;
         
         self.resend = 128;
         self.rcvwnd = 128;
-        self.mtu = 1400 ;
+        self.mtu = 1350 ;
         self.iptos = 46;
         
     }

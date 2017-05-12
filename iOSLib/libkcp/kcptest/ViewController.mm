@@ -58,7 +58,8 @@
     int port = [self.port.text integerValue];
     if (self.tun == nil) {
         TunConfig *c = [[TunConfig alloc] init];
-        self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port];
+        dispatch_queue_t queue = dispatch_queue_create("test", 0);
+        self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port queue:queue];
         self.tun.delegate = self;
     }
     

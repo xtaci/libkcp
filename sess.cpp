@@ -17,12 +17,12 @@ const size_t crcSize = 4;
 const size_t cryptHeaderSize = nonceSize + crcSize;
 
 // maximum packet size
-const size_t mtuLimit = 1500;
+//const size_t mtuLimit = 1500;
 
 // FEC keeps rxFECMulti* (dataShard+parityShard) ordered packets in memory
 const size_t rxFECMulti = 3;
 void
-dump(char *tag,  char *text, int len)
+dump(char *tag,  byte *text, size_t len)
 {
     int i;
     printf("%s: \n", tag);
@@ -76,7 +76,7 @@ UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, si
     }
 
     if (dataShards > 0 && parityShards > 0) {
-        sess->fec = FEC::New(3 * (dataShards + parityShards), dataShards, parityShards);
+        sess->fec = FEC::New(rxFECMulti * (dataShards + parityShards), dataShards, parityShards);
         sess->shards.resize(dataShards + parityShards, nullptr);
         sess->dataShards = dataShards;
         sess->parityShards = parityShards;
@@ -144,7 +144,7 @@ UDPSession::Update(uint32_t current) noexcept {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         
         if (n > 0) {
-            dump("UDP Update", (char*)m_buf, n);
+            dump((char*)"UDP Update", m_buf, n);
             //change by abigt
             bool dataValid = false;
             size_t outlen = n;
@@ -160,7 +160,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
-                int32_t checksum = crc32((uint8_t *)out, crcSize);
+                int32_t checksum = crc32((uint8_t *)out, cryptHeaderSize);
                 if (checksum == sum){
                     dataValid = true;
                     
@@ -169,7 +169,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
-                int32_t checksum = crc32((uint8_t *)out, crcSize);
+                int32_t checksum = crc32((uint8_t *)out, n - cryptHeaderSize);
                 if (checksum == sum){
                     dataValid = true;
                 }
@@ -184,6 +184,9 @@ UDPSession::Update(uint32_t current) noexcept {
             }
             
         } else {
+            if (n == 0){
+                printf("UDPSession recv nil");
+            }
             break;
         }
     }
@@ -198,6 +201,7 @@ UDPSession::KcpInPut(size_t len) noexcept {
         if (pkt.flag == typeData) {
             auto ptr = pkt.data->data();
             // we have 2B size, ignore for typeData
+            dump((char*)"ikcp input data:", (byte *) (ptr + 2),  pkt.data->size() - 2);
             ikcp_input(m_kcp, (char *) (ptr + 2), pkt.data->size() - 2);
         }
         
@@ -218,7 +222,9 @@ UDPSession::KcpInPut(size_t len) noexcept {
                     // the recovered packet size must be in the correct range.
                     if (sz >= 2 && sz <= r->size()) {
                         // input proper data to kcp
+                        dump((char*)"ikcp input data2:", (byte *) (ptr + 2), sz - 2);
                         ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
+                        
                         // std::cout << "sz:" << sz << std::endl;
                     }
                 }
@@ -302,7 +308,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
     //test no cover
-    dump("UDPSession kcp packet", (char *)buf, len);
+    dump((char*)"UDPSession kcp packet", (byte*)buf, (size_t)len);
     if (sess->fec.isEnabled()) {    // append FEC header
         BlockCrypt *block = sess->block;
         
@@ -389,7 +395,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
 
 ssize_t
 UDPSession::output(const void *buffer, size_t length) {
-    dump("UDPSession write socket", (char *)buffer, length);
+    dump((char*)"UDPSession write socket", (byte *)buffer, length);
     ssize_t n = send(m_sockfd, buffer, length, 0);
     if (n != length) {
         printf("not full send\n");

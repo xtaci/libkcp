@@ -43,12 +43,13 @@ IUINT32 iclock() {
     dispatch_source_t _timer;
     dispatch_queue_t queue ;
 }
--(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port
+-(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue
 {
     if (self = [super init]){
         self.config = c;
         self.server = ip;
         self.port = port;
+        self.dispatchqueue = dqueue;
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         [self startUDPSession];
     }
@@ -105,19 +106,24 @@ IUINT32 iclock() {
     
     assert(sess != nullptr);
 
-    size_t tosend =  data.length;
-    size_t sended = 0 ;
-    char *ptr = (char *)data.bytes;
-    while (sended < tosend) {
-        
-        
-        size_t sendt = sess->Write(ptr, data.length - sended);
-        sended += sendt ;
-        ptr += sended;
-        NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
-        sess->Update(iclock());
-    }
-    NSLog(@"KCPTun sent %zu",sended);
+    
+    dispatch_async(queue, ^{
+        size_t tosend =  data.length;
+        size_t sended = 0 ;
+        char *ptr = (char *)data.bytes;
+
+        while (sended < tosend) {
+            
+            
+            size_t sendt = sess->Write(ptr, data.length - sended);
+            sended += sendt ;
+            ptr += sended;
+            NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+            sess->Update(iclock());
+        }
+    });
+  
+    //NSLog(@"KCPTun sent %zu",sended);
     
 }
 -(void)run{
@@ -136,20 +142,33 @@ IUINT32 iclock() {
     dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
     
     // Attach the block you want to run on the timer fire
+    __weak  SFKcpTun *weakSelf = self;
     dispatch_source_set_event_handler(dispatchSource, ^{
         // Your code here
-        if (sess != nil) {
-            char *buf = (char *) malloc(4096);
-            memset(buf, 0, 4096);
-            ssize_t n = sess->Read(buf, 4096);
-            sess->Update(iclock());
-            if (n > 0 ){
-                NSData *d = [NSData dataWithBytes:buf length:n];
-                NSLog(@"##### kcp recv  %@",d);
-                [self.delegate didRecevied:d];
+        SFKcpTun* strongSelf = weakSelf;
+        if (strongSelf) {
+            if (sess != nil) {
+                
+                char *buf = (char *) malloc(4096);
+                
+                memset(buf, 0, 4096);
+                ssize_t n = sess->Read(buf, 4096);
+                sess->Update(iclock());
+                if (n > 0 ){
+                    NSData *d = [NSData dataWithBytes:buf length:n];
+                    NSLog(@"##### kcp recv  %@\n",d);
+                    
+                    dispatch_async(strongSelf.dispatchqueue, ^{
+                        [strongSelf.delegate didRecevied:d];
+                    });
+                    
+                }else {
+                    NSLog(@"##### kcp recv  null\n");
+                }
+                free(buf);
             }
-            free(buf);
         }
+   
         
     });
     

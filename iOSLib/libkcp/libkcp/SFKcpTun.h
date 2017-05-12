@@ -21,7 +21,8 @@
 @property (weak,nonatomic) NSObject<SFKcpTunDelegate> *delegate;
 @property (nonatomic) int port;
 @property (nonatomic) BOOL connected;
--(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port;
+@property (nonatomic)  dispatch_queue_t dispatchqueue ;
+-(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue;
 
 -(void)startUDPSession;
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port;
