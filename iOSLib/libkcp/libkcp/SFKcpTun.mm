@@ -71,7 +71,8 @@ IUINT32 iclock() {
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
     assert(sess != nullptr);
-    [self run];
+    self.connected = true;
+    [self runTest];
 }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
 {
@@ -92,12 +93,13 @@ IUINT32 iclock() {
     sess->SetMtu(self.config.mtu);
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
-    
+    self.connected = true;
     assert(sess != nullptr);
-    [self run];
+    [self runTest];
 }
 -(void)shutdownUDPSession
 {
+    self.connected = false;
     UDPSession::Destroy(sess);
 
 }
@@ -182,5 +184,43 @@ IUINT32 iclock() {
     
     // If on iOS5 and/or using MRC, you'll need to release the source too
     //dispatch_release(dispatchSource);
+}
+-(void)runTest
+{   __weak  SFKcpTun *weakSelf = self;
+    dispatch_async(self.dispatchqueue, ^{
+        SFKcpTun* strongSelf = weakSelf;
+        while (strongSelf.connected) {
+            
+            
+            if (strongSelf) {
+                if (sess != nil) {
+                    
+                    
+                    char *buf = (char *) malloc(4096);
+                    
+                    memset(buf, 0, 4096);
+                    ssize_t n = sess->Read(buf, 4096);
+                    sess->Update(iclock());
+                    
+                    if (n > 0 ){
+                        NSData *d = [NSData dataWithBytes:buf length:n];
+                        NSLog(@"##### kcp recv  %@\n",d);
+                        
+                        dispatch_async(strongSelf.dispatchqueue, ^{
+                            [strongSelf.delegate didRecevied:d];
+                        });
+                        
+                    }else {
+                        //NSLog(@"##### kcp recv  null\n");
+                    }
+                    free(buf);
+                    usleep(33000);
+                }else {
+                    break;
+                }
+            }
+
+        }
+    });
 }
 @end
