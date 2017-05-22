@@ -42,6 +42,7 @@ IUINT32 iclock() {
 {
     dispatch_source_t _timer;
     dispatch_queue_t queue ;
+    dispatch_queue_t writequeue ;
 }
 -(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue
 {
@@ -51,6 +52,7 @@ IUINT32 iclock() {
         self.port = port;
         self.dispatchqueue = dqueue;
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        writequeue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
         [self startUDPSession];
     }
     return self;
@@ -109,7 +111,7 @@ IUINT32 iclock() {
     assert(sess != nullptr);
 
     
-    dispatch_async(queue, ^{
+    dispatch_async(writequeue, ^{
         size_t tosend =  data.length;
         size_t sended = 0 ;
         char *ptr = (char *)data.bytes;
@@ -150,6 +152,33 @@ IUINT32 iclock() {
         SFKcpTun* strongSelf = weakSelf;
         if (strongSelf) {
             if (sess != nil) {
+                
+//                @synchronized (self) {
+//                    while ([self.sendqueue count] > 0){
+//                        NSData *data = [self.sendqueue firstObject];
+//                        size_t tosend =  data.length;
+//                        size_t sended = 0 ;
+//                        char *ptr = (char *)data.bytes;
+//                        
+//                        while (sended < tosend) {
+//                            
+//                            
+//                            size_t sendt = sess->Write(ptr, data.length - sended);
+//                            sended += sendt ;
+//                            ptr += sended;
+//                            NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+//                            sess->Update(iclock());
+//                        }
+//                        [self.sendqueue removeObjectAtIndex:0];
+//                    }
+//                    
+//                }
+                
+                
+                
+                
+                
+                
                 
                 char *buf = (char *) malloc(4096);
                 
