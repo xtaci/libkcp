@@ -160,9 +160,9 @@ IUINT32 iclock() {
                     NSData *d = [NSData dataWithBytes:buf length:n];
                     NSLog(@"##### kcp recv  %@\n",d);
                     
-                    dispatch_async(strongSelf.dispatchqueue, ^{
+                    //dispatch_async(strongSelf.dispatchqueue, ^{
                         [strongSelf.delegate didRecevied:d];
-                    });
+                    //});
                     
                 }else {
                     //NSLog(@"##### kcp recv  null\n");
@@ -206,12 +206,12 @@ IUINT32 iclock() {
                         NSData *d = [NSData dataWithBytes:buf length:n];
                         NSLog(@"##### kcp recv  %@\n",d);
                         
-                        dispatch_async(strongSelf.dispatchqueue, ^{
+                        //dispatch_async(strongSelf.dispatchqueue, ^{
                             [strongSelf.delegate didRecevied:d];
-                        });
+                        //});
                         
                     }else {
-                        //NSLog(@"##### kcp recv  null\n");
+                        NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
                     usleep(33000);
