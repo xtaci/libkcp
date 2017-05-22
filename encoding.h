@@ -36,7 +36,7 @@ inline byte *encode16u(byte *p, uint16_t w)
     *(byte*)(p + 0) = (w & 255);
 	*(byte*)(p + 1) = (w >> 8);
 #else
-    *(byte*)(p) = w;
+	*(unsigned short*)(p) = w;
 #endif
     p += 2;
     return p;
