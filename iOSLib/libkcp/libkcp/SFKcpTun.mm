@@ -187,7 +187,7 @@ IUINT32 iclock() {
 }
 -(void)runTest
 {   __weak  SFKcpTun *weakSelf = self;
-    dispatch_async(self.dispatchqueue, ^{
+    dispatch_async(self->queue, ^{
         SFKcpTun* strongSelf = weakSelf;
         while (strongSelf.connected) {
             
@@ -203,12 +203,15 @@ IUINT32 iclock() {
                     sess->Update(iclock());
                     
                     if (n > 0 ){
-                        NSData *d = [NSData dataWithBytes:buf length:n];
-                        NSLog(@"##### kcp recv  %@\n",d);
+                        //NSData *d = [NSData dataWithBytes:buf length:n];
+                        NSMutableData *dx = [NSMutableData dataWithLength:n];
+                        char *ptr = (char*)dx.bytes;
+                        memcpy(ptr, buf, n);
+                        NSLog(@"##### kcp recv  %@\n",dx);
                         
-                        //dispatch_async(strongSelf.dispatchqueue, ^{
-                            [strongSelf.delegate didRecevied:d];
-                        //});
+                        dispatch_async(strongSelf.dispatchqueue, ^{
+                            [strongSelf.delegate didRecevied:dx];
+                        });
                         
                     }else {
                         NSLog(@"##### kcp recv  null\n");
