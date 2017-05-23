@@ -122,8 +122,8 @@ IUINT32 iclock() {
             size_t sendt = sess->Write(ptr, data.length - sended);
             sended += sendt ;
             ptr += sended;
-            NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
-            sess->Update(iclock());
+            //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+            //sess->Update(iclock());
         }
     });
   
@@ -236,14 +236,14 @@ IUINT32 iclock() {
                         NSMutableData *dx = [NSMutableData dataWithLength:n];
                         char *ptr = (char*)dx.bytes;
                         memcpy(ptr, buf, n);
-                        NSLog(@"##### kcp recv  %@\n",dx);
+                        //NSLog(@"##### kcp recv  %@\n",dx);
                         
                         dispatch_async(strongSelf.dispatchqueue, ^{
                             [strongSelf.delegate didRecevied:dx];
                         });
                         
                     }else {
-                        NSLog(@"##### kcp recv  null\n");
+                        //NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
                     usleep(33000);
