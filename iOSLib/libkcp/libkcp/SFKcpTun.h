@@ -21,7 +21,7 @@
 @property (weak,nonatomic) NSObject<SFKcpTunDelegate> *delegate;
 @property (nonatomic) int port;
 @property (nonatomic) BOOL connected;
-
+//callback queue
 @property (nonatomic)  dispatch_queue_t dispatchqueue ;
 -(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue;
 
@@ -29,5 +29,5 @@
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port;
 -(void)shutdownUDPSession;
 -(void)input:(NSData*)data;
-
+-(void)upDate;
 @end

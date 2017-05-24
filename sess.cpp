@@ -21,9 +21,11 @@ const size_t cryptHeaderSize = nonceSize + crcSize;
 
 // FEC keeps rxFECMulti* (dataShard+parityShard) ordered packets in memory
 const size_t rxFECMulti = 3;
+#define KCP_DEBUG 0
 void
 dump(char *tag,  byte *text, size_t len)
 {
+#if KCP_DEBUG
     int i;
     printf("%s: \n", tag);
     for (i = 0; i < len; i++){
@@ -39,8 +41,9 @@ dump(char *tag,  byte *text, size_t len)
         
     }
     printf("\n");
+#endif
 }
-
+#define debug_print(args ...) if (KCP_DEBUG) fprintf(stderr, args)
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
     struct sockaddr_in saddr;
@@ -176,7 +179,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
             }
             if (outlen != n) {
-                printf("decrypt error outlen= %lu n = %lu\n",outlen,n);
+                debug_print("decrypt error outlen= %lu n = %lu\n",outlen,n);
             }
             if (dataValid == true) {
                 memmove(m_buf, m_buf + cryptHeaderSize, n-cryptHeaderSize);
@@ -185,7 +188,7 @@ UDPSession::Update(uint32_t current) noexcept {
             
         } else {
             if (n == 0){
-                printf("UDPSession recv nil");
+                debug_print("UDPSession recv nil");
             }
             break;
         }
@@ -320,7 +323,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         uint8_t *nonce = BlockCrypt::ramdonBytes(nonceSize);
         
         memcpy(sess->m_buf, nonce, nonceSize);
-        
+        free(nonce);
         byte *ptr = sess->m_buf + cryptHeaderSize;
         
         memcpy(ptr + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
@@ -362,7 +365,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 
                 memcpy(sess->m_buf, nonce, nonceSize);
                 
-                
+                free(nonce);
                 memcpy(ptr + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                 sess->fec.MarkFEC(ptr);
                 
@@ -398,7 +401,7 @@ UDPSession::output(const void *buffer, size_t length) {
     dump((char*)"UDPSession write socket", (byte *)buffer, length);
     ssize_t n = send(m_sockfd, buffer, length, 0);
     if (n != length) {
-        printf("not full send\n");
+        debug_print("not full send\n");
     }
     return n;
 }

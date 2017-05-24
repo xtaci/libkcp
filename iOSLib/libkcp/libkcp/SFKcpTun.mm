@@ -42,7 +42,8 @@ IUINT32 iclock() {
 {
     dispatch_source_t _timer;
     dispatch_queue_t queue ;
-    dispatch_queue_t writequeue ;
+    dispatch_queue_t socketqueue ;
+    
 }
 -(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue
 {
@@ -52,7 +53,7 @@ IUINT32 iclock() {
         self.port = port;
         self.dispatchqueue = dqueue;
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        writequeue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
+        socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
         [self startUDPSession];
     }
     return self;
@@ -75,6 +76,7 @@ IUINT32 iclock() {
     assert(sess != nullptr);
     self.connected = true;
     [self runTest];
+    
 }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
 {
@@ -111,7 +113,7 @@ IUINT32 iclock() {
     assert(sess != nullptr);
 
     
-    dispatch_async(writequeue, ^{
+    dispatch_async(socketqueue, ^{
         size_t tosend =  data.length;
         size_t sended = 0 ;
         char *ptr = (char *)data.bytes;
@@ -123,6 +125,7 @@ IUINT32 iclock() {
             sended += sendt ;
             ptr += sended;
             //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+            //不能并行,效率有折扣
             //sess->Update(iclock());
         }
     });
@@ -130,90 +133,7 @@ IUINT32 iclock() {
     //NSLog(@"KCPTun sent %zu",sended);
     
 }
--(void)run{
-    //
-    //
-    // Create a dispatch source that'll act as a timer on the concurrent queue
-    // You'll need to store this somewhere so you can suspend and remove it later on
-   //
-    dispatch_source_t dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,
-                                                              queue);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-    
-    // Setup params for creation of a recurring timer
-    double interval = 33.0;
-    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, 0);
-    uint64_t intervalTime = (int64_t)(interval * NSEC_PER_MSEC);
-    dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
-    
-    // Attach the block you want to run on the timer fire
-    __weak  SFKcpTun *weakSelf = self;
-    dispatch_source_set_event_handler(dispatchSource, ^{
-        // Your code here
-        SFKcpTun* strongSelf = weakSelf;
-        if (strongSelf) {
-            if (sess != nil) {
-                
-//                @synchronized (self) {
-//                    while ([self.sendqueue count] > 0){
-//                        NSData *data = [self.sendqueue firstObject];
-//                        size_t tosend =  data.length;
-//                        size_t sended = 0 ;
-//                        char *ptr = (char *)data.bytes;
-//                        
-//                        while (sended < tosend) {
-//                            
-//                            
-//                            size_t sendt = sess->Write(ptr, data.length - sended);
-//                            sended += sendt ;
-//                            ptr += sended;
-//                            NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
-//                            sess->Update(iclock());
-//                        }
-//                        [self.sendqueue removeObjectAtIndex:0];
-//                    }
-//                    
-//                }
-                
-                
-                
-                
-                
-                
-                
-                char *buf = (char *) malloc(4096);
-                
-                memset(buf, 0, 4096);
-                ssize_t n = sess->Read(buf, 4096);
-                sess->Update(iclock());
-                if (n > 0 ){
-                    NSData *d = [NSData dataWithBytes:buf length:n];
-                    NSLog(@"##### kcp recv  %@\n",d);
-                    
-                    //dispatch_async(strongSelf.dispatchqueue, ^{
-                        [strongSelf.delegate didRecevied:d];
-                    //});
-                    
-                }else {
-                    //NSLog(@"##### kcp recv  null\n");
-                }
-                free(buf);
-            }
-        }
-   
-        
-    });
-    
-    // Start the timer
-    dispatch_resume(dispatchSource);
-    _timer = dispatchSource;
-    // ----
-    
-    // When you want to stop the timer, you need to suspend the source
-    //dispatch_suspend(dispatchSource);
-    
-    // If on iOS5 and/or using MRC, you'll need to release the source too
-    //dispatch_release(dispatchSource);
-}
+
 -(void)runTest
 {   __weak  SFKcpTun *weakSelf = self;
     dispatch_async(self->queue, ^{
@@ -232,26 +152,23 @@ IUINT32 iclock() {
                     sess->Update(iclock());
                     
                     if (n > 0 ){
-                        //NSData *d = [NSData dataWithBytes:buf length:n];
-                        NSMutableData *dx = [NSMutableData dataWithLength:n];
-                        char *ptr = (char*)dx.bytes;
-                        memcpy(ptr, buf, n);
-                        //NSLog(@"##### kcp recv  %@\n",dx);
+                        @autoreleasepool {
+                            NSData *d = [NSData dataWithBytes:buf length:n];
+                            
+                            dispatch_async(strongSelf.dispatchqueue, ^{
+                                [strongSelf.delegate didRecevied:d];
+                            });
+                        }
                         
-                        dispatch_async(strongSelf.dispatchqueue, ^{
-                            [strongSelf.delegate didRecevied:dx];
-                        });
                         
                     }else {
                         //NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
                     usleep(33000);
-                }else {
-                    break;
                 }
             }
-
+            
         }
     });
 }
