@@ -2,14 +2,26 @@ package main
 
 import (
 	"fmt"
+	"crypto/sha1"
 
 	"github.com/xtaci/kcp-go"
+	"golang.org/x/crypto/pbkdf2"
+	"time"
 )
 
 const port = ":9999"
+var (
+	// VERSION is injected by buildflags
+	VERSION = "SELFBUILD"
+	// SALT is use for pbkdf2 key expansion
+	SALT = "kcp-go"
+)
 
 func ListenTest() (*kcp.Listener, error) {
-	return kcp.ListenWithOptions(port, nil, 2, 2)
+	var block kcp.BlockCrypt
+	pass := pbkdf2.Key([]byte("testkey"), []byte(SALT), 4096, 32, sha1.New)
+	block, _ = kcp.NewNoneBlockCrypt(pass)
+	return kcp.ListenWithOptions(port, block, 2, 2)
 }
 
 func server() {
@@ -40,11 +52,14 @@ func handle_client(conn *kcp.UDPSession) {
 			panic(err)
 		}
 		count++
-		fmt.Println("received:", string(buf[:n]))
+		
+		//fmt.Println("received :" ,time.Now().Format("2006-01-02 15:04:05"),n)
+		//fmt.Println("received:", string(buf[:n]))
 		conn.Write(buf[:n])
 	}
 }
 
 func main() {
+	fmt.Println("start :" ,time.Now().Format("2006-01-02 15:04:05"))
 	server()
 }

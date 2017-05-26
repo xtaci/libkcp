@@ -125,12 +125,18 @@ IUINT32 iclock() {
             sended += sendt ;
             ptr += sended;
             //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
-            //不能并行,效率有折扣
+            //不能并行接收网络数据,效率有折扣
             //sess->Update(iclock());
         }
+        if (sended == [data length]) {
+            NSLog(@"KCPTun sent %zu",sended);
+        }else {
+            exit(-1);
+        }
+        
     });
   
-    //NSLog(@"KCPTun sent %zu",sended);
+    
     
 }
 
@@ -165,11 +171,66 @@ IUINT32 iclock() {
                         //NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
-                    usleep(33000);
+                    if (n != 1298){
+                       usleep(33000);
+                    }
+                    
                 }
             }
             
         }
     });
+}
+-(void)testPorformce
+{
+    __weak  SFKcpTun *weakSelf = self;
+    dispatch_async(self->queue, ^{
+        SFKcpTun* strongSelf = weakSelf;
+        while (strongSelf.connected) {
+            
+            
+            if (strongSelf) {
+                if (sess != nil) {
+                    
+                    
+                    @autoreleasepool {
+                        char  *ptr = (char  *)BlockCrypt::ramdonBytes(1326);
+                        
+                        size_t sendt = sess->Write(ptr, 1326);
+                        free(ptr);
+
+                    }
+                    
+                    
+                    char *buf = (char *) malloc(4096);
+                    
+                    memset(buf, 0, 4096);
+                    ssize_t n = sess->Read(buf, 4096);
+                    sess->Update(iclock());
+                    
+                    if (n > 0 ){
+                        @autoreleasepool {
+                            NSData *d = [NSData dataWithBytes:buf length:n];
+                            
+                            dispatch_async(strongSelf.dispatchqueue, ^{
+                                [strongSelf.delegate didRecevied:d];
+                            });
+                        }
+                        
+                        
+                    }else {
+                        //NSLog(@"##### kcp recv  null\n");
+                    }
+                    free(buf);
+                    if (n != 1326) {
+                        usleep(330);
+                    }
+                    
+                }
+            }
+            
+        }
+    });
+    
 }
 @end

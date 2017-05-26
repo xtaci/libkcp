@@ -13,6 +13,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *addr;
 @property (weak, nonatomic) IBOutlet UITextField *port;
 @property (strong,nonatomic) SFKcpTun *tun;
+@property (strong,nonatomic) dispatch_queue_t dispatchqueue;
+@property (nonatomic,strong) NSTimer *t;
 @end
 
 @implementation ViewController
@@ -20,6 +22,7 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    self.dispatchqueue = dispatch_queue_create("test", NULL);
     [self testCrypto];
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -55,11 +58,15 @@
 - (IBAction)go:(id)sender {
     //kcptest(, );
     const char *addr = [self.addr.text UTF8String];
-    int port = [self.port.text integerValue];
+    NSInteger port = [self.port.text integerValue];
     if (self.tun == nil) {
         TunConfig *c = [[TunConfig alloc] init];
-        dispatch_queue_t queue = dispatch_queue_create("test", 0);
-        self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port queue:queue];
+        c.dataShards = 2;
+        c.parityShards = 2;
+        c.iptos = 46;
+        
+        //c.key = [@"1234567890123456789012345678901234567890" dataUsingEncoding:NSUTF8StringEncoding];
+        self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port queue:self.dispatchqueue];
         self.tun.delegate = self;
     }
     
@@ -69,14 +76,29 @@
     if ( self.tun == nil ){
         return;
     }
-    for (int i = 0; i < 10; i++) {
-        NSString *msg = [NSString stringWithFormat:@"message %d",i];
-        NSData *d = [msg dataUsingEncoding:NSUTF8StringEncoding];
+    self.t = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(sendtest) userInfo:nil repeats:true];
+}
+- (IBAction)stop:(id)sender {
+    [self.t invalidate];
+}
+-(void)sendtest
+{
+    for (int i = 0; i < 1000; i++) {
+        char  *ptr = (char  *)BlockCrypt::ramdonBytes(40960);
+        NSData *d = [NSData dataWithBytes:(void*)ptr length:40960];
+        free(ptr);
         [self.tun input:d];
     }
 }
+-(IBAction)shutdown:(id)sender
+{
+    if (self.tun != nil){
+        [self.tun shutdownUDPSession];
+        self.tun = nil;
+    }
+}
 -(void)didRecevied:(NSData*)data{
-    NSLog(@"recv %@",data);
+    NSLog(@"recv: %lu",(unsigned long)data.length);
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

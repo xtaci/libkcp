@@ -24,7 +24,7 @@
         self.rcvwnd = 128;
         self.mtu = 1350 ;
         self.iptos = 46;
-        
+        self.crypt = @"none";
     }
     return  self;
 }
