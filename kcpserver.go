@@ -19,8 +19,9 @@ var (
 
 func ListenTest() (*kcp.Listener, error) {
 	var block kcp.BlockCrypt
-	pass := pbkdf2.Key([]byte("testkey"), []byte(SALT), 4096, 32, sha1.New)
-	block, _ = kcp.NewNoneBlockCrypt(pass)
+	pass := pbkdf2.Key([]byte("1234567890123456789012345678901234567890"), []byte(SALT), 4096, 32, sha1.New)
+	fmt.Println(pass)
+	block, _ = kcp.NewAESBlockCrypt([]byte("1234567890123456789012345678901234567890"))
 	return kcp.ListenWithOptions(port, block, 2, 2)
 }
 
@@ -54,7 +55,7 @@ func handle_client(conn *kcp.UDPSession) {
 		count++
 		
 		//fmt.Println("received :" ,time.Now().Format("2006-01-02 15:04:05"),n)
-		//fmt.Println("received:", string(buf[:n]))
+		fmt.Println("received:", string(buf[:n]))
 		conn.Write(buf[:n])
 	}
 }
