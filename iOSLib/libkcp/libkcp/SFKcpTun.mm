@@ -112,27 +112,32 @@ IUINT32 iclock() {
     
     assert(sess != nullptr);
 
-    
+    __weak  SFKcpTun *weakSelf = self;
     dispatch_async(socketqueue, ^{
+        SFKcpTun* strongSelf = weakSelf;
+        
         size_t tosend =  data.length;
         size_t sended = 0 ;
         char *ptr = (char *)data.bytes;
 
-        while (sended < tosend) {
-            
-            
-            size_t sendt = sess->Write(ptr, data.length - sended);
-            sended += sendt ;
-            ptr += sended;
-            //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
-            //不能并行接收网络数据,效率有折扣
-            //sess->Update(iclock());
+        if  (strongSelf.connected) {
+            while (sended < tosend) {
+                
+                
+                size_t sendt = sess->Write(ptr, data.length - sended);
+                sended += sendt ;
+                ptr += sended;
+                //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
+                //不能并行接收网络数据,效率有折扣
+                //sess->Update(iclock());
+            }
+            if (sended == [data length]) {
+                NSLog(@"KCPTun sent %zu",sended);
+            }else {
+                exit(-1);
+            }
         }
-        if (sended == [data length]) {
-            NSLog(@"KCPTun sent %zu",sended);
-        }else {
-            exit(-1);
-        }
+        
         
     });
   
@@ -171,7 +176,10 @@ IUINT32 iclock() {
                         //NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
-                    if (n == 0 ){
+                    if (n > 0 ){
+                       //usleep(33000);
+                       usleep(5500);
+                    }else {
                        usleep(33000);
                     }
                     
