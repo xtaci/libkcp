@@ -148,10 +148,14 @@ IUINT32 iclock() {
 -(void)runTest
 {   __weak  SFKcpTun *weakSelf = self;
     dispatch_async(self->queue, ^{
+        size_t total = 0;
+        NSDate *start = [NSDate date];
         SFKcpTun* strongSelf = weakSelf;
         while (strongSelf.connected) {
             
-            
+            if (total == 0) {
+                start = [NSDate date];
+            }
             if (strongSelf) {
                 if (sess != nil) {
                     
@@ -169,19 +173,27 @@ IUINT32 iclock() {
                             dispatch_async(strongSelf.dispatchqueue, ^{
                                 [strongSelf.delegate didRecevied:d];
                             });
+                            
+                            total += n ;
+                            NSDate *now = [NSDate date];
+                            
+                            //size_t speed =  (NSTimeInterval)total/inter;
+                            if(( [now timeIntervalSinceDate:start]> 3.0 )&&( total > 1024*1000*10))  {
+                                total = 0;
+                                usleep(1100);
+                            }else {
+                                usleep(800);
+                            }
+
                         }
                         
                         
                     }else {
-                        //NSLog(@"##### kcp recv  null\n");
+                        usleep(33000);
                     }
                     free(buf);
-                    if (n > 0 ){
-                       //usleep(33000);
-                       usleep(5500);
-                    }else {
-                       usleep(33000);
-                    }
+                    
+                    
                     
                 }
             }
