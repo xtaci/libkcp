@@ -64,8 +64,8 @@
         c.dataShards = 2;
         c.parityShards = 2;
         c.iptos = 46;
-        
-        //c.key = [@"1234567890123456789012345678901234567890" dataUsingEncoding:NSUTF8StringEncoding];
+        c.crypt = @"aes";
+        c.key = [@"1234567890123456789012345678901234567890" dataUsingEncoding:NSUTF8StringEncoding];
         self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port queue:self.dispatchqueue];
         self.tun.delegate = self;
     }
@@ -76,17 +76,20 @@
     if ( self.tun == nil ){
         return;
     }
-    self.t = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(sendtest) userInfo:nil repeats:true];
+    [self sendtest];
+    //self.t = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(sendtest) userInfo:nil repeats:true];
 }
 - (IBAction)stop:(id)sender {
     [self.t invalidate];
 }
 -(void)sendtest
 {
-    for (int i = 0; i < 1000; i++) {
-        char  *ptr = (char  *)BlockCrypt::ramdonBytes(40960);
-        NSData *d = [NSData dataWithBytes:(void*)ptr length:40960];
-        free(ptr);
+    for (int i = 0; i < 2; i++) {
+        NSString *msg = [NSString stringWithFormat:@"message %d",i];
+        NSData *d = [msg dataUsingEncoding:NSUTF8StringEncoding];
+        //char  *ptr = (char  *)BlockCrypt::ramdonBytes(40960);
+        //NSData *d = [NSData dataWithBytes:(void*)ptr length:40960];
+        //free(ptr);
         [self.tun input:d];
     }
 }
@@ -98,7 +101,7 @@
     }
 }
 -(void)didRecevied:(NSData*)data{
-    NSLog(@"recv: %lu",(unsigned long)data.length);
+    NSLog(@"recv: %@",data);
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

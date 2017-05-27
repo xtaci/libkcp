@@ -171,7 +171,7 @@ IUINT32 iclock() {
                         //NSLog(@"##### kcp recv  null\n");
                     }
                     free(buf);
-                    if (n != 1298){
+                    if (n == 0 ){
                        usleep(33000);
                     }
                     

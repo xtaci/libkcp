@@ -19,8 +19,8 @@ var (
 
 func ListenTest() (*kcp.Listener, error) {
 	var block kcp.BlockCrypt
-	pass := pbkdf2.Key([]byte("1234567890123456789012345678901234567890"), []byte(SALT), 4096, 32, sha1.New)
-	fmt.Println(pass)
+	pass := pbkdf2.Key([]byte("it's a secrect"), []byte(SALT), 4096, 32, sha1.New)
+	fmt.Println("key",pass)
 	block, _ = kcp.NewAESBlockCrypt([]byte("1234567890123456789012345678901234567890"))
 	return kcp.ListenWithOptions(port, block, 2, 2)
 }
