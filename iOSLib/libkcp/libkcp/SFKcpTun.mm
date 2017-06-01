@@ -256,4 +256,13 @@ IUINT32 iclock() {
     });
     
 }
+-(NSString*)localAddress{
+    if (sess != nil) {
+        char *addr =  sess->getLocalIPAddr();
+        NSString *addrs = [NSString stringWithUTF8String:addr];
+        return addrs;
+    }else {
+        return @"";
+    }
+}
 @end

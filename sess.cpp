@@ -60,6 +60,10 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+    
+    
+   
+    
     if (sockfd == -1) {
         return nullptr;
     }
@@ -68,6 +72,14 @@ UDPSession::Dial(const char *ip, uint16_t port) {
         return nullptr;
     }
 
+    struct sockaddr_in localAddress;
+    //socklen_t addressLength;
+    socklen_t addressLength = sizeof(localAddress);
+    getsockname(sockfd, (struct sockaddr*)&localAddress,   \
+                &addressLength);
+    printf("local address: %s\n", inet_ntoa( localAddress.sin_addr));
+    printf("local port: %d\n", (int) ntohs(localAddress.sin_port));
+    
     return UDPSession::createSession(sockfd);
 }
 
@@ -290,7 +302,16 @@ UDPSession::SetDSCP(int iptos) noexcept {
     iptos = (iptos << 2) & 0xFF;
     return setsockopt(this->m_sockfd, IPPROTO_IP, IP_TOS, &iptos, sizeof(iptos));
 }
-
+char * UDPSession::getLocalIPAddr() noexcept{
+    struct sockaddr_in localAddress;
+    //socklen_t addressLength;
+    socklen_t addressLength = sizeof(localAddress);
+    getsockname(this->m_sockfd, (struct sockaddr*)&localAddress,   \
+                &addressLength);
+    printf("local address: %s\n", inet_ntoa( localAddress.sin_addr));
+    printf("local port: %d\n", (int) ntohs(localAddress.sin_port));
+    return inet_ntoa( localAddress.sin_addr);
+}
 void
 UDPSession::SetStreamMode(bool enable) noexcept {
     if (enable) {
