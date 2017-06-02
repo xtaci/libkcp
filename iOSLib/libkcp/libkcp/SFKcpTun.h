@@ -31,4 +31,5 @@
 -(void)input:(NSData*)data;
 -(void)upDate;
 -(NSString*)localAddress;
+-(BOOL)useCell;
 @end
