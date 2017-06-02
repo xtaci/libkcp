@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "69639BD41EE1AAC100893D18"
-               BuildableName = "kcpOSX.framework"
+               BuildableName = "kcp.framework"
                BlueprintName = "kcpOSX"
                ReferencedContainer = "container:libkcp.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "69639BD41EE1AAC100893D18"
-            BuildableName = "kcpOSX.framework"
+            BuildableName = "kcp.framework"
             BlueprintName = "kcpOSX"
             ReferencedContainer = "container:libkcp.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "69639BD41EE1AAC100893D18"
-            BuildableName = "kcpOSX.framework"
+            BuildableName = "kcp.framework"
             BlueprintName = "kcpOSX"
             ReferencedContainer = "container:libkcp.xcodeproj">
          </BuildableReference>

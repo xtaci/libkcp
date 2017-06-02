@@ -40,7 +40,7 @@
 		6959B7471EBB7DEC00B0BC58 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */; };
 		6959B7481EBB7DEC00B0BC58 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 6959B7461EBB7DEC00B0BC58 /* CRC32.h */; };
 		6959B74A1EBB8B0C00B0BC58 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6959B7491EBB8B0C00B0BC58 /* Security.framework */; };
-		69639BD91EE1AAC100893D18 /* kcpOSX.h in Headers */ = {isa = PBXBuildFile; fileRef = 69639BD71EE1AAC100893D18 /* kcpOSX.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69639BD91EE1AAC100893D18 /* kcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 69639BD71EE1AAC100893D18 /* kcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69639BDD1EE1AAD700893D18 /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69639BDE1EE1AAE000893D18 /* SFKcpTun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC69F1EB30985008A030D /* SFKcpTun.mm */; };
 		69639BDF1EE1AAE400893D18 /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -61,7 +61,6 @@
 		69639BEE1EE1AB3100893D18 /* sess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3301EB2EEBD006A4B9D /* sess.cpp */; };
 		69639BEF1EE1AB3500893D18 /* ikcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3401EB2EF11006A4B9D /* ikcp.h */; };
 		69639BF01EE1AB3900893D18 /* ikcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32E1EB2EEB0006A4B9D /* ikcp.c */; };
-		69639BF11EE1AB3D00893D18 /* kcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3241EB2EE59006A4B9D /* kcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69639BF21EE1AB4C00893D18 /* fec.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3421EB2EF1C006A4B9D /* fec.h */; };
 		69639BF31EE1AB5000893D18 /* fec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32C1EB2EE98006A4B9D /* fec.cpp */; };
 		69639BF41EE1AB5500893D18 /* BlockCrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695165F31EBB2663008DCF66 /* BlockCrypt.cpp */; };
@@ -143,7 +142,7 @@
 		6959B7461EBB7DEC00B0BC58 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		6959B7491EBB8B0C00B0BC58 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		69639BD51EE1AAC100893D18 /* kcp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = kcp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		69639BD71EE1AAC100893D18 /* kcpOSX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcpOSX.h; sourceTree = "<group>"; };
+		69639BD71EE1AAC100893D18 /* kcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcp.h; sourceTree = "<group>"; };
 		69639BD81EE1AAC100893D18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69639BF81EE1ABA200893D18 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
@@ -275,7 +274,7 @@
 		69639BD61EE1AAC100893D18 /* kcpOSX */ = {
 			isa = PBXGroup;
 			children = (
-				69639BD71EE1AAC100893D18 /* kcpOSX.h */,
+				69639BD71EE1AAC100893D18 /* kcp.h */,
 				69639BD81EE1AAC100893D18 /* Info.plist */,
 			);
 			path = kcpOSX;
@@ -323,14 +322,13 @@
 				69639BED1EE1AB2D00893D18 /* sess.h in Headers */,
 				69639BEC1EE1AB2800893D18 /* reedsolomon.h in Headers */,
 				69639BDD1EE1AAD700893D18 /* SFKcpTun.h in Headers */,
-				69639BD91EE1AAC100893D18 /* kcpOSX.h in Headers */,
+				69639BD91EE1AAC100893D18 /* kcp.h in Headers */,
 				69639BF21EE1AB4C00893D18 /* fec.h in Headers */,
 				69639BDF1EE1AAE400893D18 /* TunConfig.h in Headers */,
 				69639BEA1EE1AB1E00893D18 /* matrix.h in Headers */,
 				69639BE11EE1AAF500893D18 /* encoding.h in Headers */,
 				69639BE81EE1AB1700893D18 /* inversion_tree.h in Headers */,
 				69639BE31EE1AAFD00893D18 /* galois_noasm.h in Headers */,
-				69639BF11EE1AB3D00893D18 /* kcp.h in Headers */,
 				69639BE61EE1AB0D00893D18 /* galois.h in Headers */,
 				69639BF71EE1AB6100893D18 /* CRC32.h in Headers */,
 				69639BEF1EE1AB3500893D18 /* ikcp.h in Headers */,
@@ -802,6 +800,7 @@
 				69639BDB1EE1AAC100893D18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
