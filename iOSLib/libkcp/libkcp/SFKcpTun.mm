@@ -178,18 +178,18 @@ IUINT32 iclock() {
                             NSDate *now = [NSDate date];
                             
                             //size_t speed =  (NSTimeInterval)total/inter;
-                            if(( [now timeIntervalSinceDate:start]> 3.0 )&&( total > 1024*1000*10))  {
-                                total = 0;
-                                usleep(1100);
-                            }else {
-                                usleep(800);
-                            }
+//                            if(( [now timeIntervalSinceDate:start]> 3.0 )&&( total > 1024*1000*10))  {
+//                                total = 0;
+//                                usleep(1100);
+//                            }else {
+//                                usleep(800);
+//                            }
 
                         }
                         
                         
                     }else {
-                        usleep(33000);
+                        usleep(3300);
                     }
                     free(buf);
                     
