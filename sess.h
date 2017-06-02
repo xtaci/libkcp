@@ -53,6 +53,7 @@ public:
     // Set DSCP value
     int SetDSCP(int dscp) noexcept;
 
+    char *getLocalIPAddr() noexcept;
    
     // SetStreamMode toggles the stream mode on/off
     void SetStreamMode(bool enable) noexcept;

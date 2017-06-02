@@ -180,8 +180,15 @@ IUINT32 iclock() {
                             //size_t speed =  (NSTimeInterval)total/inter;
 //                            if(( [now timeIntervalSinceDate:start]> 3.0 )&&( total > 1024*1000*10))  {
 //                                total = 0;
+
 //                                usleep(1100);
 //                            }else {
+
+//                                usleep(3300);
+//                            }else {
+//                                if ( [now timeIntervalSinceDate:start]> 3.0 ){
+//                                    total = 0 ;
+//                                }
 //                                usleep(800);
 //                            }
 
@@ -189,7 +196,9 @@ IUINT32 iclock() {
                         
                         
                     }else {
+
                         usleep(3300);
+
                     }
                     free(buf);
                     
@@ -252,5 +261,14 @@ IUINT32 iclock() {
         }
     });
     
+}
+-(NSString*)localAddress{
+    if (sess != nil) {
+        char *addr =  sess->getLocalIPAddr();
+        NSString *addrs = [NSString stringWithUTF8String:addr];
+        return addrs;
+    }else {
+        return @"";
+    }
 }
 @end
