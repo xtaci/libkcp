@@ -213,7 +213,7 @@ UDPSession::KcpInPut(size_t len) noexcept {
     if (fec.isEnabled()) {
         // decode FEC packet
         auto pkt = fec.Decode(m_buf, static_cast<size_t>(len));
-        if (pkt.flag == typeData) {
+        if (pkt.flag == kcptypeData) {
             auto ptr = pkt.data->data();
             // we have 2B size, ignore for typeData
             dump((char*)"ikcp input data:", (byte *) (ptr + 2),  pkt.data->size() - 2);
@@ -221,7 +221,7 @@ UDPSession::KcpInPut(size_t len) noexcept {
         }
         
         // allow FEC packet processing with correct flags.
-        if (pkt.flag == typeData || pkt.flag == typeFEC) {
+        if (pkt.flag == kcptypeData || pkt.flag == typeFEC) {
             // input to FEC, and see if we can recover data.
             auto recovered = fec.Input(pkt);
             

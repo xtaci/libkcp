@@ -47,7 +47,7 @@ FEC::Decode(byte *data, size_t sz) {
 void
 FEC::MarkData(byte *data, uint16_t sz) {
     data = encode32u(data,this->next);
-    data = encode16u(data,typeData);
+    data = encode16u(data,kcptypeData);
     encode16u(data,static_cast<uint16_t>(sz + 2)); // including size itself
     this->next++;
 }
@@ -125,7 +125,7 @@ FEC::Input(fecPacket &pkt) {
                 shardVec[seqid%totalShards] = rx[i].data;
                 shardflag[seqid%totalShards] = true;
                 numshard++;
-                if (rx[i].flag == typeData) {
+                if (rx[i].flag == kcptypeData) {
                     numDataShard++;
                 }
                 if (numshard == 1) {
