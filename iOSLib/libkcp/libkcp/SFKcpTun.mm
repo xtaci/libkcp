@@ -200,10 +200,10 @@ IUINT32 iclock() {
 
                         }
                         
-                        
+                        usleep(2200);
                     }else {
 
-                        usleep(3300);
+                        usleep(33000);
 
                     }
                     free(buf);

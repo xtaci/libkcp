@@ -13,5 +13,7 @@
 #include <stdlib.h>
 int32_t crc32(uint8_t *bytes, size_t len);
 
-
+unsigned int cal_crc(unsigned char *ptr, unsigned char len);
+uint32_t
+crc32_kr(uint32_t crc, const uint8_t *buf, size_t size);
 #endif /* CRC32_h */

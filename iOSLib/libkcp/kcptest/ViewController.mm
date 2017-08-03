@@ -24,7 +24,17 @@
     [super viewDidLoad];
     self.dispatchqueue = dispatch_queue_create("test", NULL);
     [self testCrypto];
+    [self testSodium];
     // Do any additional setup after loading the view, typically from a nib.
+}
+-(void)testCrypto2
+{
+    
+}
+- (void)testSodium
+{
+    //sodium_init();
+    //NSData *s = [@"0123456789ABCDEF0123456789ABCDEF" dataUsingEncoding:NSUTF8StringEncoding];
 }
 - (void)testCrypto{
     NSData *s = [@"0123456789ABCDEF0123456789ABCDEF" dataUsingEncoding:NSUTF8StringEncoding];

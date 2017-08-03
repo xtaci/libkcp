@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "kcp.h"
+#include "sodium.h"
 @interface ViewController : UIViewController<SFKcpTunDelegate>
 
 

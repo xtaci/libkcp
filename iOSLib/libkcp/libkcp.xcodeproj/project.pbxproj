@@ -145,6 +145,7 @@
 		69639BD71EE1AAC100893D18 /* kcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcp.h; sourceTree = "<group>"; };
 		69639BD81EE1AAC100893D18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69639BF81EE1ABA200893D18 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		698D5CFB1F0A0E6B008C2335 /* Sodium.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sodium.framework; sourceTree = "<group>"; };
 		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
 		69FFC69F1EB30985008A030D /* SFKcpTun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SFKcpTun.mm; path = libkcp/SFKcpTun.mm; sourceTree = SOURCE_ROOT; };
 		69FFC6A31EB309E8008A030D /* TunConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TunConfig.h; path = libkcp/TunConfig.h; sourceTree = "<group>"; };
@@ -264,6 +265,7 @@
 		692AE36F1EB2F191006A4B9D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				698D5CFB1F0A0E6B008C2335 /* Sodium.framework */,
 				69639BF81EE1ABA200893D18 /* Security.framework */,
 				6959B7491EBB8B0C00B0BC58 /* Security.framework */,
 				692AE3701EB2F191006A4B9D /* libc++.tbd */,
@@ -659,6 +661,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = libkcp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -668,6 +674,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 			};
 			name = Debug;
 		};
@@ -682,6 +689,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = libkcp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -690,6 +701,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 			};
 			name = Release;
 		};
@@ -702,6 +714,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcptest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 			};
 			name = Debug;
 		};
@@ -714,6 +727,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcptest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 			};
 			name = Release;
 		};

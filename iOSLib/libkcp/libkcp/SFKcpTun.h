@@ -29,7 +29,7 @@
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port;
 -(void)shutdownUDPSession;
 -(void)input:(NSData*)data;
--(void)upDate;
+//-(void)upDate;
 -(NSString*)localAddress;
 -(BOOL)useCell;
 @end

@@ -5,6 +5,7 @@
 #include <sys/fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <errno.h>
 #include <cstring>
 #include "CRC32.h"
 // 16-bytes magic number for each packet
@@ -157,7 +158,10 @@ void
 UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
-        
+        if (n < 0) {
+            perror("fopen( \"nulltest.txt\", \"r\" )");
+            debug_print("kcp udp socket read error");
+        }
         if (n > 0) {
             dump((char*)"UDP Update", m_buf, n);
             //change by abigt
@@ -175,7 +179,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
-                int32_t checksum = crc32((uint8_t *)out, n-cryptHeaderSize);
+                int32_t checksum = crc32_kr(0,(uint8_t *)out, n-cryptHeaderSize);
                 if (checksum == sum){
                     dataValid = true;
                     
@@ -184,7 +188,7 @@ UDPSession::Update(uint32_t current) noexcept {
                 
                 memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
                 out += crcSize;
-                int32_t checksum = crc32((uint8_t *)out, n - cryptHeaderSize);
+                int32_t checksum = crc32_kr(0,(uint8_t *)out, n - cryptHeaderSize);
                 if (checksum == sum){
                     dataValid = true;
                 }
@@ -350,7 +354,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         memcpy(ptr + fecHeaderSizePlus2, buf, static_cast<size_t>(len));
         sess->fec.MarkData(ptr, static_cast<uint16_t>(len));
         
-        int32_t sum =  crc32(ptr  ,len +  fecHeaderSizePlus2);
+        int32_t sum =  crc32_kr(0,ptr  ,len +  fecHeaderSizePlus2);
         memcpy(sess->m_buf + nonceSize, &sum, 4);
         //dump("UDPSession header", (char *)header, nonceSize + crcSize);
         //sess->output(header, nonceSize + crcSize );
@@ -390,7 +394,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
                 memcpy(ptr + fecHeaderSize, sess->shards[i]->data(), sess->shards[i]->size());
                 sess->fec.MarkFEC(ptr);
                 
-                int32_t sum =  crc32(ptr  ,sess->shards[i]->size()  +  fecHeaderSize);
+                int32_t sum =  crc32_kr(0,ptr  ,sess->shards[i]->size()  +  fecHeaderSize);
                 memcpy(sess->m_buf + nonceSize, &sum, 4);
                 
                 //go version write ecc to remote?
@@ -423,6 +427,10 @@ UDPSession::output(const void *buffer, size_t length) {
     ssize_t n = send(m_sockfd, buffer, length, 0);
     if (n != length) {
         debug_print("not full send\n");
+    }
+    if (n==-1) {
+        perror("fopen( \"nulltest.txt\", \"r\" )");
+        
     }
     return n;
 }

@@ -11,6 +11,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 
 #include <stdio.h>
+//#include "sodium.h"
 class BlockCrypt  {
 private:
     CCCryptorRef send_ctx;
@@ -27,4 +28,5 @@ private:
     ~BlockCrypt() = default;
     static void Destroy(BlockCrypt *block);
 };
+
 #endif /* BlockCrypt_hpp */
