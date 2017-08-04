@@ -105,7 +105,67 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     self.connected = true;
     assert(sess != nullptr);
+    
     [self runTest];
+}
+-(void)runDispatchTimer
+{
+    // Create a dispatch source that'll act as a timer on the concurrent queue
+    // You'll need to store this somewhere so you can suspend and remove it later on
+    dispatch_source_t dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,self->queue);
+    
+    // Setup params for creation of a recurring timer
+    double interval = 3300.0;
+    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, 0);
+    uint64_t intervalTime = (int64_t)(interval * NSEC_PER_MSEC);
+    dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
+    
+    // Attach the block you want to run on the timer fire
+    dispatch_source_set_event_handler(dispatchSource, ^{
+        // Your code here
+        
+        
+        if (sess != nil) {
+            
+            
+            char *buf = (char *) malloc(4096);
+            
+            memset(buf, 0, 4096);
+            ssize_t n = sess->Read(buf, 4096);
+            sess->Update(iclock());
+            
+            if (n > 0 ){
+                @autoreleasepool {
+                    NSData *d = [NSData dataWithBytes:buf length:n];
+                    
+                    dispatch_async(self.dispatchqueue, ^{
+                        [self.delegate didRecevied:d];
+                    });
+                    
+                    // total += n ;
+                    //NSDate *now = [NSDate date];
+                    
+                    
+                    
+                }
+            }
+            free(buf);
+            
+            
+            
+        }
+    });
+    
+    // Start the timer
+    dispatch_resume(dispatchSource);
+    
+    // ----
+    
+    // When you want to stop the timer, you need to suspend the source
+    //dispatch_suspend(dispatchSource);
+    
+    // If on iOS5 and/or using MRC, you'll need to release the source too
+    
 }
 -(void)shutdownUDPSession
 {
@@ -162,6 +222,8 @@ IUINT32 iclock() {
             if (total == 0) {
                 start = [NSDate date];
             }
+            int zeroCount = 0;
+            int valueCont = 0 ;
             if (strongSelf) {
                 if (sess != nil) {
                     
@@ -181,30 +243,49 @@ IUINT32 iclock() {
                             });
                             
                             total += n ;
-                            NSDate *now = [NSDate date];
-                            
-                            //size_t speed =  (NSTimeInterval)total/inter;
-//                            if(( [now timeIntervalSinceDate:start]> 3.0 )&&( total > 1024*1000*10))  {
-//                                total = 0;
-
-//                                usleep(1100);
-//                            }else {
-
-//                                usleep(3300);
-//                            }else {
-//                                if ( [now timeIntervalSinceDate:start]> 3.0 ){
-//                                    total = 0 ;
-//                                }
-//                                usleep(800);
-//                            }
+                            //NSDate *now = [NSDate date];
 
                         }
+
+#include "TargetConditionals.h"
+#if TARGET_IPHONE_SIMULATOR
+                            // iOS Simulator
+#elif TARGET_OS_IPHONE
+                        if (valueCont > 10) {
+                            valueCont = 0;
+                            usleep(10000);
+                        }else {
+                            usleep(1000);
+                        }
                         
-                        usleep(2200);
+                        valueCont++;               // iOS device
+#elif TARGET_OS_MAC
+                            // Other kinds of Mac OS
+#else
+#   error "Unknown Apple platform"
+#endif
+                        
+                       
                     }else {
+#if TARGET_IPHONE_SIMULATOR
+                        // iOS Simulator
+#elif TARGET_OS_IPHONE
+                        if (zeroCount > 3) {
+                            zeroCount = 0;
+                            usleep(3300);
+                        }else {
+                            usleep(1000);
+                        }
+                        zeroCount++;
 
-                        usleep(33000);
-
+              // iOS device
+#elif TARGET_OS_MAC
+                        usleep(3000);
+                        // Other kinds of Mac OS
+#else
+#   error "Unknown Apple platform"
+#endif
+                        
                     }
                     free(buf);
                     
