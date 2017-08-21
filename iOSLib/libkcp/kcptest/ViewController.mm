@@ -15,17 +15,64 @@
 @property (strong,nonatomic) SFKcpTun *tun;
 @property (strong,nonatomic) dispatch_queue_t dispatchqueue;
 @property (nonatomic,strong) NSTimer *t;
+
 @end
 
 @implementation ViewController
-
+{
+    NSDate *last;
+    dispatch_source_t dispatchSource;
+    dispatch_queue_t tqueue ;
+    dispatch_queue_t socketqueue ;
+    
+}
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    self.dispatchqueue = dispatch_queue_create("test", NULL);
-    [self testCrypto];
-    [self testSodium];
+//    self.dispatchqueue = dispatch_queue_create("test", NULL);
+//    [self testCrypto];
+//    [self testSodium];
+    tqueue  = dispatch_queue_create("test.yarshure", DISPATCH_QUEUE_SERIAL);
     // Do any additional setup after loading the view, typically from a nib.
+}
+-(IBAction)tThread:(id)sender{
+    last = [NSDate date];
+    [NSThread detachNewThreadWithBlock:^{
+        for (; ; ) {
+            NSDate *n = [NSDate date];
+            //NSLog(@"timer come %0.6f",[n timeIntervalSinceDate:last]);
+            last = n;
+            [NSThread sleepForTimeInterval:0.003];
+        }
+    }];
+}
+-(IBAction)testTimer:(id)sender{
+    
+    // Create a dispatch source that'll act as a timer on the concurrent queue
+    // You'll need to store this somewhere so you can suspend and remove it later on
+    NSLog(@"go");
+    dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,tqueue);
+    last = [NSDate date];
+    // Setup params for creation of a recurring timer
+    double interval = 3.0;
+    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, 0);
+    uint64_t intervalTime = (int64_t)(interval * NSEC_PER_MSEC);
+    dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
+    
+    // Attach the block you want to run on the timer fire
+    dispatch_source_set_event_handler(dispatchSource, ^{
+        // Your code here
+        NSDate *n = [NSDate date];
+        //NSLog(@"timer come %0.6f",[n timeIntervalSinceDate:last]);
+        last = n;
+    });
+    
+    
+    dispatch_resume(dispatchSource);
+    
+    
+    
+    
 }
 -(void)testCrypto2
 {

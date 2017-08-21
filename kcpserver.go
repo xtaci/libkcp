@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"crypto/sha1"
+		"crypto/sha1"
 
 	"github.com/xtaci/kcp-go"
 	"golang.org/x/crypto/pbkdf2"
