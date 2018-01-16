@@ -51,13 +51,13 @@ IUINT32 iclock() {
     dispatch_queue_t socketqueue ;
     
 }
--(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue delegate:(NSObject<SFKcpTunDelegate>*)delegate
+-(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue 
 {
     if (self = [super init]){
         self.config = c;
         self.server = ip;
         self.port = port;
-        self.delegate = delegate;
+       
         self.dispatchqueue = dqueue;
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
@@ -83,13 +83,23 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
    
     self.connected = true;
-    [self runTest];
-    __weak  SFKcpTun *weakSelf = self;
-    dispatch_async(self.dispatchqueue, ^{
-         [weakSelf.delegate connected:weakSelf];
-    });
+  
    
 }
+-(void)startWith:(tunConnected)connectd recv:(didRecvData)recv disConnect:(tunConnected)disConnect
+    {
+        self.tunConnected = connectd;
+        self.recvData = recv;
+        self.disConnected = disConnect;
+        [self runTest];
+        __weak  SFKcpTun *weakSelf = self;
+        if ( self.connected )  {
+            dispatch_async(self.dispatchqueue, ^{
+                weakSelf.tunConnected(weakSelf);
+            });
+        }
+        
+    }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
 {
     if (sess != nil) {
@@ -113,10 +123,7 @@ IUINT32 iclock() {
    
     
     [self runTest];
-    __weak  SFKcpTun *weakSelf = self;
-    dispatch_async(self.dispatchqueue, ^{
-        [weakSelf.delegate connected:weakSelf];
-    });
+    
 }
 -(void)runDispatchTimer
 {
@@ -131,6 +138,7 @@ IUINT32 iclock() {
     dispatch_source_set_timer(dispatchSource, startTime, intervalTime, 0);
     
     // Attach the block you want to run on the timer fire
+    __weak  SFKcpTun *weakSelf = self;
     dispatch_source_set_event_handler(dispatchSource, ^{
         // Your code here
         
@@ -149,7 +157,8 @@ IUINT32 iclock() {
                     NSData *d = [NSData dataWithBytes:buf length:n];
                     
                     dispatch_async(self.dispatchqueue, ^{
-                        [self.delegate didRecevied:d];
+                        weakSelf.recvData(weakSelf, d);
+                       
                     });
                     
                     // total += n ;
@@ -249,7 +258,8 @@ IUINT32 iclock() {
                             NSData *d = [NSData dataWithBytes:buf length:n];
                             
                             dispatch_async(strongSelf.dispatchqueue, ^{
-                                [strongSelf.delegate didRecevied:d];
+                                weakSelf.recvData(self, d);
+                                
                             });
                             
                             total += n ;
@@ -339,7 +349,8 @@ IUINT32 iclock() {
                             NSData *d = [NSData dataWithBytes:buf length:n];
                             
                             dispatch_async(strongSelf.dispatchqueue, ^{
-                                [strongSelf.delegate didRecevied:d];
+                                weakSelf.recvData(weakSelf, d);
+                                
                             });
                         }
                         
