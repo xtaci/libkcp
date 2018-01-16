@@ -51,12 +51,13 @@ IUINT32 iclock() {
     dispatch_queue_t socketqueue ;
     
 }
--(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue
+-(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue delegate:(NSObject<SFKcpTunDelegate>*)delegate
 {
     if (self = [super init]){
         self.config = c;
         self.server = ip;
         self.port = port;
+        self.delegate = delegate;
         self.dispatchqueue = dqueue;
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
@@ -66,23 +67,28 @@ IUINT32 iclock() {
 }
 -(void)startUDPSession
 {
-    if (self.config.key.length > 0){
+    if (self.config.key.length > 0 && ![self.config.crypt isEqualToString:@"none"]){
         
         BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
         sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
     }else {
         sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
     }
+    assert(sess != nullptr);
     
     sess->NoDelay(self.config.nodelay, self.config.interval, self.config.resend, self.config.nc);
     sess->WndSize(self.config.sndwnd, self.config.rcvwnd);
     sess->SetMtu(self.config.mtu);
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
-    assert(sess != nullptr);
+   
     self.connected = true;
     [self runTest];
-    
+    __weak  SFKcpTun *weakSelf = self;
+    dispatch_async(self.dispatchqueue, ^{
+         [weakSelf.delegate connected:weakSelf];
+    });
+   
 }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
 {
@@ -97,16 +103,20 @@ IUINT32 iclock() {
         sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
     }
     
-  
+    assert(sess != nullptr);
     sess->NoDelay(self.config.nodelay, self.config.interval, self.config.resend, self.config.nc);
     sess->WndSize(self.config.sndwnd, self.config.rcvwnd);
     sess->SetMtu(self.config.mtu);
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
     self.connected = true;
-    assert(sess != nullptr);
+   
     
     [self runTest];
+    __weak  SFKcpTun *weakSelf = self;
+    dispatch_async(self.dispatchqueue, ^{
+        [weakSelf.delegate connected:weakSelf];
+    });
 }
 -(void)runDispatchTimer
 {

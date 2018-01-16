@@ -159,8 +159,10 @@ UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n < 0) {
-            perror("fopen( \"nulltest.txt\", \"r\" )");
+            //perror("read fopen( \"nulltest.txt\", \"r\" )");
+            
             debug_print("kcp udp socket read error");
+            break;
         }
         if (n > 0) {
             dump((char*)"UDP Update", m_buf, n);
@@ -429,7 +431,7 @@ UDPSession::output(const void *buffer, size_t length) {
         debug_print("not full send\n");
     }
     if (n==-1) {
-        perror("fopen( \"nulltest.txt\", \"r\" )");
+        perror("send error fopen( \"nulltest.txt\", \"r\" )");
         
     }
     return n;
