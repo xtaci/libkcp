@@ -86,7 +86,7 @@ IUINT32 iclock() {
   
    
 }
--(void)startWith:(tunConnected)connectd recv:(didRecvData)recv disConnect:(tunConnected)disConnect
+-(void)startWith:(tunConnected)connectd recv:(didRecvdata)recv disConnect:(tunConnected)disConnect
     {
         self.tunConnected = connectd;
         self.recvData = recv;
