@@ -97,6 +97,9 @@ UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, si
         sess->dataShards = dataShards;
         sess->parityShards = parityShards;
     }
+    
+    sess->block = NULL;
+    printf("sess->block:%p",sess->block);
     return sess;
 };
 // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption with block
@@ -162,7 +165,7 @@ UDPSession::Update(uint32_t current) noexcept {
             //perror("read fopen( \"nulltest.txt\", \"r\" )");
             
             debug_print("kcp udp socket read error");
-            break;
+            //break;
         }
         if (n > 0) {
             dump((char*)"UDP Update", m_buf, n);
@@ -369,7 +372,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
         sess->shards[sess->pkt_idx] =
         std::make_shared<std::vector<byte>>(&sess->m_buf[fecHeaderSize + cryptHeaderSize], &sess->m_buf[fecHeaderSize + cryptHeaderSize + slen]);
         size_t outlen = 0;
-        if (block != NULL) {
+        if (block != NULL ) {
             block->encrypt(sess->m_buf, len + fecHeaderSizePlus2 + cryptHeaderSize, &outlen);
             sess->output(sess->m_buf, outlen);
         }else {

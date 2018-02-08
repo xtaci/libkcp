@@ -60,7 +60,9 @@ BlockCrypt::blockWith(const void* key,const char* crypto){
 void 
 BlockCrypt::encrypt(void *buffer, size_t length,size_t *outlen)
 {
-    
+    if (send_ctx == NULL ){
+        return;
+    }
     size_t len = length + kCCBlockSizeAES128;
     
     void *dataOut = malloc(len);
@@ -79,7 +81,9 @@ void
 BlockCrypt::decrypt(void *buffer, size_t length,size_t *outlen)
 {
     size_t len = length + kCCBlockSizeAES128;
-    
+    if (recv_ctx == NULL ){
+        return;
+    }
     void *dataOut = malloc(len);
     
     CCCryptorStatus st  = CCCryptorUpdate(recv_ctx, buffer, length, dataOut, len, outlen);

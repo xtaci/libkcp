@@ -59,7 +59,7 @@ IUINT32 iclock() {
         self.port = port;
        
         self.dispatchqueue = dqueue;
-        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        queue = dispatch_queue_create("com.abigt.read", DISPATCH_QUEUE_SERIAL);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
         [self startUDPSession];
     }
@@ -81,7 +81,7 @@ IUINT32 iclock() {
     sess->SetMtu(self.config.mtu);
     sess->SetStreamMode(true);
     sess->SetDSCP(self.config.iptos);
-   
+    
     self.connected = true;
   
    
@@ -105,7 +105,7 @@ IUINT32 iclock() {
     if (sess != nil) {
         UDPSession::Destroy(sess);
     }
-    if (self.config.key.length > 0){
+    if (self.config.key.length > 0 && ![self.config.crypt isEqualToString:@"none"]){
         
         BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
         sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
