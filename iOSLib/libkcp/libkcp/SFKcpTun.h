@@ -35,5 +35,6 @@ typedef void (^didRecvdata)(SFKcpTun * _Nonnull tun,NSData * _Nonnull d);
 -(void)input:(NSData*_Nonnull)data;
 //-(void)upDate;
 -(NSString*_Nonnull)localAddress;
+-(NSInteger)localPort;
 -(BOOL)useCell;
 @end

@@ -373,10 +373,21 @@ IUINT32 iclock() {
 -(NSString*)localAddress{
     if (sess != nil) {
         char *addr =  sess->getLocalIPAddr();
+        
         NSString *addrs = [NSString stringWithUTF8String:addr];
         return addrs;
     }else {
         return @"";
+    }
+}
+-(NSInteger)localPort{
+    if (sess != nil) {
+        
+        NSInteger port = sess->getLocalPort();
+      
+        return port;
+    }else {
+        return 0;
     }
 }
 -(BOOL)useCell
@@ -385,7 +396,7 @@ IUINT32 iclock() {
     NSDictionary *infos = [self address];
     for (NSString *key in infos.allKeys) {
         if ([ipaddr isEqualToString:infos[key]]) {
-            if ([key isEqualToString:@"en0"]) {
+            if ([key isEqualToString:@"en"]) {
                 return  false;
             }
         }

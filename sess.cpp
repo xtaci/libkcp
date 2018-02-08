@@ -321,6 +321,16 @@ char * UDPSession::getLocalIPAddr() noexcept{
     printf("local port: %d\n", (int) ntohs(localAddress.sin_port));
     return inet_ntoa( localAddress.sin_addr);
 }
+int UDPSession::getLocalPort() noexcept{
+    struct sockaddr_in localAddress;
+    //socklen_t addressLength;
+    socklen_t addressLength = sizeof(localAddress);
+    getsockname(this->m_sockfd, (struct sockaddr*)&localAddress,   \
+                &addressLength);
+    printf("local address: %s\n", inet_ntoa( localAddress.sin_addr));
+    printf("local port: %d\n", (int) ntohs(localAddress.sin_port));
+    return (int) ntohs(localAddress.sin_port);
+}
 void
 UDPSession::SetStreamMode(bool enable) noexcept {
     if (enable) {

@@ -54,7 +54,7 @@ public:
     int SetDSCP(int dscp) noexcept;
 
     char *getLocalIPAddr() noexcept;
-   
+    int getLocalPort() noexcept;
     // SetStreamMode toggles the stream mode on/off
     void SetStreamMode(bool enable) noexcept;
 
