@@ -59,8 +59,8 @@ IUINT32 iclock() {
         self.port = port;
        
         self.dispatchqueue = dqueue;
-        queue = dispatch_queue_create("com.abigt.read", DISPATCH_QUEUE_SERIAL);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);
+        queue = dispatch_queue_create("com.abigt.kcpread", DISPATCH_QUEUE_SERIAL);//dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        socketqueue = dispatch_queue_create("com.abigt.kcpwrite", DISPATCH_QUEUE_SERIAL);//input data
         [self startUDPSession];
     }
     return self;
@@ -243,6 +243,7 @@ IUINT32 iclock() {
             }
             int zeroCount = 0;
             int valueCont = 0 ;
+            
             if (strongSelf) {
                 if (sess != nil) {
                     
@@ -256,9 +257,9 @@ IUINT32 iclock() {
                     if (n > 0 ){
                         @autoreleasepool {
                             NSData *d = [NSData dataWithBytes:buf length:n];
-                            
+                            //NSData *d=  [NSData dataWithBytesNoCopy:buf length:n];
                             dispatch_async(strongSelf.dispatchqueue, ^{
-                                weakSelf.recvData(self, d);
+                                weakSelf.recvData(weakSelf, d);
                                 
                             });
                             
@@ -271,15 +272,26 @@ IUINT32 iclock() {
 #if TARGET_IPHONE_SIMULATOR
                             // iOS Simulator
 #elif TARGET_OS_IPHONE
-                        if (valueCont > 10) {
-                            valueCont = 0;
-                            usleep(10000);
-                        }else {
-                            usleep(1000);
-                        }
-                        
-                        valueCont++;               // iOS device
+//                        if (valueCont > 10) {
+//                            valueCont = 0;
+//                            usleep(10000);
+//                        }else {
+//                            usleep(1000);
+//                        }
+//                        
+//                        valueCont++;
+                        // iOS device
 #elif TARGET_OS_MAC
+//                        if (zeroCount > 3) {
+//                            zeroCount = 0;
+//                            usleep(3300);
+//                        }else {
+//                            usleep(1000);
+//                        }
+//                        
+//                        zeroCount++;
+                        
+                        //usleep(1000);
                             // Other kinds of Mac OS
 #else
 #   error "Unknown Apple platform"
@@ -300,7 +312,8 @@ IUINT32 iclock() {
 
               // iOS device
 #elif TARGET_OS_MAC
-                        usleep(3000);
+                        NSLog(@"session Update");
+                        usleep(1000);
                         // Other kinds of Mac OS
 #else
 #   error "Unknown Apple platform"
