@@ -1030,6 +1030,7 @@ void ikcp_flush(ikcpcb *kcp)
 	for (p = kcp->snd_buf.next; p != &kcp->snd_buf; p = p->next) {
 		IKCPSEG *segment = iqueue_entry(p, IKCPSEG, node);
 		int needsend = 0;
+        //EXC_BAD_ACCESS (code=1, address=0xf00000000000003c)
 		if (segment->xmit == 0) {
 			needsend = 1;
 			segment->xmit++;

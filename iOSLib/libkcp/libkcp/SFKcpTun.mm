@@ -206,6 +206,7 @@ IUINT32 iclock() {
         char *ptr = (char *)data.bytes;
 
         if  (strongSelf.connected) {
+            dispatch_suspend(strongSelf->queue);
             while (sended < tosend) {
                 
                 
@@ -221,6 +222,7 @@ IUINT32 iclock() {
             }else {
                 exit(-1);
             }
+            dispatch_resume(strongSelf->queue);
         }
         
         
@@ -278,7 +280,7 @@ IUINT32 iclock() {
 //                        }else {
 //                            usleep(1000);
 //                        }
-//                        
+//
 //                        valueCont++;
                         // iOS device
 #elif TARGET_OS_MAC
