@@ -67,6 +67,8 @@
 		69639BF61EE1AB5D00893D18 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */; };
 		69639BF71EE1AB6100893D18 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 6959B7461EBB7DEC00B0BC58 /* CRC32.h */; };
 		69639BF91EE1ABA200893D18 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69639BF81EE1ABA200893D18 /* Security.framework */; };
+		69B917C221785876004CC106 /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69B917C121785876004CC106 /* Network.framework */; };
+		69B917C42178587F004CC106 /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69B917C32178587F004CC106 /* Network.framework */; };
 		69C757811EB2F96D00139321 /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
 		69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -145,6 +147,8 @@
 		69639BD81EE1AAC100893D18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69639BF81EE1ABA200893D18 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		698D5CFB1F0A0E6B008C2335 /* Sodium.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sodium.framework; sourceTree = "<group>"; };
+		69B917C121785876004CC106 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = System/Library/Frameworks/Network.framework; sourceTree = SDKROOT; };
+		69B917C32178587F004CC106 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
 		69FFC69F1EB30985008A030D /* SFKcpTun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SFKcpTun.mm; path = libkcp/SFKcpTun.mm; sourceTree = SOURCE_ROOT; };
 		69FFC6A31EB309E8008A030D /* TunConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TunConfig.h; path = libkcp/TunConfig.h; sourceTree = "<group>"; };
@@ -156,6 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69B917C221785876004CC106 /* Network.framework in Frameworks */,
 				6959B74A1EBB8B0C00B0BC58 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -173,6 +178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69B917C42178587F004CC106 /* Network.framework in Frameworks */,
 				69639BF91EE1ABA200893D18 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -263,6 +269,8 @@
 		692AE36F1EB2F191006A4B9D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				69B917C121785876004CC106 /* Network.framework */,
+				69B917C32178587F004CC106 /* Network.framework */,
 				698D5CFB1F0A0E6B008C2335 /* Sodium.framework */,
 				69639BF81EE1ABA200893D18 /* Security.framework */,
 				6959B7491EBB8B0C00B0BC58 /* Security.framework */,
@@ -400,7 +408,7 @@
 		692AE3181EB2EE59006A4B9D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Kong XiangBo";
 				TargetAttributes = {
 					692AE3201EB2EE59006A4B9D = {
@@ -564,6 +572,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -571,6 +580,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -622,6 +632,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -629,6 +640,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

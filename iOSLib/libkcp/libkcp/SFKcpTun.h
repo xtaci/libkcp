@@ -19,7 +19,7 @@ typedef void (^didRecvdata)(SFKcpTun * _Nonnull tun,NSData * _Nonnull d);
     @property (strong,nonatomic) TunConfig * _Nonnull config;
     @property (strong,nonatomic) NSString * _Nonnull server;
 
-@property (nonatomic) int port;
+@property (nonatomic) NSString * _Nonnull port;
 @property (nonatomic) BOOL connected;
     
 @property (nonatomic,copy) didRecvdata _Nonnull recvData;
@@ -27,10 +27,10 @@ typedef void (^didRecvdata)(SFKcpTun * _Nonnull tun,NSData * _Nonnull d);
 @property (nonatomic,copy) tunConnected _Nonnull tunConnected;
 //callback queue
     @property (nonatomic)  dispatch_queue_t _Nonnull dispatchqueue ;
--(instancetype _Nonnull )initWithConfig:(TunConfig *_Nonnull)c ipaddr:(NSString*_Nonnull)ip port:(int)port queue:(dispatch_queue_t _Nonnull )dqueue;
+-(instancetype _Nonnull )initWithConfig:(TunConfig *_Nonnull)c ipaddr:(NSString*_Nonnull)ip port:(NSString*_Nonnull)port queue:(dispatch_queue_t _Nonnull )dqueue;
 -(void)startWith:(tunConnected _Nonnull )connectd recv:(didRecvdata _Nonnull )recv disConnect:(tunConnected _Nonnull )disConnect;
 -(void)startUDPSession;
--(void)restartUDPSessionWithIpaddr:(NSString*_Nonnull)ip port:(int)port;
+-(void)restartUDPSessionWithIpaddr:(NSString*_Nonnull)ip port:(NSString *_Nonnull)port;
 -(void)shutdownUDPSession;
 -(void)input:(NSData*_Nonnull)data;
 //-(void)upDate;

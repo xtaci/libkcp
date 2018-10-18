@@ -5,12 +5,15 @@
 #include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
+#include <Network/Network.h>
+#include <err.h>
 #import "BlockCrypt.h"
 void
 dump(char *tag, char *text, int len);
 class UDPSession  {
 private:
     int m_sockfd{0};
+    nw_connection_t outbound_connection = NULL;
     ikcpcb *m_kcp{nullptr};
     byte m_buf[2048];
     byte m_streambuf[65535];
@@ -32,10 +35,10 @@ public:
     static UDPSession *Dial(const char *ip, uint16_t port);
 
     // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
-    static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards);
+    static UDPSession *DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards);
 
     // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption with block
-    static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards,BlockCrypt *block);
+    static UDPSession *DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards,BlockCrypt *block);
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
 
@@ -66,7 +69,8 @@ public:
     inline int WndSize(int sndwnd, int rcvwnd) { return ikcp_wndsize(m_kcp, sndwnd, rcvwnd); }
 
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
-
+    void receive_loop();
+    void start_send_receive_loop();
 private:
     UDPSession() = default;
 
@@ -82,8 +86,13 @@ private:
     ssize_t output(const void *buffer, size_t length);
 
     static UDPSession *createSession(int sockfd);
-
-
+    static UDPSession *createSession(nw_connection_t sockfd);
+    //new
+    static nw_connection_t create_outbound_connection(const char *, const char *);
+    void start_connection(nw_connection_t connection);
+    
+    void send_loop(nw_connection_t connection,dispatch_data_t _Nonnull read_data);
+   
 };
 
 inline uint32_t currentMs() {

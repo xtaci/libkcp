@@ -51,7 +51,7 @@ IUINT32 iclock() {
     dispatch_queue_t socketqueue ;
     
 }
--(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(int)port queue:(dispatch_queue_t)dqueue 
+-(instancetype)initWithConfig:(TunConfig *)c ipaddr:(NSString*)ip port:(NSString* )port queue:(dispatch_queue_t)dqueue
 {
     if (self = [super init]){
         self.config = c;
@@ -70,9 +70,9 @@ IUINT32 iclock() {
     if (self.config.key.length > 0 && ![self.config.crypt isEqualToString:@"none"]){
         
         BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
-        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port.UTF8String, self.config.dataShards,self.config.parityShards,block);
     }else {
-        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port.UTF8String, self.config.dataShards,self.config.parityShards);
     }
     assert(sess != nullptr);
     
@@ -91,6 +91,7 @@ IUINT32 iclock() {
         self.tunConnected = connectd;
         self.recvData = recv;
         self.disConnected = disConnect;
+        sess->start_send_receive_loop();
         [self runTest];
         __weak  SFKcpTun *weakSelf = self;
         if ( self.connected )  {
@@ -100,7 +101,7 @@ IUINT32 iclock() {
         }
         
     }
--(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(int)port
+-(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(NSString*)port
 {
     if (sess != nil) {
         UDPSession::Destroy(sess);
@@ -108,9 +109,9 @@ IUINT32 iclock() {
     if (self.config.key.length > 0 && ![self.config.crypt isEqualToString:@"none"]){
         
         BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
-        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards,block);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port.UTF8String, self.config.dataShards,self.config.parityShards,block);
     }else {
-        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port, self.config.dataShards,self.config.parityShards);
+        sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port.UTF8String, self.config.dataShards,self.config.parityShards);
     }
     
     assert(sess != nullptr);
@@ -121,7 +122,7 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     self.connected = true;
    
-    
+    sess->start_send_receive_loop();
     [self runTest];
     
 }
@@ -150,7 +151,14 @@ IUINT32 iclock() {
             
             memset(buf, 0, 4096);
             ssize_t n = sess->Read(buf, 4096);
-            sess->Update(iclock());
+            
+            if (__builtin_available(iOS 12, macOS 10.14,*)) {
+                
+            }else {
+                sess->Update(iclock());
+            }
+            
+            
             
             if (n > 0 ){
                 @autoreleasepool {
@@ -254,7 +262,12 @@ IUINT32 iclock() {
                     
                     memset(buf, 0, 4096);
                     ssize_t n = sess->Read(buf, 4096);
-                    sess->Update(iclock());
+                    
+                    if (__builtin_available(iOS 12, macOS 10.14,*)) {
+                    }else {
+                        sess->Update(iclock());
+                    }
+                    
                     
                     if (n > 0 ){
                         @autoreleasepool {
@@ -357,8 +370,11 @@ IUINT32 iclock() {
                     
                     memset(buf, 0, 4096);
                     ssize_t n = sess->Read(buf, 4096);
-                    sess->Update(iclock());
-                    
+                    //sess->Update(iclock());
+                    if (__builtin_available(iOS 12, macOS 10.14,*)) {
+                    }else {
+                        sess->Update(iclock());
+                    }
                     if (n > 0 ){
                         @autoreleasepool {
                             NSData *d = [NSData dataWithBytes:buf length:n];
