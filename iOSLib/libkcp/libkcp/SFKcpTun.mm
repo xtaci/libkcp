@@ -83,11 +83,15 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     
     self.connected = true;
-  
+   
    
 }
 -(void)startWith:(tunConnected)connectd recv:(didRecvdata)recv disConnect:(tunConnected)disConnect
     {
+        if (__builtin_available(iOS 12, macOS 10.14,*)) {
+            sess->start_send_receive_loop();
+        }
+        
         self.tunConnected = connectd;
         self.recvData = recv;
         self.disConnected = disConnect;
@@ -122,7 +126,9 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     self.connected = true;
    
-    sess->start_send_receive_loop();
+    if (__builtin_available(iOS 12, macOS 10.14,*)) {
+        sess->start_send_receive_loop();
+    }
     [self runTest];
     
 }
@@ -264,6 +270,7 @@ IUINT32 iclock() {
                     ssize_t n = sess->Read(buf, 4096);
                     
                     if (__builtin_available(iOS 12, macOS 10.14,*)) {
+                        sess->NWUpdate(iclock());
                     }else {
                         sess->Update(iclock());
                     }

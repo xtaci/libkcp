@@ -21,6 +21,7 @@ bool g_use_tls = false;        // Use TLS or DTLS
 bool g_use_udp = true;        // Use UDP instead of TCP
 bool g_verbose = false;        // Verbose
 int g_family = AF_UNSPEC;     // Required address family
+dispatch_queue_t q = dispatch_queue_create("nw.socket.queue",NULL);
 #define NWCAT_BONJOUR_SERVICE_TCP_TYPE "_nwcat._tcp"
 #define NWCAT_BONJOUR_SERVICE_UDP_TYPE "_nwcat._udp"
 #define NWCAT_BONJOUR_SERVICE_DOMAIN "local"
@@ -113,7 +114,7 @@ UDPSession *
 UDPSession::DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards) {
     UDPSession  *sess;
     if (__builtin_available(iOS 12,macOS 10.14, *)) {
-        
+        printf("nw event base udp socket");
         
         nw_connection_t connection  = create_outbound_connection(ip , port);
         if (connection == NULL) {
@@ -266,6 +267,11 @@ UDPSession::Update(uint32_t current) noexcept {
             break;
         }
     }
+    m_kcp->current = current;
+    ikcp_flush(m_kcp);
+}
+void
+UDPSession::NWUpdate(uint32_t current) noexcept {
     m_kcp->current = current;
     ikcp_flush(m_kcp);
 }
@@ -491,7 +497,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
 ssize_t
 UDPSession::output(const void *buffer, size_t length) {
     dump((char*)"UDPSession write socket", (byte *)buffer, length);
-    if (__builtin_available(iOS 12, *)) {
+    if (__builtin_available(iOS 12,macOS 10.14, *)) {
         //send error check
         this->send_loop(this->outbound_connection, dispatch_data_create(buffer,length,nil,DISPATCH_DATA_DESTRUCTOR_DEFAULT));
         return length;
@@ -519,7 +525,7 @@ UDPSession::create_outbound_connection(const char *name, const char *port)
 {
     // If we are using bonjour to connect, treat the name as a bonjour name
     // Otherwise, treat the name as a hostname
-    if (__builtin_available(iOS 12, *)) {
+    if (__builtin_available(iOS 12,macOS 10.14, *)) {
         nw_endpoint_t endpoint = (g_use_bonjour ?
                                   nw_endpoint_create_bonjour_service(name,
                                                                      (g_use_udp ? NWCAT_BONJOUR_SERVICE_UDP_TYPE : NWCAT_BONJOUR_SERVICE_TCP_TYPE),
@@ -588,7 +594,7 @@ UDPSession::create_outbound_connection(const char *name, const char *port)
 void UDPSession::start_connection(nw_connection_t connection)
 {
      if (__builtin_available(iOS 12, macOS 10.14,*)) {
-         nw_connection_set_queue(connection, dispatch_get_main_queue());
+         nw_connection_set_queue(connection,q);
          
          nw_retain(connection); // Hold a reference until cancelled
          nw_connection_set_state_changed_handler(connection, ^(nw_connection_state_t state, nw_error_t error) {
@@ -647,12 +653,14 @@ void
 UDPSession::receive_loop()
 {
     nw_connection_t connection = this->outbound_connection;
+    printf("nw start recvloop");
     if (__builtin_available(iOS 12, macOS 10.14,*)) {
         nw_connection_receive(connection, 1, UINT32_MAX, ^(dispatch_data_t content, nw_content_context_t context, bool is_complete, nw_error_t receive_error) {
             
             dispatch_block_t schedule_next_receive = ^{
                 // If the context is marked as complete, and is the final context,
                 // we're read-closed.
+#pragma mark todo fixme ,crash here
                 if (is_complete &&
                     context != NULL && nw_content_context_get_is_final(context)) {
                     exit(0);
@@ -720,7 +728,8 @@ UDPSession::receive_loop()
                 m_kcp->current = value & 0xfffffffful;
                 ikcp_flush(m_kcp);
                 
-                dispatch_async( dispatch_get_main_queue(), ^{
+                dispatch_async( q, ^{
+                   // Block_retain(schedule_next_receive);
                     schedule_next_receive();
                     Block_release(schedule_next_receive);
                 });
@@ -740,6 +749,7 @@ void
 UDPSession::send_loop(nw_connection_t connection, dispatch_data_t _Nonnull read_data){
     // Every send is marked as complete. This has no effect with the default message context for TCP,
     // but is required for UDP to indicate the end of a packet.
+    printf("nw send data!\n");
     if (__builtin_available(iOS 12,macOS 10.14, *)) {
         nw_connection_send(connection, read_data, NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true, ^(nw_error_t  _Nullable error) {
             if (error != NULL) {

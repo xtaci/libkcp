@@ -41,7 +41,7 @@ public:
     static UDPSession *DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards,BlockCrypt *block);
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
-
+    void NWUpdate(uint32_t current) noexcept;
     //kcpInput go UDPpsession
     void KcpInPut(size_t len) noexcept;
     // Destroy release all resource related.
