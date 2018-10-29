@@ -657,12 +657,14 @@ UDPSession::receive_loop()
     if (__builtin_available(iOS 12, macOS 10.14,*)) {
         nw_connection_receive(connection, 1, UINT32_MAX, ^(dispatch_data_t content, nw_content_context_t context, bool is_complete, nw_error_t receive_error) {
             
+            CFRetain(context);
             dispatch_block_t schedule_next_receive = ^{
                 // If the context is marked as complete, and is the final context,
                 // we're read-closed.
-#pragma mark todo fixme ,crash here
                 if (is_complete &&
+                    
                     context != NULL && nw_content_context_get_is_final(context)) {
+                    CFRelease(context);
                     exit(0);
                 }
                 
@@ -670,6 +672,7 @@ UDPSession::receive_loop()
                 if (receive_error == NULL) {
                     receive_loop();
                 }
+                CFRelease(context);
             };
             
             if (content != NULL) {
