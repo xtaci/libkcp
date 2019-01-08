@@ -1,0 +1,844 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		692AE3261EB2EE59006A4B9D /* kcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3241EB2EE59006A4B9D /* kcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		692AE32D1EB2EE98006A4B9D /* fec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32C1EB2EE98006A4B9D /* fec.cpp */; };
+		692AE32F1EB2EEB0006A4B9D /* ikcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32E1EB2EEB0006A4B9D /* ikcp.c */; };
+		692AE3311EB2EEBD006A4B9D /* sess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3301EB2EEBD006A4B9D /* sess.cpp */; };
+		692AE3331EB2EEE6006A4B9D /* sess.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3321EB2EEE6006A4B9D /* sess.h */; };
+		692AE3361EB2EEEF006A4B9D /* reedsolomon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3341EB2EEEF006A4B9D /* reedsolomon.cpp */; };
+		692AE3371EB2EEEF006A4B9D /* reedsolomon.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3351EB2EEEF006A4B9D /* reedsolomon.h */; };
+		692AE33A1EB2EEF9006A4B9D /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3381EB2EEF9006A4B9D /* matrix.cpp */; };
+		692AE33B1EB2EEF9006A4B9D /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3391EB2EEF9006A4B9D /* matrix.h */; };
+		692AE33E1EB2EF0B006A4B9D /* inversion_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE33C1EB2EF0B006A4B9D /* inversion_tree.cpp */; };
+		692AE33F1EB2EF0B006A4B9D /* inversion_tree.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE33D1EB2EF0B006A4B9D /* inversion_tree.h */; };
+		692AE3411EB2EF11006A4B9D /* ikcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3401EB2EF11006A4B9D /* ikcp.h */; };
+		692AE3481EB2EF1C006A4B9D /* fec.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3421EB2EF1C006A4B9D /* fec.h */; };
+		692AE3491EB2EF1C006A4B9D /* galois_noasm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3431EB2EF1C006A4B9D /* galois_noasm.cpp */; };
+		692AE34A1EB2EF1C006A4B9D /* galois_noasm.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3441EB2EF1C006A4B9D /* galois_noasm.h */; };
+		692AE34B1EB2EF1C006A4B9D /* galois_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3451EB2EF1C006A4B9D /* galois_table.c */; };
+		692AE34C1EB2EF1C006A4B9D /* galois.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3461EB2EF1C006A4B9D /* galois.cpp */; };
+		692AE34D1EB2EF1C006A4B9D /* galois.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3471EB2EF1C006A4B9D /* galois.h */; };
+		692AE34F1EB2EF25006A4B9D /* encoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE34E1EB2EF25006A4B9D /* encoding.h */; };
+		692AE3581EB2EF83006A4B9D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3571EB2EF83006A4B9D /* main.m */; };
+		692AE35B1EB2EF83006A4B9D /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 692AE35A1EB2EF83006A4B9D /* AppDelegate.mm */; };
+		692AE35E1EB2EF83006A4B9D /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 692AE35D1EB2EF83006A4B9D /* ViewController.mm */; };
+		692AE3611EB2EF83006A4B9D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 692AE35F1EB2EF83006A4B9D /* Main.storyboard */; };
+		692AE3631EB2EF83006A4B9D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 692AE3621EB2EF83006A4B9D /* Assets.xcassets */; };
+		692AE3661EB2EF83006A4B9D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 692AE3641EB2EF83006A4B9D /* LaunchScreen.storyboard */; };
+		692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3701EB2F191006A4B9D /* libc++.tbd */; };
+		695165F51EBB2663008DCF66 /* BlockCrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695165F31EBB2663008DCF66 /* BlockCrypt.cpp */; };
+		695165F61EBB2663008DCF66 /* BlockCrypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 695165F41EBB2663008DCF66 /* BlockCrypt.h */; };
+		695165F91EBB32D2008DCF66 /* Crypt.mm in Sources */ = {isa = PBXBuildFile; fileRef = 695165F81EBB32D2008DCF66 /* Crypt.mm */; };
+		6959B7471EBB7DEC00B0BC58 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */; };
+		6959B7481EBB7DEC00B0BC58 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 6959B7461EBB7DEC00B0BC58 /* CRC32.h */; };
+		6959B74A1EBB8B0C00B0BC58 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6959B7491EBB8B0C00B0BC58 /* Security.framework */; };
+		69639BD91EE1AAC100893D18 /* kcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 69639BD71EE1AAC100893D18 /* kcp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69639BDD1EE1AAD700893D18 /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69639BDE1EE1AAE000893D18 /* SFKcpTun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC69F1EB30985008A030D /* SFKcpTun.mm */; };
+		69639BDF1EE1AAE400893D18 /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69639BE01EE1AAEC00893D18 /* TunConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC6A41EB309E8008A030D /* TunConfig.m */; };
+		69639BE11EE1AAF500893D18 /* encoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE34E1EB2EF25006A4B9D /* encoding.h */; };
+		69639BE21EE1AAF900893D18 /* galois_noasm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3431EB2EF1C006A4B9D /* galois_noasm.cpp */; };
+		69639BE31EE1AAFD00893D18 /* galois_noasm.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3441EB2EF1C006A4B9D /* galois_noasm.h */; };
+		69639BE41EE1AB0100893D18 /* galois_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3451EB2EF1C006A4B9D /* galois_table.c */; };
+		69639BE51EE1AB0900893D18 /* galois.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3461EB2EF1C006A4B9D /* galois.cpp */; };
+		69639BE61EE1AB0D00893D18 /* galois.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3471EB2EF1C006A4B9D /* galois.h */; };
+		69639BE71EE1AB1300893D18 /* inversion_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE33C1EB2EF0B006A4B9D /* inversion_tree.cpp */; };
+		69639BE81EE1AB1700893D18 /* inversion_tree.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE33D1EB2EF0B006A4B9D /* inversion_tree.h */; };
+		69639BE91EE1AB1B00893D18 /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3381EB2EEF9006A4B9D /* matrix.cpp */; };
+		69639BEA1EE1AB1E00893D18 /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3391EB2EEF9006A4B9D /* matrix.h */; };
+		69639BEB1EE1AB2200893D18 /* reedsolomon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3341EB2EEEF006A4B9D /* reedsolomon.cpp */; };
+		69639BEC1EE1AB2800893D18 /* reedsolomon.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3351EB2EEEF006A4B9D /* reedsolomon.h */; };
+		69639BED1EE1AB2D00893D18 /* sess.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3321EB2EEE6006A4B9D /* sess.h */; };
+		69639BEE1EE1AB3100893D18 /* sess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE3301EB2EEBD006A4B9D /* sess.cpp */; };
+		69639BEF1EE1AB3500893D18 /* ikcp.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3401EB2EF11006A4B9D /* ikcp.h */; };
+		69639BF01EE1AB3900893D18 /* ikcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32E1EB2EEB0006A4B9D /* ikcp.c */; };
+		69639BF21EE1AB4C00893D18 /* fec.h in Headers */ = {isa = PBXBuildFile; fileRef = 692AE3421EB2EF1C006A4B9D /* fec.h */; };
+		69639BF31EE1AB5000893D18 /* fec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 692AE32C1EB2EE98006A4B9D /* fec.cpp */; };
+		69639BF41EE1AB5500893D18 /* BlockCrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695165F31EBB2663008DCF66 /* BlockCrypt.cpp */; };
+		69639BF51EE1AB5900893D18 /* BlockCrypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 695165F41EBB2663008DCF66 /* BlockCrypt.h */; };
+		69639BF61EE1AB5D00893D18 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */; };
+		69639BF71EE1AB6100893D18 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 6959B7461EBB7DEC00B0BC58 /* CRC32.h */; };
+		69639BF91EE1ABA200893D18 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69639BF81EE1ABA200893D18 /* Security.framework */; };
+		69B917C221785876004CC106 /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69B917C121785876004CC106 /* Network.framework */; };
+		69B917C42178587F004CC106 /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69B917C32178587F004CC106 /* Network.framework */; };
+		69C757811EB2F96D00139321 /* kcp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; };
+		69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 692AE3211EB2EE59006A4B9D /* kcp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC69E1EB30985008A030D /* SFKcpTun.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69FFC6A11EB30985008A030D /* SFKcpTun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC69F1EB30985008A030D /* SFKcpTun.mm */; };
+		69FFC6A51EB309E8008A030D /* TunConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FFC6A31EB309E8008A030D /* TunConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69FFC6A61EB309E8008A030D /* TunConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 69FFC6A41EB309E8008A030D /* TunConfig.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		69C757831EB2F96D00139321 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 692AE3181EB2EE59006A4B9D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 692AE3201EB2EE59006A4B9D;
+			remoteInfo = libkcp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		69C757851EB2F96D00139321 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				69C757821EB2F96D00139321 /* kcp.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		692AE3211EB2EE59006A4B9D /* kcp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = kcp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		692AE3241EB2EE59006A4B9D /* kcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcp.h; sourceTree = "<group>"; };
+		692AE3251EB2EE59006A4B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		692AE32C1EB2EE98006A4B9D /* fec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fec.cpp; path = ../../../fec.cpp; sourceTree = "<group>"; };
+		692AE32E1EB2EEB0006A4B9D /* ikcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ikcp.c; path = ../../../ikcp.c; sourceTree = "<group>"; };
+		692AE3301EB2EEBD006A4B9D /* sess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sess.cpp; path = ../../../sess.cpp; sourceTree = "<group>"; };
+		692AE3321EB2EEE6006A4B9D /* sess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sess.h; path = ../../../sess.h; sourceTree = "<group>"; };
+		692AE3341EB2EEEF006A4B9D /* reedsolomon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reedsolomon.cpp; path = ../../../reedsolomon.cpp; sourceTree = "<group>"; };
+		692AE3351EB2EEEF006A4B9D /* reedsolomon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = reedsolomon.h; path = ../../../reedsolomon.h; sourceTree = "<group>"; };
+		692AE3381EB2EEF9006A4B9D /* matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = matrix.cpp; path = ../../../matrix.cpp; sourceTree = "<group>"; };
+		692AE3391EB2EEF9006A4B9D /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = matrix.h; path = ../../../matrix.h; sourceTree = "<group>"; };
+		692AE33C1EB2EF0B006A4B9D /* inversion_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inversion_tree.cpp; path = ../../../inversion_tree.cpp; sourceTree = "<group>"; };
+		692AE33D1EB2EF0B006A4B9D /* inversion_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inversion_tree.h; path = ../../../inversion_tree.h; sourceTree = "<group>"; };
+		692AE3401EB2EF11006A4B9D /* ikcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ikcp.h; path = ../../../ikcp.h; sourceTree = "<group>"; };
+		692AE3421EB2EF1C006A4B9D /* fec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fec.h; path = ../../../fec.h; sourceTree = "<group>"; };
+		692AE3431EB2EF1C006A4B9D /* galois_noasm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = galois_noasm.cpp; path = ../../../galois_noasm.cpp; sourceTree = "<group>"; };
+		692AE3441EB2EF1C006A4B9D /* galois_noasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = galois_noasm.h; path = ../../../galois_noasm.h; sourceTree = "<group>"; };
+		692AE3451EB2EF1C006A4B9D /* galois_table.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = galois_table.c; path = ../../../galois_table.c; sourceTree = "<group>"; };
+		692AE3461EB2EF1C006A4B9D /* galois.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = galois.cpp; path = ../../../galois.cpp; sourceTree = "<group>"; };
+		692AE3471EB2EF1C006A4B9D /* galois.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = galois.h; path = ../../../galois.h; sourceTree = "<group>"; };
+		692AE34E1EB2EF25006A4B9D /* encoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = encoding.h; path = ../../../encoding.h; sourceTree = "<group>"; };
+		692AE3541EB2EF83006A4B9D /* kcptest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kcptest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		692AE3571EB2EF83006A4B9D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		692AE3591EB2EF83006A4B9D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		692AE35A1EB2EF83006A4B9D /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
+		692AE35C1EB2EF83006A4B9D /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		692AE35D1EB2EF83006A4B9D /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		692AE3601EB2EF83006A4B9D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		692AE3621EB2EF83006A4B9D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		692AE3651EB2EF83006A4B9D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		692AE3671EB2EF83006A4B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kcp_test.cpp; path = ../../../kcp_test.cpp; sourceTree = "<group>"; };
+		692AE3701EB2F191006A4B9D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		695165F31EBB2663008DCF66 /* BlockCrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlockCrypt.cpp; sourceTree = "<group>"; };
+		695165F41EBB2663008DCF66 /* BlockCrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockCrypt.h; sourceTree = "<group>"; };
+		695165F71EBB32D2008DCF66 /* Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Crypt.h; path = libkcp/Crypt.h; sourceTree = SOURCE_ROOT; };
+		695165F81EBB32D2008DCF66 /* Crypt.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Crypt.mm; path = libkcp/Crypt.mm; sourceTree = SOURCE_ROOT; };
+		6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
+		6959B7461EBB7DEC00B0BC58 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
+		6959B7491EBB8B0C00B0BC58 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		69639BD51EE1AAC100893D18 /* kcp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = kcp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		69639BD71EE1AAC100893D18 /* kcp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kcp.h; sourceTree = "<group>"; };
+		69639BD81EE1AAC100893D18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69639BF81EE1ABA200893D18 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		698D5CFB1F0A0E6B008C2335 /* Sodium.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sodium.framework; sourceTree = "<group>"; };
+		69B917C121785876004CC106 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = System/Library/Frameworks/Network.framework; sourceTree = SDKROOT; };
+		69B917C32178587F004CC106 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
+		69FFC69E1EB30985008A030D /* SFKcpTun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFKcpTun.h; path = libkcp/SFKcpTun.h; sourceTree = SOURCE_ROOT; };
+		69FFC69F1EB30985008A030D /* SFKcpTun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SFKcpTun.mm; path = libkcp/SFKcpTun.mm; sourceTree = SOURCE_ROOT; };
+		69FFC6A31EB309E8008A030D /* TunConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TunConfig.h; path = libkcp/TunConfig.h; sourceTree = "<group>"; };
+		69FFC6A41EB309E8008A030D /* TunConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TunConfig.m; path = libkcp/TunConfig.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		692AE31D1EB2EE59006A4B9D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69B917C221785876004CC106 /* Network.framework in Frameworks */,
+				6959B74A1EBB8B0C00B0BC58 /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		692AE3511EB2EF83006A4B9D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				692AE3711EB2F191006A4B9D /* libc++.tbd in Frameworks */,
+				69C757811EB2F96D00139321 /* kcp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69639BD11EE1AAC100893D18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69B917C42178587F004CC106 /* Network.framework in Frameworks */,
+				69639BF91EE1ABA200893D18 /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		692AE3171EB2EE59006A4B9D = {
+			isa = PBXGroup;
+			children = (
+				69FFC6A21EB3098C008A030D /* tun */,
+				692AE3231EB2EE59006A4B9D /* libkcp */,
+				692AE3551EB2EF83006A4B9D /* kcptest */,
+				69639BD61EE1AAC100893D18 /* kcpOSX */,
+				692AE3221EB2EE59006A4B9D /* Products */,
+				692AE36F1EB2F191006A4B9D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		692AE3221EB2EE59006A4B9D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				692AE3211EB2EE59006A4B9D /* kcp.framework */,
+				692AE3541EB2EF83006A4B9D /* kcptest.app */,
+				69639BD51EE1AAC100893D18 /* kcp.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		692AE3231EB2EE59006A4B9D /* libkcp */ = {
+			isa = PBXGroup;
+			children = (
+				692AE34E1EB2EF25006A4B9D /* encoding.h */,
+				692AE3431EB2EF1C006A4B9D /* galois_noasm.cpp */,
+				692AE3441EB2EF1C006A4B9D /* galois_noasm.h */,
+				692AE3451EB2EF1C006A4B9D /* galois_table.c */,
+				692AE3461EB2EF1C006A4B9D /* galois.cpp */,
+				692AE3471EB2EF1C006A4B9D /* galois.h */,
+				692AE33C1EB2EF0B006A4B9D /* inversion_tree.cpp */,
+				692AE33D1EB2EF0B006A4B9D /* inversion_tree.h */,
+				692AE3381EB2EEF9006A4B9D /* matrix.cpp */,
+				692AE3391EB2EEF9006A4B9D /* matrix.h */,
+				692AE3341EB2EEEF006A4B9D /* reedsolomon.cpp */,
+				692AE3351EB2EEEF006A4B9D /* reedsolomon.h */,
+				692AE3321EB2EEE6006A4B9D /* sess.h */,
+				692AE3301EB2EEBD006A4B9D /* sess.cpp */,
+				692AE3401EB2EF11006A4B9D /* ikcp.h */,
+				692AE32E1EB2EEB0006A4B9D /* ikcp.c */,
+				692AE3241EB2EE59006A4B9D /* kcp.h */,
+				692AE3421EB2EF1C006A4B9D /* fec.h */,
+				692AE32C1EB2EE98006A4B9D /* fec.cpp */,
+				692AE3251EB2EE59006A4B9D /* Info.plist */,
+				695165F31EBB2663008DCF66 /* BlockCrypt.cpp */,
+				695165F41EBB2663008DCF66 /* BlockCrypt.h */,
+				6959B7451EBB7DEC00B0BC58 /* CRC32.cpp */,
+				6959B7461EBB7DEC00B0BC58 /* CRC32.h */,
+			);
+			path = libkcp;
+			sourceTree = "<group>";
+		};
+		692AE3551EB2EF83006A4B9D /* kcptest */ = {
+			isa = PBXGroup;
+			children = (
+				695165F71EBB32D2008DCF66 /* Crypt.h */,
+				695165F81EBB32D2008DCF66 /* Crypt.mm */,
+				692AE36B1EB2EF91006A4B9D /* kcp_test.cpp */,
+				692AE3591EB2EF83006A4B9D /* AppDelegate.h */,
+				692AE35A1EB2EF83006A4B9D /* AppDelegate.mm */,
+				692AE35C1EB2EF83006A4B9D /* ViewController.h */,
+				692AE35D1EB2EF83006A4B9D /* ViewController.mm */,
+				692AE35F1EB2EF83006A4B9D /* Main.storyboard */,
+				692AE3621EB2EF83006A4B9D /* Assets.xcassets */,
+				692AE3641EB2EF83006A4B9D /* LaunchScreen.storyboard */,
+				692AE3671EB2EF83006A4B9D /* Info.plist */,
+				692AE3561EB2EF83006A4B9D /* Supporting Files */,
+			);
+			path = kcptest;
+			sourceTree = "<group>";
+		};
+		692AE3561EB2EF83006A4B9D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				692AE3571EB2EF83006A4B9D /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		692AE36F1EB2F191006A4B9D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				69B917C121785876004CC106 /* Network.framework */,
+				69B917C32178587F004CC106 /* Network.framework */,
+				698D5CFB1F0A0E6B008C2335 /* Sodium.framework */,
+				69639BF81EE1ABA200893D18 /* Security.framework */,
+				6959B7491EBB8B0C00B0BC58 /* Security.framework */,
+				692AE3701EB2F191006A4B9D /* libc++.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		69639BD61EE1AAC100893D18 /* kcpOSX */ = {
+			isa = PBXGroup;
+			children = (
+				69639BD71EE1AAC100893D18 /* kcp.h */,
+				69639BD81EE1AAC100893D18 /* Info.plist */,
+			);
+			path = kcpOSX;
+			sourceTree = "<group>";
+		};
+		69FFC6A21EB3098C008A030D /* tun */ = {
+			isa = PBXGroup;
+			children = (
+				69FFC69E1EB30985008A030D /* SFKcpTun.h */,
+				69FFC69F1EB30985008A030D /* SFKcpTun.mm */,
+				69FFC6A31EB309E8008A030D /* TunConfig.h */,
+				69FFC6A41EB309E8008A030D /* TunConfig.m */,
+			);
+			name = tun;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		692AE31E1EB2EE59006A4B9D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				692AE34A1EB2EF1C006A4B9D /* galois_noasm.h in Headers */,
+				69FFC6A01EB30985008A030D /* SFKcpTun.h in Headers */,
+				69FFC6A51EB309E8008A030D /* TunConfig.h in Headers */,
+				692AE34F1EB2EF25006A4B9D /* encoding.h in Headers */,
+				6959B7481EBB7DEC00B0BC58 /* CRC32.h in Headers */,
+				692AE33F1EB2EF0B006A4B9D /* inversion_tree.h in Headers */,
+				692AE3371EB2EEEF006A4B9D /* reedsolomon.h in Headers */,
+				692AE3481EB2EF1C006A4B9D /* fec.h in Headers */,
+				692AE3331EB2EEE6006A4B9D /* sess.h in Headers */,
+				692AE3261EB2EE59006A4B9D /* kcp.h in Headers */,
+				692AE33B1EB2EEF9006A4B9D /* matrix.h in Headers */,
+				692AE3411EB2EF11006A4B9D /* ikcp.h in Headers */,
+				692AE34D1EB2EF1C006A4B9D /* galois.h in Headers */,
+				695165F61EBB2663008DCF66 /* BlockCrypt.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69639BD21EE1AAC100893D18 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69639BED1EE1AB2D00893D18 /* sess.h in Headers */,
+				69639BEC1EE1AB2800893D18 /* reedsolomon.h in Headers */,
+				69639BDD1EE1AAD700893D18 /* SFKcpTun.h in Headers */,
+				69639BD91EE1AAC100893D18 /* kcp.h in Headers */,
+				69639BF21EE1AB4C00893D18 /* fec.h in Headers */,
+				69639BDF1EE1AAE400893D18 /* TunConfig.h in Headers */,
+				69639BEA1EE1AB1E00893D18 /* matrix.h in Headers */,
+				69639BE11EE1AAF500893D18 /* encoding.h in Headers */,
+				69639BE81EE1AB1700893D18 /* inversion_tree.h in Headers */,
+				69639BE31EE1AAFD00893D18 /* galois_noasm.h in Headers */,
+				69639BE61EE1AB0D00893D18 /* galois.h in Headers */,
+				69639BF71EE1AB6100893D18 /* CRC32.h in Headers */,
+				69639BEF1EE1AB3500893D18 /* ikcp.h in Headers */,
+				69639BF51EE1AB5900893D18 /* BlockCrypt.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		692AE3201EB2EE59006A4B9D /* kcp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "kcp" */;
+			buildPhases = (
+				692AE31C1EB2EE59006A4B9D /* Sources */,
+				692AE31D1EB2EE59006A4B9D /* Frameworks */,
+				692AE31E1EB2EE59006A4B9D /* Headers */,
+				692AE31F1EB2EE59006A4B9D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = kcp;
+			productName = libkcp;
+			productReference = 692AE3211EB2EE59006A4B9D /* kcp.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		692AE3531EB2EF83006A4B9D /* kcptest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 692AE3681EB2EF83006A4B9D /* Build configuration list for PBXNativeTarget "kcptest" */;
+			buildPhases = (
+				692AE3501EB2EF83006A4B9D /* Sources */,
+				692AE3511EB2EF83006A4B9D /* Frameworks */,
+				692AE3521EB2EF83006A4B9D /* Resources */,
+				69C757851EB2F96D00139321 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69C757841EB2F96D00139321 /* PBXTargetDependency */,
+			);
+			name = kcptest;
+			productName = kcptest;
+			productReference = 692AE3541EB2EF83006A4B9D /* kcptest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		69639BD41EE1AAC100893D18 /* kcpOSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69639BDC1EE1AAC100893D18 /* Build configuration list for PBXNativeTarget "kcpOSX" */;
+			buildPhases = (
+				69639BD01EE1AAC100893D18 /* Sources */,
+				69639BD11EE1AAC100893D18 /* Frameworks */,
+				69639BD21EE1AAC100893D18 /* Headers */,
+				69639BD31EE1AAC100893D18 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = kcpOSX;
+			productName = kcpOSX;
+			productReference = 69639BD51EE1AAC100893D18 /* kcp.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		692AE3181EB2EE59006A4B9D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1000;
+				ORGANIZATIONNAME = "Kong XiangBo";
+				TargetAttributes = {
+					692AE3201EB2EE59006A4B9D = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 745WQDK4L7;
+						LastSwiftMigration = 0830;
+						ProvisioningStyle = Automatic;
+					};
+					692AE3531EB2EF83006A4B9D = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 745WQDK4L7;
+						ProvisioningStyle = Automatic;
+					};
+					69639BD41EE1AAC100893D18 = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 745WQDK4L7;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 692AE31B1EB2EE59006A4B9D /* Build configuration list for PBXProject "libkcp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 692AE3171EB2EE59006A4B9D;
+			productRefGroup = 692AE3221EB2EE59006A4B9D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				692AE3201EB2EE59006A4B9D /* kcp */,
+				692AE3531EB2EF83006A4B9D /* kcptest */,
+				69639BD41EE1AAC100893D18 /* kcpOSX */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		692AE31F1EB2EE59006A4B9D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		692AE3521EB2EF83006A4B9D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				692AE3661EB2EF83006A4B9D /* LaunchScreen.storyboard in Resources */,
+				692AE3631EB2EF83006A4B9D /* Assets.xcassets in Resources */,
+				692AE3611EB2EF83006A4B9D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69639BD31EE1AAC100893D18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		692AE31C1EB2EE59006A4B9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				692AE3491EB2EF1C006A4B9D /* galois_noasm.cpp in Sources */,
+				692AE33A1EB2EEF9006A4B9D /* matrix.cpp in Sources */,
+				692AE33E1EB2EF0B006A4B9D /* inversion_tree.cpp in Sources */,
+				6959B7471EBB7DEC00B0BC58 /* CRC32.cpp in Sources */,
+				69FFC6A61EB309E8008A030D /* TunConfig.m in Sources */,
+				692AE32F1EB2EEB0006A4B9D /* ikcp.c in Sources */,
+				692AE34C1EB2EF1C006A4B9D /* galois.cpp in Sources */,
+				692AE32D1EB2EE98006A4B9D /* fec.cpp in Sources */,
+				692AE34B1EB2EF1C006A4B9D /* galois_table.c in Sources */,
+				69FFC6A11EB30985008A030D /* SFKcpTun.mm in Sources */,
+				695165F51EBB2663008DCF66 /* BlockCrypt.cpp in Sources */,
+				692AE3311EB2EEBD006A4B9D /* sess.cpp in Sources */,
+				692AE3361EB2EEEF006A4B9D /* reedsolomon.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		692AE3501EB2EF83006A4B9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				692AE35E1EB2EF83006A4B9D /* ViewController.mm in Sources */,
+				692AE35B1EB2EF83006A4B9D /* AppDelegate.mm in Sources */,
+				695165F91EBB32D2008DCF66 /* Crypt.mm in Sources */,
+				692AE3581EB2EF83006A4B9D /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69639BD01EE1AAC100893D18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69639BF41EE1AB5500893D18 /* BlockCrypt.cpp in Sources */,
+				69639BF01EE1AB3900893D18 /* ikcp.c in Sources */,
+				69639BDE1EE1AAE000893D18 /* SFKcpTun.mm in Sources */,
+				69639BE71EE1AB1300893D18 /* inversion_tree.cpp in Sources */,
+				69639BEE1EE1AB3100893D18 /* sess.cpp in Sources */,
+				69639BE41EE1AB0100893D18 /* galois_table.c in Sources */,
+				69639BE91EE1AB1B00893D18 /* matrix.cpp in Sources */,
+				69639BE21EE1AAF900893D18 /* galois_noasm.cpp in Sources */,
+				69639BE51EE1AB0900893D18 /* galois.cpp in Sources */,
+				69639BF31EE1AB5000893D18 /* fec.cpp in Sources */,
+				69639BF61EE1AB5D00893D18 /* CRC32.cpp in Sources */,
+				69639BE01EE1AAEC00893D18 /* TunConfig.m in Sources */,
+				69639BEB1EE1AB2200893D18 /* reedsolomon.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		69C757841EB2F96D00139321 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 692AE3201EB2EE59006A4B9D /* kcp */;
+			targetProxy = 69C757831EB2F96D00139321 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		692AE35F1EB2EF83006A4B9D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				692AE3601EB2EF83006A4B9D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		692AE3641EB2EF83006A4B9D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				692AE3651EB2EF83006A4B9D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		692AE3271EB2EE59006A4B9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		692AE3281EB2EE59006A4B9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		692AE32A1EB2EE59006A4B9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = libkcp/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+			};
+			name = Debug;
+		};
+		692AE32B1EB2EE59006A4B9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = libkcp/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+			};
+			name = Release;
+		};
+		692AE3691EB2EF83006A4B9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				INFOPLIST_FILE = kcptest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcptest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+			};
+			name = Debug;
+		};
+		692AE36A1EB2EF83006A4B9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				INFOPLIST_FILE = kcptest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcptest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+			};
+			name = Release;
+		};
+		69639BDA1EE1AAC100893D18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = kcpOSX/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
+				PRODUCT_MODULE_NAME = kcp;
+				PRODUCT_NAME = kcp;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		69639BDB1EE1AAC100893D18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 745WQDK4L7;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = kcpOSX/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.squash.kcp;
+				PRODUCT_MODULE_NAME = kcp;
+				PRODUCT_NAME = kcp;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		692AE31B1EB2EE59006A4B9D /* Build configuration list for PBXProject "libkcp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				692AE3271EB2EE59006A4B9D /* Debug */,
+				692AE3281EB2EE59006A4B9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		692AE3291EB2EE59006A4B9D /* Build configuration list for PBXNativeTarget "kcp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				692AE32A1EB2EE59006A4B9D /* Debug */,
+				692AE32B1EB2EE59006A4B9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		692AE3681EB2EF83006A4B9D /* Build configuration list for PBXNativeTarget "kcptest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				692AE3691EB2EF83006A4B9D /* Debug */,
+				692AE36A1EB2EF83006A4B9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69639BDC1EE1AAC100893D18 /* Build configuration list for PBXNativeTarget "kcpOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69639BDA1EE1AAC100893D18 /* Debug */,
+				69639BDB1EE1AAC100893D18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 692AE3181EB2EE59006A4B9D /* Project object */;
+}

@@ -545,7 +545,7 @@ static void ikcp_update_ack(ikcpcb *kcp, IINT32 rtt)
 		kcp->rx_srtt = rtt;
 		kcp->rx_rttval = rtt / 2;
 	}	else {
-		long delta = rtt - kcp->rx_srtt;
+		IINT32 delta = rtt - kcp->rx_srtt;
 		if (delta < 0) delta = -delta;
 		kcp->rx_rttval = (3 * kcp->rx_rttval + delta) / 4;
 		kcp->rx_srtt = (7 * kcp->rx_srtt + rtt) / 8;
@@ -772,7 +772,7 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 
 		size -= IKCP_OVERHEAD;
 
-		if ((long)size < (long)len) return -2;
+		if ((long)size < (long)len  || (int)len < 0) return -2;
 
 		if (cmd != IKCP_CMD_PUSH && cmd != IKCP_CMD_ACK &&
 			cmd != IKCP_CMD_WASK && cmd != IKCP_CMD_WINS) 
@@ -1030,6 +1030,7 @@ void ikcp_flush(ikcpcb *kcp)
 	for (p = kcp->snd_buf.next; p != &kcp->snd_buf; p = p->next) {
 		IKCPSEG *segment = iqueue_entry(p, IKCPSEG, node);
 		int needsend = 0;
+        //EXC_BAD_ACCESS (code=1, address=0xf00000000000003c)
 		if (segment->xmit == 0) {
 			needsend = 1;
 			segment->xmit++;
