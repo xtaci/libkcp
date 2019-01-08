@@ -115,16 +115,25 @@
 - (IBAction)go:(id)sender {
     //kcptest(, );
     const char *addr = [self.addr.text UTF8String];
-    NSInteger port = [self.port.text integerValue];
+    NSString *port= self.port.text;
+    if (self.dispatchqueue == nil) {
+        self.dispatchqueue = dispatch_queue_create("tun", nil);
+    }
     if (self.tun == nil) {
         TunConfig *c = [[TunConfig alloc] init];
         c.dataShards = 2;
         c.parityShards = 2;
         c.iptos = 46;
-        c.crypt = @"aes";
-        c.key = [@"1234567890123456789012345678901234567890" dataUsingEncoding:NSUTF8StringEncoding];
+        c.crypt = @"none";
+        c.key = [@"" dataUsingEncoding:NSUTF8StringEncoding];
         self.tun = [[SFKcpTun alloc] initWithConfig:c ipaddr:self.addr.text port:port queue:self.dispatchqueue];
-        self.tun.delegate = self;
+        [self.tun startWith:^(SFKcpTun * _Nonnull tun) {
+            printf("connected");
+        } recv:^(SFKcpTun * _Nonnull tun, NSData * _Nonnull d) {
+            NSLog(@"recv:%@",d);
+        } disConnect:^(SFKcpTun * _Nonnull tun) {
+            printf("disConnect");
+        }];
     }
     
 }
@@ -141,7 +150,7 @@
 }
 -(void)sendtest
 {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 1; i++) {
         NSString *msg = [NSString stringWithFormat:@"message %d",i];
         NSData *d = [msg dataUsingEncoding:NSUTF8StringEncoding];
         //char  *ptr = (char  *)BlockCrypt::ramdonBytes(40960);

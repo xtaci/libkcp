@@ -21,6 +21,7 @@ bool g_use_tls = false;        // Use TLS or DTLS
 bool g_use_udp = true;        // Use UDP instead of TCP
 bool g_verbose = false;        // Verbose
 int g_family = AF_UNSPEC;     // Required address family
+
 dispatch_queue_t q = dispatch_queue_create("nw.socket.queue",NULL);
 #define NWCAT_BONJOUR_SERVICE_TCP_TYPE "_nwcat._tcp"
 #define NWCAT_BONJOUR_SERVICE_UDP_TYPE "_nwcat._udp"
@@ -48,7 +49,7 @@ const size_t cryptHeaderSize = nonceSize + crcSize;
 
 // FEC keeps rxFECMulti* (dataShard+parityShard) ordered packets in memory
 const size_t rxFECMulti = 3;
-#define KCP_DEBUG 0
+#define KCP_DEBUG 1
 void
 dump(char *tag,  byte *text, size_t len)
 {
@@ -87,10 +88,6 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     }
 
     int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
-    
-    
-   
-    
     if (sockfd == -1) {
         return nullptr;
     }
@@ -205,7 +202,7 @@ UDPSession::createSession(nw_connection_t sockfd) {
     sess->outbound_connection = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
     sess->m_kcp->output = sess->out_wrapper;
-    
+    //sess->buffer_used = 0;
     return sess;
 }
 //recv data from udp socket
@@ -215,7 +212,7 @@ UDPSession::Update(uint32_t current) noexcept {
     for (;;) {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n < 0) {
-            //perror("read fopen( \"nulltest.txt\", \"r\" )");
+            //perror("read fopen( \"null test.txt\", \"r\" )");
             
             debug_print("kcp udp socket read error");
             //break;
@@ -227,7 +224,6 @@ UDPSession::Update(uint32_t current) noexcept {
             size_t outlen = n;
             //size_t orgsize = n;
             char *out = (char *)m_buf;
-            //nonceSize = 16
             //outlen -= nonceSize;
             out += nonceSize;
             uint32_t sum = 0;
@@ -267,8 +263,7 @@ UDPSession::Update(uint32_t current) noexcept {
             break;
         }
     }
-    m_kcp->current = current;
-    ikcp_flush(m_kcp);
+    this->NWUpdate(current);
 }
 void
 UDPSession::NWUpdate(uint32_t current) noexcept {
@@ -483,10 +478,6 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
             // reset indexing
             sess->pkt_idx = 0;
         }
-        
-        
-        
-        
     } else { // No FEC, just send raw bytes,
         //kcp-tun no use this
         sess->output(buf, static_cast<size_t>(len));
@@ -526,11 +517,7 @@ UDPSession::create_outbound_connection(const char *name, const char *port)
     // If we are using bonjour to connect, treat the name as a bonjour name
     // Otherwise, treat the name as a hostname
     if (__builtin_available(iOS 12,macOS 10.14, *)) {
-        nw_endpoint_t endpoint = (g_use_bonjour ?
-                                  nw_endpoint_create_bonjour_service(name,
-                                                                     (g_use_udp ? NWCAT_BONJOUR_SERVICE_UDP_TYPE : NWCAT_BONJOUR_SERVICE_TCP_TYPE),
-                                                                     NWCAT_BONJOUR_SERVICE_DOMAIN) :
-                                  nw_endpoint_create_host(name, port));
+        nw_endpoint_t endpoint = nw_endpoint_create_host(name, port);
         
         nw_parameters_t parameters = NULL;
         nw_parameters_configure_protocol_block_t configure_tls = NW_PARAMETERS_DISABLE_PROTOCOL;
@@ -635,12 +622,10 @@ void UDPSession::start_connection(nw_connection_t connection)
  * Every read on stdin becomes a send on the connection, and every receive on the
  * connection becomes a write on stdout.
  */
-void UDPSession::start_send_receive_loop()
+void UDPSession::start_send_receive_loop(recvBlock didRecv)
 {
-    // Start reading from stdin
-    //this->send_loop(connection);
-    
     // Start reading from connection
+    this->didRecv = Block_copy(didRecv);
     this->receive_loop();
 }
 /*
@@ -653,9 +638,9 @@ void
 UDPSession::receive_loop()
 {
     nw_connection_t connection = this->outbound_connection;
-    printf("nw start recvloop");
+    printf("nw start recvloop\n");
     if (__builtin_available(iOS 12, macOS 10.14,*)) {
-        nw_connection_receive(connection, 1, UINT32_MAX, ^(dispatch_data_t content, nw_content_context_t context, bool is_complete, nw_error_t receive_error) {
+        nw_connection_receive(connection, 1, 2048, ^(dispatch_data_t content, nw_content_context_t context, bool is_complete, nw_error_t receive_error) {
             
             CFRetain(context);
             dispatch_block_t schedule_next_receive = ^{
@@ -669,8 +654,28 @@ UDPSession::receive_loop()
                 }
                 
                 // If there was no error in receiving, request more data
+                
+               
+                
+                if (is_complete) {
+                    
+                    long s, u;
+                    IUINT64 value;
+                    struct timeval time;
+                    gettimeofday(&time, NULL);
+                    _itimeofday(&s, &u);
+                    value = ((IUINT64) s) * 1000 + (u / 1000);
+                    this->NWUpdate(value & 0xfffffffful);
+                    // this->buffer_used = 0 ;
+                }else {
+                    printf("is_complete false \n");
+                }
+               
+                
                 if (receive_error == NULL) {
+                   
                     receive_loop();
+                    
                 }
                 CFRelease(context);
             };
@@ -679,57 +684,79 @@ UDPSession::receive_loop()
                 // If there is content, write it to stdout asynchronously
                 schedule_next_receive = Block_copy(schedule_next_receive);
                 
-                //dump((char*)"UDP Update", m_buf, n);
-                //change by abigt
-                bool dataValid = false;
-                size_t outlen = 0;
-                size_t n = dispatch_data_get_size(content);
-                //size_t orgsize = n;
-                memcpy(m_buf, content, n);
-                char *out = (char *)m_buf;
-                //nonceSize = 16
-                //outlen -= nonceSize;
-                out += nonceSize;
-                uint32_t sum = 0;
-                if (block != NULL) {
+                if (is_complete) {
                     
-                    block->decrypt(m_buf, n, &outlen);
                     
-                    memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
-                    out += crcSize;
-                    int32_t checksum = crc32_kr(0,(uint8_t *)out, n-cryptHeaderSize);
-                    if (checksum == sum){
-                        dataValid = true;
+                    //change by abigt
+                    bool dataValid = false;
+                    
+                    size_t n = dispatch_data_get_size(content);
+                    printf("current read complete new data:%ld\n",n);
+                    __block size_t buffer_used = 0;
+                    dispatch_data_apply(content, ^bool(dispatch_data_t region, size_t offset, const void *buffer, size_t size) {
+                        fprintf(stderr, "region with offset %zu, size %zu\n", offset, size);
+                        memcpy(m_buf+buffer_used, (char*)buffer + offset, size);
+                        buffer_used += size;
+                        return true;
+                    });
+
+                     dump((char*)"UDP Update", m_buf, n);
+                    size_t outlen = n;
+                    char *out = (char *)m_buf;
+
+
+                    //outlen -= nonceSize;
+                    out += nonceSize;
+                    uint32_t sum = 0;
+                    if (block != NULL) {
                         
+                        block->decrypt(m_buf, n, &outlen);
+                        
+                        memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
+                        out += crcSize;
+                        int32_t checksum = crc32_kr(0,(uint8_t *)out, n-cryptHeaderSize);
+                        if (checksum == sum){
+                            dataValid = true;
+                            
+                        }
+                    }else {
+                        //dump((char*)"check sum", out, n - (size_t)nonceSize);
+                        memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
+                        out += crcSize;
+                        int32_t checksum = crc32_kr(0,(uint8_t *)out, n - cryptHeaderSize);
+                        if (checksum == sum){
+                            dataValid = true;
+                        }
                     }
+                    
+                    if (dataValid == true) {
+                        memmove(m_buf, m_buf + cryptHeaderSize, n-cryptHeaderSize);
+                        
+                        KcpInPut( n-cryptHeaderSize);
+                        char *buf = (char *) malloc(4096);
+                        memset(buf, 0, 4096);
+                        ssize_t nn = 0;
+                        nn = this->Read(buf, 4096);
+                        if(nn > 0 && this->didRecv != nil){
+                            this->didRecv(buf,nn);
+                        }else {
+                            printf("no date recv!\n");
+                        }
+                        free(buf);
+                    }else {
+                        fprintf(stderr," dataValid failure\n");
+                    }
+                    
+                    
+                   
+                    
                 }else {
-                    
-                    memcpy(&sum, (uint8_t *)out, sizeof(uint32_t));
-                    out += crcSize;
-                    int32_t checksum = crc32_kr(0,(uint8_t *)out, n - cryptHeaderSize);
-                    if (checksum == sum){
-                        dataValid = true;
-                    }
-                    
+                    //don't go here
+                    fprintf(stderr," don't go here\n");
+//                    size_t n = dispatch_data_get_size(content);
+//                    memcpy(m_buf+this->buffer_used, content, n);
+//                    this->buffer_used += n;
                 }
-                if (outlen != n) {
-                    debug_print("decrypt error outlen= %lu n = %lu\n",outlen,n);
-                }
-                if (dataValid == true) {
-                    memmove(m_buf, m_buf + cryptHeaderSize, n-cryptHeaderSize);
-                    KcpInPut(n - cryptHeaderSize);
-                }
-                long s, u;
-                IUINT64 value;
-                
-                struct timeval time;
-                gettimeofday(&time, NULL);
-                _itimeofday(&s, &u);
-                value = ((IUINT64) s) * 1000 + (u / 1000);
-                
-                
-                m_kcp->current = value & 0xfffffffful;
-                ikcp_flush(m_kcp);
                 
                 dispatch_async( q, ^{
                    // Block_retain(schedule_next_receive);
@@ -738,6 +765,8 @@ UDPSession::receive_loop()
                 });
             } else {
                 // Content was NULL, so directly schedule the next receive
+                //update kcp
+                
                 schedule_next_receive();
             }
         });
@@ -749,18 +778,18 @@ UDPSession::receive_loop()
  * Start reading from stdin on a dispatch source, and send any bytes on the given connection.
  */
 void
-UDPSession::send_loop(nw_connection_t connection, dispatch_data_t _Nonnull read_data){
+UDPSession::send_loop(nw_connection_t connection, dispatch_data_t _Nonnull write_data){
     // Every send is marked as complete. This has no effect with the default message context for TCP,
     // but is required for UDP to indicate the end of a packet.
     printf("nw send data!\n");
     if (__builtin_available(iOS 12,macOS 10.14, *)) {
-        nw_connection_send(connection, read_data, NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true, ^(nw_error_t  _Nullable error) {
+        nw_connection_send(connection, write_data, NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true, ^(nw_error_t  _Nullable error) {
             if (error != NULL) {
                 errno = nw_error_get_error_code(error);
-                warn("send error");
+                warn("send error %d",errno);
             } else {
-                // Continue reading from stdin
                 //send_loop(connection);
+                printf("send fin\n");
             }
         });
     }

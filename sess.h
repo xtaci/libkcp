@@ -8,11 +8,13 @@
 #include <Network/Network.h>
 #include <err.h>
 #import "BlockCrypt.h"
+typedef void (^recvBlock)(char* buffer,size_t len);
 void
 dump(char *tag, char *text, int len);
 class UDPSession  {
 private:
     int m_sockfd{0};
+    //size_t buffer_used;
     nw_connection_t outbound_connection = NULL;
     ikcpcb *m_kcp{nullptr};
     byte m_buf[2048];
@@ -57,6 +59,7 @@ public:
     int SetDSCP(int dscp) noexcept;
 
     char *getLocalIPAddr() noexcept;
+    recvBlock didRecv;
     int getLocalPort() noexcept;
     // SetStreamMode toggles the stream mode on/off
     void SetStreamMode(bool enable) noexcept;
@@ -70,7 +73,7 @@ public:
 
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
     void receive_loop();
-    void start_send_receive_loop();
+    void start_send_receive_loop(recvBlock didRecv);
 private:
     UDPSession() = default;
 

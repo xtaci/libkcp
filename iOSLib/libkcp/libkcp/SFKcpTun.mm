@@ -68,7 +68,7 @@ IUINT32 iclock() {
 -(void)startUDPSession
 {
     if (self.config.key.length > 0 && ![self.config.crypt isEqualToString:@"none"]){
-        
+        NSLog(@"tun config crypt %@,key:%@",self.config.crypt,self.config.key);
         BlockCrypt *block = BlockCrypt::blockWith(self.config.key.bytes, self.config.crypt.UTF8String);
         sess = UDPSession::DialWithOptions(self.server.UTF8String, self.port.UTF8String, self.config.dataShards,self.config.parityShards,block);
     }else {
@@ -88,15 +88,6 @@ IUINT32 iclock() {
 }
 -(void)startWith:(tunConnected)connectd recv:(didRecvdata)recv disConnect:(tunConnected)disConnect
     {
-        if (__builtin_available(iOS 12, macOS 10.14,*)) {
-            sess->start_send_receive_loop();
-        }
-        
-        self.tunConnected = connectd;
-        self.recvData = recv;
-        self.disConnected = disConnect;
-        sess->start_send_receive_loop();
-        [self runTest];
         __weak  SFKcpTun *weakSelf = self;
         if ( self.connected )  {
             dispatch_async(self.dispatchqueue, ^{
@@ -104,6 +95,23 @@ IUINT32 iclock() {
             });
         }
         
+        self.tunConnected = connectd;
+        self.recvData = recv;
+        self.disConnected = disConnect;
+
+        if (__builtin_available(iOS 12, macOS 10.14,*)) {
+            sess->start_send_receive_loop(^(char *buffer, size_t len) {
+                NSData *d = [NSData dataWithBytes:buffer length:len];
+                
+                dispatch_async(self.dispatchqueue, ^{
+                    weakSelf.recvData(weakSelf, d);
+                    
+                });
+                
+            });
+        }else {
+             [self checkLoop];
+        }
     }
 -(void)restartUDPSessionWithIpaddr:(NSString*)ip port:(NSString*)port
 {
@@ -126,10 +134,8 @@ IUINT32 iclock() {
     sess->SetDSCP(self.config.iptos);
     self.connected = true;
    
-    if (__builtin_available(iOS 12, macOS 10.14,*)) {
-        sess->start_send_receive_loop();
-    }
-    [self runTest];
+   
+    [self checkLoop];
     
 }
 -(void)runDispatchTimer
@@ -229,7 +235,12 @@ IUINT32 iclock() {
                 ptr += sended;
                 //NSLog(@"KCPTun sended:%zu, totoal:= %zu",sended,tosend);
                 //不能并行接收网络数据,效率有折扣
-                //sess->Update(iclock());
+                if (__builtin_available(iOS 12,macOS 10.14, *)) {
+                    sess->NWUpdate(iclock());
+                }else {
+                    sess->Update(iclock());
+                }
+                
             }
             if (sended == [data length]) {
                 NSLog(@"KCPTun sent %zu",sended);
@@ -246,7 +257,7 @@ IUINT32 iclock() {
     
 }
 
--(void)runTest
+-(void)checkLoop
 {   __weak  SFKcpTun *weakSelf = self;
     dispatch_async(self->queue, ^{
         size_t total = 0;
@@ -267,15 +278,11 @@ IUINT32 iclock() {
                     char *buf = (char *) malloc(4096);
                     
                     memset(buf, 0, 4096);
-                    ssize_t n = sess->Read(buf, 4096);
                     
-                    if (__builtin_available(iOS 12, macOS 10.14,*)) {
-                        sess->NWUpdate(iclock());
-                    }else {
-                        sess->Update(iclock());
-                    }
-                    
-                    
+                    ssize_t n = 0;
+                    n = sess->Read(buf, 4096);
+                    sess->Update(iclock());
+
                     if (n > 0 ){
                         @autoreleasepool {
                             NSData *d = [NSData dataWithBytes:buf length:n];
@@ -292,33 +299,13 @@ IUINT32 iclock() {
 
 #include "TargetConditionals.h"
 #if TARGET_IPHONE_SIMULATOR
-                            // iOS Simulator
-#elif TARGET_OS_IPHONE
-//                        if (valueCont > 10) {
-//                            valueCont = 0;
-//                            usleep(10000);
-//                        }else {
-//                            usleep(1000);
-//                        }
-//
-//                        valueCont++;
-                        // iOS device
-#elif TARGET_OS_MAC
-//                        if (zeroCount > 3) {
-//                            zeroCount = 0;
-//                            usleep(3300);
-//                        }else {
-//                            usleep(1000);
-//                        }
-//                        
-//                        zeroCount++;
                         
-                        //usleep(1000);
-                            // Other kinds of Mac OS
+#elif TARGET_OS_IPHONE
+
+#elif TARGET_OS_MAC
 #else
 #   error "Unknown Apple platform"
 #endif
-                        
                        
                     }else {
 #if TARGET_IPHONE_SIMULATOR
@@ -334,18 +321,14 @@ IUINT32 iclock() {
 
               // iOS device
 #elif TARGET_OS_MAC
-                        NSLog(@"session Update");
+                        //NSLog(@"session Update");
                         usleep(1000);
                         // Other kinds of Mac OS
 #else
 #   error "Unknown Apple platform"
 #endif
-                        
                     }
                     free(buf);
-                    
-                    
-                    
                 }
             }
             
@@ -456,11 +439,6 @@ IUINT32 iclock() {
         while (cursor != NULL)
         {
             NSLog(@"cursor->ifa_name = %s", cursor->ifa_name);
-            
-            //            if (strncmp(cursor->ifa_name, "pdp_ip", 6) == 0)
-            //            {
-            //
-            //            }
             if (cursor->ifa_addr->sa_family == AF_INET)
             {
                 struct sockaddr_in *addr = (struct sockaddr_in *)cursor->ifa_addr;
