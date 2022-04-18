@@ -9,51 +9,74 @@
 #include <memory>
 #include "galois.h"
 
-using row_type = std::shared_ptr<std::vector<byte>>;
+// newMatrix returns a matrix of zeros.
+class Matrix {
+ public:
+  Matrix(int r, int c) : rows(r), cols(c) {
+    data = new byte*[r];
+    for (int i = 0; i < r; i++) data[i] = new byte[c]{0};
+  }
 
-struct matrix {
-    // newMatrix returns a matrix of zeros.
-    static matrix newMatrix(int rows, int cols);
+  ~Matrix() {
+    for (int i = 0; i < rows; i++) delete[] data[i];
+    delete[] data;
+    data = nullptr;
+  }
 
-    // IdentityMatrix returns an identity matrix of the given empty.
-    static matrix identityMatrix(int size);
+  inline byte& at(int row, int col) { return data[row][col]; }
 
-    // Create a Vandermonde matrix, which is guaranteed to have the
-    // property that any subset of rows that forms a square matrix
-    // is invertible.
-    static matrix vandermonde(int rows, int cols);
+  inline bool IsSquare() { return this->rows == this->cols; }
 
-    // Multiply multiplies this matrix (the one on the left) by another
-    // matrix (the one on the right) and returns a new matrix with the result.
-    matrix Multiply(matrix &right);
+  // SwapRows Exchanges two rows in the matrix.
+  int SwapRows(int r1, int r2);
 
-    // Augment returns the concatenation of this matrix and the matrix on the right.
-    matrix Augment(matrix &right);
+  //  Gaussian elimination (also known as row reduction)
+  int GaussianElimination();
 
-    // Returns a part of this matrix. Data is copied.
-    matrix SubMatrix(int rmin, int cmin, int rmax, int cmax);
+  int rows{0}, cols{0};
 
-    // IsSquare will return true if the matrix is square
-    bool IsSquare();
-
-    // SwapRows Exchanges two rows in the matrix.
-    int SwapRows(int r1, int r2);
-
-    // Invert returns the inverse of this matrix.
-    // Returns ErrSingular when the matrix is singular and doesn't have an inverse.
-    // The matrix must be square, otherwise ErrNotSquare is returned.
-    matrix Invert();
-
-    //  Gaussian elimination (also known as row reduction)
-    int gaussianElimination();
-
-    std::vector<row_type> data;
-    int rows{0}, cols{0};
-
-    inline byte &at(int row, int col) { return (*(data[row]))[col]; }
-
-    inline bool empty() { return (rows == 0 || cols == 0); }
+  byte** data;
 };
 
+// IdentityMatrix returns an identity matrix of the given empty.
+class IdentityMatrix : public Matrix {
+ public:
+  IdentityMatrix(int size) : Matrix(size, size) {
+    for (int i = 0; i < size; i++) {
+      at(i, i) = 1;
+    }
+  }
+};
+
+// Create a Vandermonde matrix, which is guaranteed to have the
+// property that any subset of rows that forms a square matrix
+// is invertible.
+class VandermondeMatrix : public Matrix {
+ public:
+  VandermondeMatrix(int rows, int cols) : Matrix(rows, cols) {
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < cols; c++) {
+        at(r, c) = galExp(byte(r), byte(c));
+      }
+    }
+  }
+};
+
+using MatrixPtr = std::shared_ptr<Matrix>;
+
+// Multiply multiplies this matrix (the one on the left) by another
+// matrix (the one on the right) and returns a new matrix with the result.
+MatrixPtr Multiply(const MatrixPtr& left, const MatrixPtr& right);
+
+// Augment returns the concatenation of this matrix and the matrix on the right.
+MatrixPtr Augment(const MatrixPtr& left, const MatrixPtr& right);
+
+// Returns a part of this matrix. Data is copied.
+MatrixPtr SubMatrix(const MatrixPtr& mp, int rmin, int cmin, int rmax, int cmax);
+
+// Invert returns the inverse of this matrix.
+// Returns ErrSingular when the matrix is singular and doesn't have an inverse.
+// The matrix must be square, otherwise ErrNotSquare is returned.
+MatrixPtr Invert(const MatrixPtr& mp);
 
 #endif //KCP_MATRIX_H

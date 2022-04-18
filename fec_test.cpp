@@ -61,7 +61,8 @@ int main() {
         } else {
             pkt.flag = typeFEC;
         }
-        auto recovered = fec.Input(pkt);
+        std::vector<row_type> recovered;
+        fec.Input(pkt, 0, recovered);
 
         if (recovered.size() > 0) {
             std::cout << "recovered:" << std::endl;
