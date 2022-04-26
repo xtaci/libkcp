@@ -35,13 +35,13 @@ public:
     inline bool isEnabled() { return dataShards > 0 && parityShards > 0 ; }
 
     // Input a FEC packet, and return recovered data if possible.
-    std::vector<row_type> Input(fecPacket &pkt);
+    void Input(fecPacket &pkt, uint32_t now, std::vector<row_type>& recovered);
 
     // Calc Parity Shards
     void Encode(std::vector<row_type> &shards);
 
     // Decode a raw array into fecPacket
-    static fecPacket Decode(byte *data, size_t sz);
+    static fecPacket Decode(byte *data, size_t sz,  uint32_t ts);
 
     // Mark raw array as typeData, and write correct size.
     void MarkData(byte *data, uint16_t sz);

@@ -2,12 +2,9 @@
 // Created by 理 傅 on 2017/1/2.
 //
 
-#include <err.h>
-#include <sys/time.h>
 #include <iostream>
 #include <stdexcept>
 #include "fec.h"
-#include "sess.h"
 #include "encoding.h"
 
 FEC::FEC(ReedSolomon enc) :enc(enc) {}
@@ -33,13 +30,11 @@ FEC::New(int rxlimit, int dataShards, int parityShards)  {
 }
 
 fecPacket
-FEC::Decode(byte *data, size_t sz) {
+FEC::Decode(byte *data, size_t sz, uint32_t ts) {
     fecPacket pkt;
     data = decode32u(data, &pkt.seqid);
     data = decode16u(data, &pkt.flag);
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    pkt.ts = uint32_t(time.tv_sec * 1000 + time.tv_usec/1000);
+    pkt.ts = ts;
     pkt.data = std::make_shared<std::vector<byte>>(data, data+sz - fecHeaderSize);
     return pkt;
 }
@@ -62,11 +57,8 @@ FEC::MarkFEC(byte *data) {
     }
 }
 
-std::vector<row_type>
-FEC::Input(fecPacket &pkt) {
-    std::vector<row_type> recovered;
-
-    uint32_t now = currentMs();
+void
+FEC::Input(fecPacket &pkt, uint32_t now, std::vector<row_type>& recovered) {
     if (now-lastCheck >= fecExpire) {
         for (auto it = rx.begin();it !=rx.end();) {
             if (now - it->ts > fecExpire) {
@@ -78,13 +70,12 @@ FEC::Input(fecPacket &pkt) {
         lastCheck = now;
     }
 
-
     // insertion
     auto n = this->rx.size() -1;
     int insertIdx = 0;
     for (int i=n;i>=0;i--) {
         if (pkt.seqid == rx[i].seqid) {
-            return recovered;
+            return;
         } else if (pkt.seqid > rx[i].seqid) {
             insertIdx = i + 1;
             break;
@@ -113,10 +104,10 @@ FEC::Input(fecPacket &pkt) {
         int numDataShard = 0;
         int first = 0;
         size_t maxlen = 0;
-
-        std::vector<row_type> shardVec(totalShards);
-        std::vector<bool> shardflag(totalShards, false);
-
+        static thread_local std::vector<row_type> shardVec(totalShards);
+        static thread_local std::vector<bool> shardflag(totalShards, false);
+        std::fill(shardVec.begin(), shardVec.end(), nullptr);
+        std::fill(shardflag.begin(), shardflag.end(), false);
         for (auto i = searchBegin; i <= searchEnd; i++) {
             auto seqid = rx[i].seqid;
             if (seqid > shardEnd) {
@@ -163,7 +154,7 @@ FEC::Input(fecPacket &pkt) {
         rx.erase(rx.begin());
     }
 
-    return recovered;
+    return;
 }
 
 
