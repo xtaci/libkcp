@@ -12,8 +12,9 @@
 #include "reedsolomon.h"
 
 const size_t fecHeaderSize = 6;
+//const size_t cryptHeaderSize = 20;//nonce 16 crc 4
 const size_t fecHeaderSizePlus2{fecHeaderSize + 2};
-const uint16_t typeData = 0xf1;
+const uint16_t kcptypeData = 0xf1;
 const uint16_t typeFEC = 0xf2;
 const int fecExpire = 30000;
 

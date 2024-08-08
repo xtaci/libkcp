@@ -17,7 +17,8 @@ FEC enhanced KCP client session library for iOS/Android, compatible with [kcp-go
 1. Optimized for ***Online Games***.
 1. Stream based interface, you can easily switch from your TCP based protocol to libkcp or dualstack.
 1. [FEC(Forward Error Correction)](https://en.wikipedia.org/wiki/Forward_error_correction) Support with [Reed-Solomon Codes](https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction)
-
+1. Add iOS/macOs Framework and Test target 
+1. MAS app https://itunes.apple.com/us/app/a-big-t/id1114040100?l=zh&ls=1&mt=12 support kcptun use this lib
 ## ***Usage***
 libkcp has been designed as a ***Frame-Driven*** library, the main loop was supposed as:       
 ```
@@ -45,7 +46,7 @@ $go run kcpserver.go
 compile and run libkcp(Best with CLion), and watch output.      
 
 ## ***Caveats***
-1. Packet level encryption has not been implemented yet.
+1. Packet level encryption  use CommonCrypto, dose not pass test,need test and debug
    
 ## ***Troubleshooting***
 1. C++11 is required for compiling.

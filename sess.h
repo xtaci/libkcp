@@ -5,10 +5,17 @@
 #include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
-
+#include <Network/Network.h>
+#include <err.h>
+#import "BlockCrypt.h"
+typedef void (^recvBlock)(char* buffer,size_t len);
+void
+dump(char *tag, char *text, int len);
 class UDPSession  {
 private:
     int m_sockfd{0};
+    //size_t buffer_used;
+    nw_connection_t outbound_connection = NULL;
     ikcpcb *m_kcp{nullptr};
     byte m_buf[2048];
     byte m_streambuf[65535];
@@ -19,6 +26,8 @@ private:
     std::vector<row_type> shards;
     size_t dataShards{0};
     size_t parityShards{0};
+    BlockCrypt *block;
+ 
 public:
     UDPSession(const UDPSession &) = delete;
 
@@ -28,11 +37,15 @@ public:
     static UDPSession *Dial(const char *ip, uint16_t port);
 
     // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
-    static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards);
+    static UDPSession *DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards);
 
+    // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption with block
+    static UDPSession *DialWithOptions(const char *ip, const char *port, size_t dataShards, size_t parityShards,BlockCrypt *block);
     // Update will try reading/writing udp packet, pass current unix millisecond
     void Update(uint32_t current) noexcept;
-
+    void NWUpdate(uint32_t current) noexcept;
+    //kcpInput go UDPpsession
+    void KcpInPut(size_t len) noexcept;
     // Destroy release all resource related.
     static void Destroy(UDPSession *sess);
 
@@ -45,6 +58,9 @@ public:
     // Set DSCP value
     int SetDSCP(int dscp) noexcept;
 
+    char *getLocalIPAddr() noexcept;
+    recvBlock didRecv;
+    int getLocalPort() noexcept;
     // SetStreamMode toggles the stream mode on/off
     void SetStreamMode(bool enable) noexcept;
 
@@ -56,7 +72,8 @@ public:
     inline int WndSize(int sndwnd, int rcvwnd) { return ikcp_wndsize(m_kcp, sndwnd, rcvwnd); }
 
     inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
-
+    void receive_loop();
+    void start_send_receive_loop(recvBlock didRecv);
 private:
     UDPSession() = default;
 
@@ -72,8 +89,13 @@ private:
     ssize_t output(const void *buffer, size_t length);
 
     static UDPSession *createSession(int sockfd);
-
-
+    static UDPSession *createSession(nw_connection_t sockfd);
+    //new
+    static nw_connection_t create_outbound_connection(const char *, const char *);
+    void start_connection(nw_connection_t connection);
+    
+    void send_loop(nw_connection_t connection,dispatch_data_t _Nonnull read_data);
+   
 };
 
 inline uint32_t currentMs() {
