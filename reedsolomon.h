@@ -9,6 +9,8 @@
 #include "inversion_tree.h"
 #include "galois.h"
 
+using row_type = std::shared_ptr<std::vector<byte>>;
+
 class ReedSolomon {
 public:
     ReedSolomon() = default;
@@ -49,9 +51,9 @@ private:
     int m_parityShards; // Number of parity shards, should not be modified.
     int m_totalShards; // Total number of shards. Calculated, and should not be modified.
 
-    matrix m;
+    MatrixPtr m;
     inversionTree tree;
-    std::vector<row_type> parity;
+    std::vector<byte*> parity;
 
     int shardSize(std::vector<row_type> &shards);
 
@@ -66,7 +68,7 @@ private:
     // number of matrix rows used, is determined by
     // outputCount, which is the number of outputs to compute.
     void
-    codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> &inputs, std::vector<row_type> &outputs,
+    codeSomeShards(std::vector<byte*> &matrixRows, std::vector<byte*> &inputs, int data_size, std::vector<byte*> &outputs,
                    int outputCount);
 
     // checkShards will check if shards are the same size
