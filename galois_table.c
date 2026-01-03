@@ -5,7 +5,7 @@
 #include "galois.h"
 
 // The number of elements in the field.
-const int fieldSize = 256;
+enum { fieldSize = 256 };
 
 // The polynomial used to generate the logarithm table.
 //
@@ -15,7 +15,7 @@ const int fieldSize = 256;
 //
 // The possibilities are: 29, 43, 45, 77, 95, 99, 101, 105,
 //* 113, 135, 141, 169, 195, 207, 231, and 245.
-const int generatingPolynomial = 29;
+enum { generatingPolynomial = 29 };
 
 
 byte logTable[fieldSize] = {

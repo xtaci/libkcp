@@ -12,46 +12,31 @@ ReedSolomon::ReedSolomon(int dataShards, int parityShards) :
         m_dataShards(dataShards),
         m_parityShards(parityShards),
         m_totalShards(dataShards + parityShards) {
-    tree = inversionTree::newInversionTree(dataShards, parityShards);
+    if (m_dataShards <= 0 || m_parityShards <= 0) {
+        throw std::invalid_argument("cannot create Encoder with zero or less data/parity shards");
+    }
+    if (m_totalShards > 255) {
+        throw std::invalid_argument("cannot create Encoder with 255 or more data+parity shards");
+    }
+
+    matrix vm = matrix::vandermonde(m_totalShards, m_dataShards);
+    auto top = vm.SubMatrix(0, 0, m_dataShards, m_dataShards).Invert();
+    if (top.empty()) {
+        throw std::runtime_error("cannot invert matrix top square");
+    }
+    m = vm.Multiply(top);
+
+    tree = inversionTree::newInversionTree(m_dataShards, m_parityShards);
+
+    parity.resize(m_parityShards);
+    for (int i = 0; i < m_parityShards; i++) {
+        parity[i] = m.data[m_dataShards + i];
+    }
 }
 
 ReedSolomon
 ReedSolomon::New(int dataShards, int parityShards) {
-    if (dataShards <= 0 || parityShards <= 0) {
-        throw std::invalid_argument("cannot create Encoder with zero or less data/parity shards");
-    }
-
-    if (dataShards + parityShards > 255) {
-        throw std::invalid_argument("cannot create Encoder with 255 or more data+parity shards");
-    }
-
-    ReedSolomon r(dataShards, parityShards);
-
-    // Start with a Vandermonde matrix.  This matrix would work,
-    // in theory, but doesn't have the property that the data
-    // shards are unchanged after encoding.
-    matrix vm = matrix::vandermonde(r.m_totalShards, r.m_dataShards);
-
-    // Multiply by the inverse of the top square of the matrix.
-    // This will make the top square be the identity matrix, but
-    // preserve the property that any square subset of rows  is
-    // invertible.
-    auto top = vm.SubMatrix(0, 0, dataShards, dataShards);
-    top = top.Invert();
-    r.m = vm.Multiply(top);
-
-    // Inverted matrices are cached in a tree keyed by the indices
-    // of the invalid rows of the data to reconstruct.
-    // The inversion m_root node will have the identity matrix as
-    // its inversion matrix because it implies there are no errors
-    // with the original data.
-    r.tree = inversionTree::newInversionTree(dataShards, parityShards);
-
-    r.parity = std::vector<row_type>(parityShards);
-    for (int i = 0; i < parityShards; i++) {
-        r.parity[i] = r.m.data[dataShards + i];
-    }
-    return r;
+    return ReedSolomon(dataShards, parityShards);
 }
 
 void
@@ -217,7 +202,7 @@ void
 ReedSolomon::checkShards(std::vector<row_type> &shards, bool nilok) {
     auto size = shardSize(shards);
     if (size == 0) {
-        throw std::invalid_argument("no shard data");
+        return;
     }
 
     for (int i = 0; i < shards.size(); i++) {

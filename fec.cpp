@@ -80,14 +80,15 @@ FEC::Input(fecPacket &pkt) {
 
 
     // insertion
-    auto n = this->rx.size() -1;
     int insertIdx = 0;
-    for (int i=n;i>=0;i--) {
-        if (pkt.seqid == rx[i].seqid) {
-            return recovered;
-        } else if (pkt.seqid > rx[i].seqid) {
-            insertIdx = i + 1;
-            break;
+    if (!rx.empty()) {
+        for (int i = int(this->rx.size()) - 1; i >= 0; i--) {
+            if (pkt.seqid == rx[i].seqid) {
+                return recovered;
+            } else if (pkt.seqid > rx[i].seqid) {
+                insertIdx = i + 1;
+                break;
+            }
         }
     }
     // insert into ordered rx queue
