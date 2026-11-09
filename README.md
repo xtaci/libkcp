@@ -36,6 +36,16 @@ End
 The ```Read/Write/Update``` functions of libkcp are ***guaranteed*** to be ***non-blocking***.       
 Please read ```kcp_test.cpp fec_test.cpp``` for library usage.        
 
+## ***Build and test***
+```
+cmake -S . -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build --parallel 2
+./build/fec_test
+./build/reedsolomon_test
+```
+GitHub Actions runs these commands on Linux and macOS. The `kcp_test` executable
+requires the echo server described below.
+
 ## ***Demo***
 start echo server(golang)       
 ```
