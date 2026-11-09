@@ -1,4 +1,5 @@
 #include <cassert>
+#include <stdexcept>
 #include <vector>
 #include <sys/time.h>
 #include "reedsolomon.h"
@@ -84,9 +85,27 @@ static void testFecAcceptsFirstPacket() {
     assert(recovered.empty());
 }
 
+static void testDefaultFecIsDisabled() {
+    FEC fec;
+    assert(!fec.isEnabled());
+}
+
+static void testFecRejectsTruncatedHeader() {
+    byte packet[fecHeaderSize - 1]{};
+    bool rejected = false;
+    try {
+        FEC::Decode(packet, sizeof(packet));
+    } catch (const std::invalid_argument &) {
+        rejected = true;
+    }
+    assert(rejected);
+}
+
 int main() {
     testConstructorMatchesFactory();
     testZeroLengthShardsEncodeReconstruct();
     testFecAcceptsFirstPacket();
+    testDefaultFecIsDisabled();
+    testFecRejectsTruncatedHeader();
     return 0;
 }

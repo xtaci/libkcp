@@ -11,13 +11,14 @@
 ReedSolomon::ReedSolomon(int dataShards, int parityShards) :
         m_dataShards(dataShards),
         m_parityShards(parityShards),
-        m_totalShards(dataShards + parityShards) {
+        m_totalShards(0) {
     if (m_dataShards <= 0 || m_parityShards <= 0) {
         throw std::invalid_argument("cannot create Encoder with zero or less data/parity shards");
     }
-    if (m_totalShards > 255) {
-        throw std::invalid_argument("cannot create Encoder with 255 or more data+parity shards");
+    if (m_dataShards > 255 - m_parityShards) {
+        throw std::invalid_argument("cannot create Encoder with more than 255 total shards");
     }
+    m_totalShards = m_dataShards + m_parityShards;
 
     matrix vm = matrix::vandermonde(m_totalShards, m_dataShards);
     auto top = vm.SubMatrix(0, 0, m_dataShards, m_dataShards).Invert();

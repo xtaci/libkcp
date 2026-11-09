@@ -5,13 +5,14 @@
 #include "fec.h"
 #include <sys/types.h>
 #include <sys/time.h>
+#include <vector>
 
 class UDPSession  {
 private:
-    int m_sockfd{0};
+    int m_sockfd{-1};
     ikcpcb *m_kcp{nullptr};
     byte m_buf[2048];
-    byte m_streambuf[65535];
+    std::vector<char> m_streambuf;
     size_t m_streambufsiz{0};
 
     FEC fec;
@@ -27,19 +28,20 @@ public:
     // Dial connects to the remote server and returns UDPSession.
     static UDPSession *Dial(const char *ip, uint16_t port);
 
-    // DialWithOptions connects to the remote address "raddr" on the network "udp" with packet encryption
+    // Connect using Reed-Solomon FEC with the requested data and parity shard counts.
     static UDPSession *DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards);
 
-    // Update will try reading/writing udp packet, pass current unix millisecond
+    // Process pending UDP input and flush KCP output using the current millisecond tick.
     void Update(uint32_t current) noexcept;
 
-    // Destroy release all resource related.
+    // Close the socket and release the session and KCP resources.
     static void Destroy(UDPSession *sess);
 
-    // Read reads from kcp with buffer empty sz.
+    // Read at most sz bytes from the next KCP message; returns 0 when no data
+    // is ready and a negative value on error.
     ssize_t Read(char *buf, size_t sz) noexcept;
 
-    // Write writes into kcp with buffer empty sz.
+    // Queue sz bytes for transmission; returns the number of bytes accepted or a negative error.
     ssize_t Write(const char *buf, size_t sz) noexcept;
 
     // Set DSCP value
@@ -55,7 +57,12 @@ public:
 
     inline int WndSize(int sndwnd, int rcvwnd) { return ikcp_wndsize(m_kcp, sndwnd, rcvwnd); }
 
-    inline int SetMtu(int mtu) { return ikcp_setmtu(m_kcp, mtu); }
+    inline int SetMtu(int mtu) {
+        if (fec.isEnabled() && (mtu < 0 || static_cast<size_t>(mtu) > sizeof(m_buf) - fecHeaderSizePlus2)) {
+            return -1;
+        }
+        return ikcp_setmtu(m_kcp, mtu);
+    }
 
 private:
     UDPSession() = default;

@@ -18,13 +18,13 @@ public:
     // New creates a new encoder and initializes it to
     // the number of data shards and parity shards that
     // you want to use. You can reuse this encoder.
-    // Note that the maximum number of data shards is 256.
+    // The total number of data and parity shards must not exceed 255.
     static ReedSolomon New(int dataShards, int parityShards);
 
     // Encodes parity for a set of data shards.
     // An array 'shards' containing data shards followed by parity shards.
     // The number of shards must match the number given to New.
-    // Each shard is a byte array, and they must all be the same empty.
+    // Each shard is a byte array, and all shards must have the same length.
     // The parity shards will always be overwritten and the data shards
     // will remain the same.
     void Encode(std::vector<row_type> &shards);
@@ -32,16 +32,14 @@ public:
     // Reconstruct will recreate the missing shards, if possible.
     //
     // Given a list of shards, some of which contain data, fills in the
-    // ones that don't have data.
+    // ones that are nullptr.
     //
     // The length of the array must be equal to Shards.
     // You indicate that a shard is missing by setting it to nil.
     //
-    // If there are too few shards to reconstruct the missing
-    // ones, ErrTooFewShards will be returned.
+    // Throws std::invalid_argument if too few shards are available.
     //
-    // The reconstructed shard set is complete, but integrity is not verified.
-    // Use the Verify function to check if data set is ok.
+    // The reconstructed shard set is complete, but its integrity is not verified.
     void Reconstruct(std::vector<row_type> &shards);
 
 private:
@@ -69,9 +67,8 @@ private:
     codeSomeShards(std::vector<row_type> &matrixRows, std::vector<row_type> &inputs, std::vector<row_type> &outputs,
                    int outputCount);
 
-    // checkShards will check if shards are the same size
-    // or 0, if allowed. An error is returned if this fails.
-    // An error is also returned if all shards are size 0.
+    // Check that all present shards have equal size. Throws
+    // std::invalid_argument when a shard is missing or has a different size.
     void checkShards(std::vector<row_type> &shards, bool nilok) ;
 };
 

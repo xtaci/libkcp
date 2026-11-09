@@ -15,7 +15,7 @@ struct matrix {
     // newMatrix returns a matrix of zeros.
     static matrix newMatrix(int rows, int cols);
 
-    // IdentityMatrix returns an identity matrix of the given empty.
+    // Return an identity matrix of the requested size.
     static matrix identityMatrix(int size);
 
     // Create a Vandermonde matrix, which is guaranteed to have the
@@ -39,9 +39,8 @@ struct matrix {
     // SwapRows Exchanges two rows in the matrix.
     int SwapRows(int r1, int r2);
 
-    // Invert returns the inverse of this matrix.
-    // Returns ErrSingular when the matrix is singular and doesn't have an inverse.
-    // The matrix must be square, otherwise ErrNotSquare is returned.
+    // Return the inverse, or an empty matrix if this matrix is not square or
+    // is singular.
     matrix Invert();
 
     //  Gaussian elimination (also known as row reduction)

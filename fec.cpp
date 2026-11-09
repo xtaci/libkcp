@@ -17,8 +17,11 @@ FEC::New(int rxlimit, int dataShards, int parityShards)  {
     if (dataShards <= 0 || parityShards <= 0) {
         throw std::invalid_argument("invalid arguments");
     }
+    if (dataShards > 255 || parityShards > 255 - dataShards) {
+        throw std::invalid_argument("too many total shards");
+    }
 
-    if (rxlimit < dataShards+parityShards) {
+    if (rxlimit < dataShards + parityShards) {
         throw std::invalid_argument("invalid arguments");
     }
 
@@ -27,13 +30,17 @@ FEC::New(int rxlimit, int dataShards, int parityShards)  {
     fec.dataShards = dataShards;
     fec.parityShards = parityShards;
     fec.totalShards = dataShards + parityShards;
-    fec.paws = (0xffffffff/uint32_t(fec.totalShards) - 1) * uint32_t(fec.totalShards);
+    fec.paws = (0xffffffff / uint32_t(fec.totalShards) - 1) * uint32_t(fec.totalShards);
 
     return fec;
 }
 
 fecPacket
 FEC::Decode(byte *data, size_t sz) {
+    if (data == nullptr || sz < fecHeaderSize) {
+        throw std::invalid_argument("truncated FEC packet");
+    }
+
     fecPacket pkt;
     data = decode32u(data, &pkt.seqid);
     data = decode16u(data, &pkt.flag);
@@ -46,6 +53,9 @@ FEC::Decode(byte *data, size_t sz) {
 
 void
 FEC::MarkData(byte *data, uint16_t sz) {
+    if (sz > UINT16_MAX - 2) {
+        throw std::invalid_argument("data shard is too large");
+    }
     data = encode32u(data,this->next);
     data = encode16u(data,typeData);
     encode16u(data,static_cast<uint16_t>(sz + 2)); // including size itself
@@ -169,9 +179,16 @@ FEC::Input(fecPacket &pkt) {
 
 
 void FEC::Encode(std::vector<row_type> &shards) {
+    if (shards.size() != static_cast<size_t>(totalShards)) {
+        throw std::invalid_argument("incorrect number of shards");
+    }
+
     // resize elements with 0 appending
     size_t max = 0;
     for (int i = 0;i<dataShards;i++) {
+        if (shards[i] == nullptr) {
+            throw std::invalid_argument("data shard is missing");
+        }
         if (shards[i]->size() > max) {
             max = shards[i]->size();
         }

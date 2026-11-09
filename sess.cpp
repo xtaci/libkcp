@@ -6,17 +6,22 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstring>
+#include <new>
+#include <stdexcept>
+#include <utility>
+#include <climits>
 
 UDPSession *
 UDPSession::Dial(const char *ip, uint16_t port) {
+    if (ip == nullptr) return nullptr;
+
     struct sockaddr_in saddr;
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
     int ret = inet_pton(AF_INET, ip, &(saddr.sin_addr));
 
-    if (ret == 1) { // do nothing
-    } else if (ret == 0) { // try ipv6
+    if (ret == 0) {
         return UDPSession::dialIPv6(ip, port);
     } else if (ret == -1) {
         return nullptr;
@@ -26,7 +31,7 @@ UDPSession::Dial(const char *ip, uint16_t port) {
     if (sockfd == -1) {
         return nullptr;
     }
-    if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) < 0) {
+    if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(saddr)) < 0) {
         close(sockfd);
         return nullptr;
     }
@@ -36,14 +41,27 @@ UDPSession::Dial(const char *ip, uint16_t port) {
 
 UDPSession *
 UDPSession::DialWithOptions(const char *ip, uint16_t port, size_t dataShards, size_t parityShards) {
+    FEC encoder;
+    std::vector<row_type> shards;
+    if (dataShards > 0 && parityShards > 0) {
+        if (dataShards > 255 || parityShards > 255 - dataShards) {
+            return nullptr;
+        }
+        const size_t totalShards = dataShards + parityShards;
+        shards.resize(totalShards, nullptr);
+        encoder = FEC::New(static_cast<int>(3 * totalShards),
+                           static_cast<int>(dataShards),
+                           static_cast<int>(parityShards));
+    }
+
     auto sess = UDPSession::Dial(ip, port);
     if (sess == nullptr) {
         return nullptr;
     }
 
-    if (dataShards > 0 && parityShards > 0) {
-        sess->fec = FEC::New(3 * (dataShards + parityShards), dataShards, parityShards);
-        sess->shards.resize(dataShards + parityShards, nullptr);
+    if (encoder.isEnabled()) {
+        sess->fec = std::move(encoder);
+        sess->shards = std::move(shards);
         sess->dataShards = dataShards;
         sess->parityShards = parityShards;
     }
@@ -77,16 +95,27 @@ UDPSession *
 UDPSession::createSession(int sockfd) {
     int flags = fcntl(sockfd, F_GETFL, 0);
     if (flags < 0) {
+        close(sockfd);
         return nullptr;
     }
 
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        close(sockfd);
         return nullptr;
     }
 
-    UDPSession *sess = new(UDPSession);
+    UDPSession *sess = new (std::nothrow) UDPSession;
+    if (sess == nullptr) {
+        close(sockfd);
+        return nullptr;
+    }
     sess->m_sockfd = sockfd;
     sess->m_kcp = ikcp_create(IUINT32(rand()), sess);
+    if (sess->m_kcp == nullptr) {
+        close(sockfd);
+        delete sess;
+        return nullptr;
+    }
     sess->m_kcp->output = sess->out_wrapper;
     return sess;
 }
@@ -98,12 +127,20 @@ UDPSession::Update(uint32_t current) noexcept {
         ssize_t n = recv(m_sockfd, m_buf, sizeof(m_buf), 0);
         if (n > 0) {
             if (fec.isEnabled()) {
+                if (static_cast<size_t>(n) < fecHeaderSize) {
+                    continue;
+                }
                 // decode FEC packet
                 auto pkt = fec.Decode(m_buf, static_cast<size_t>(n));
                 if (pkt.flag == typeData) {
                     auto ptr = pkt.data->data();
-                    // we have 2B size, ignore for typeData
-                    ikcp_input(m_kcp, (char *) (ptr + 2), pkt.data->size() - 2);
+                    if (pkt.data->size() >= 2) {
+                        uint16_t sz;
+                        decode16u(ptr, &sz);
+                        if (sz >= 2 && sz <= pkt.data->size()) {
+                            ikcp_input(m_kcp, reinterpret_cast<char *>(ptr + 2), sz - 2);
+                        }
+                    }
                 }
 
                 // allow FEC packet processing with correct flags.
@@ -123,7 +160,7 @@ UDPSession::Update(uint32_t current) noexcept {
                             // the recovered packet size must be in the correct range.
                             if (sz >= 2 && sz <= r->size()) {
                                 // input proper data to kcp
-                                ikcp_input(m_kcp, (char *) (ptr + 2), sz - 2);
+                                ikcp_input(m_kcp, reinterpret_cast<char *>(ptr + 2), sz - 2);
                                 // std::cout << "sz:" << sz << std::endl;
                             }
                         }
@@ -143,23 +180,28 @@ UDPSession::Update(uint32_t current) noexcept {
 void
 UDPSession::Destroy(UDPSession *sess) {
     if (nullptr == sess) return;
-    if (0 != sess->m_sockfd) { close(sess->m_sockfd); }
+    if (sess->m_sockfd >= 0) { close(sess->m_sockfd); }
     if (nullptr != sess->m_kcp) { ikcp_release(sess->m_kcp); }
     delete sess;
 }
 
 ssize_t
 UDPSession::Read(char *buf, size_t sz) noexcept {
+    if (sz == 0) {
+        return 0;
+    }
+    if (buf == nullptr) return -1;
+
     if (m_streambufsiz > 0) {
         size_t n = m_streambufsiz;
         if (n > sz) {
             n = sz;
         }
-        memcpy(buf, m_streambuf, n);
+        memcpy(buf, m_streambuf.data(), n);
 
         m_streambufsiz -= n;
         if (m_streambufsiz != 0) {
-            memmove(m_streambuf, m_streambuf + n, m_streambufsiz);
+            memmove(m_streambuf.data(), m_streambuf.data() + n, m_streambufsiz);
         }
         return n;
     }
@@ -170,19 +212,31 @@ UDPSession::Read(char *buf, size_t sz) noexcept {
     }
 
     if (psz <= sz) {
-        return (ssize_t) ikcp_recv(m_kcp, buf, int(sz));
+        return static_cast<ssize_t>(ikcp_recv(m_kcp, buf, psz));
     } else {
-        ikcp_recv(m_kcp, (char *) m_streambuf, sizeof(m_streambuf));
-        memcpy(buf, m_streambuf, sz);
+        try {
+            m_streambuf.resize(static_cast<size_t>(psz));
+        } catch (const std::bad_alloc &) {
+            return -1;
+        } catch (const std::length_error &) {
+            return -1;
+        }
+        int n = ikcp_recv(m_kcp, m_streambuf.data(), psz);
+        if (n != psz) {
+            m_streambuf.clear();
+            return n < 0 ? n : -1;
+        }
+        memcpy(buf, m_streambuf.data(), sz);
         m_streambufsiz = psz - sz;
-        memmove(m_streambuf, m_streambuf + sz, psz - sz);
+        memmove(m_streambuf.data(), m_streambuf.data() + sz, m_streambufsiz);
         return sz;
     }
 }
 
 ssize_t
 UDPSession::Write(const char *buf, size_t sz) noexcept {
-    int n = ikcp_send(m_kcp, const_cast<char *>(buf), int(sz));
+    if (sz > static_cast<size_t>(INT_MAX)) return -1;
+    int n = ikcp_send(m_kcp, buf, static_cast<int>(sz));
     if (n == 0) {
         return sz;
     } else return n;
@@ -190,6 +244,7 @@ UDPSession::Write(const char *buf, size_t sz) noexcept {
 
 int
 UDPSession::SetDSCP(int iptos) noexcept {
+    if (iptos < 0 || iptos > 63) return -1;
     iptos = (iptos << 2) & 0xFF;
     return setsockopt(this->m_sockfd, IPPROTO_IP, IP_TOS, &iptos, sizeof(iptos));
 }
@@ -208,7 +263,7 @@ UDPSession::out_wrapper(const char *buf, int len, struct IKCPCB *, void *user) {
     assert(user != nullptr);
     UDPSession *sess = static_cast<UDPSession *>(user);
 
-    if (sess->fec.isEnabled()) {    // append FEC header
+    if (sess->fec.isEnabled()) {    // Add the FEC header and protect each batch of data shards.
         // extend to len + fecHeaderSizePlus2
         // i.e. 4B seqid + 2B flag + 2B size
         memcpy(sess->m_buf + fecHeaderSizePlus2, buf, static_cast<size_t>(len));

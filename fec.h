@@ -19,10 +19,10 @@ const int fecExpire = 30000;
 
 class fecPacket {
 public:
-    uint32_t seqid;
-    uint16_t flag;
+    uint32_t seqid{0};
+    uint16_t flag{0};
     row_type data;
-    uint32_t ts;
+    uint32_t ts{0};
 };
 
 class FEC {
@@ -32,31 +32,31 @@ public:
 
     static FEC New(int rxlimit, int dataShards, int parityShards);
 
-    inline bool isEnabled() { return dataShards > 0 && parityShards > 0 ; }
+    inline bool isEnabled() const { return dataShards > 0 && parityShards > 0; }
 
-    // Input a FEC packet, and return recovered data if possible.
+    // Add a received shard and return any data shards recovered from its group.
     std::vector<row_type> Input(fecPacket &pkt);
 
-    // Calc Parity Shards
+    // Generate parity shards from the data shards in the provided shard set.
     void Encode(std::vector<row_type> &shards);
 
-    // Decode a raw array into fecPacket
+    // Decode a complete FEC packet; throws std::invalid_argument if its header is truncated.
     static fecPacket Decode(byte *data, size_t sz);
 
-    // Mark raw array as typeData, and write correct size.
+    // Write a data-shard header and its encoded payload size.
     void MarkData(byte *data, uint16_t sz);
 
-    // Mark raw array as typeFEC
+    // Write a parity-shard header and advance the shard sequence number.
     void MarkFEC(byte *data);
 private:
-    std::vector<fecPacket> rx; // ordered receive queue
-    int rxlimit;  // queue empty limit
-    int dataShards;
-    int parityShards;
-    int totalShards;
+    std::vector<fecPacket> rx; // Received shards, ordered by sequence number.
+    int rxlimit{0};  // Maximum number of received shards retained.
+    int dataShards{0};
+    int parityShards{0};
+    int totalShards{0};
     uint32_t next{0}; // next seqid
     ReedSolomon enc;
-    uint32_t paws;  // Protect Against Wrapped Sequence numbers
+    uint32_t paws{0};  // Sequence-number limit before wrapping.
     uint32_t lastCheck{0};
 };
 
