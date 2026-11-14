@@ -1,6 +1,7 @@
 # libkcp
 
 [![KCP Powered](https://img.shields.io/badge/KCP-Powered-blue.svg)](https://github.com/skywind3000/kcp)
+[![Created At](https://img.shields.io/github/created-at/xtaci/kcp-go)](https://img.shields.io/github/created-at/xtaci/kcp-go)
 
 A frame-driven, single-connection KCP client library with Reed-Solomon FEC,
 compatible with [kcp-go](https://github.com/xtaci/kcp-go). Each session owns
