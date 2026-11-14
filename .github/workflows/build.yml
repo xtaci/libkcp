@@ -12,14 +12,71 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        crypto: ['OFF', 'ON']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install LibTomCrypt (Linux)
+        if: matrix.crypto == 'ON' && runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libtomcrypt-dev
+      - name: Install LibTomCrypt (macOS)
+        if: matrix.crypto == 'ON' && runner.os == 'macOS'
+        run: |
+          brew install libtomcrypt
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix libtomcrypt)" >> "$GITHUB_ENV"
       - name: Configure
-        run: cmake -S . -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        run: cmake -S . -B build -DKCP_ENABLE_CRYPTO=${{ matrix.crypto }}
       - name: Build
         run: cmake --build build --parallel 2
-      - name: Test FEC and Reed-Solomon
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Check out kcp-go
+        if: matrix.crypto == 'ON'
+        uses: actions/checkout@v4
+        with:
+          repository: xtaci/kcp-go
+          path: kcp-go-src
+      - name: Set up Go
+        if: matrix.crypto == 'ON'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: kcp-go-src/go.mod
+          cache-dependency-path: kcp-go-src/go.sum
+      - name: Test kcp-go interoperability
+        if: matrix.crypto == 'ON'
+        working-directory: kcp-go-src
+        run: go run ../tests/interop.go ../build/tests/kcp_test
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-libtomcrypt
+      - uses: actions/checkout@v4
+        with:
+          repository: xtaci/kcp-go
+          path: kcp-go-src
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: kcp-go-src/go.mod
+          cache-dependency-path: kcp-go-src/go.sum
+      - name: Build and test Windows C library
+        shell: msys2 {0}
         run: |
-          ./build/fec_test
-          ./build/reedsolomon_test
+          cmake -S . -B build -G Ninja -DKCP_ENABLE_CRYPTO=ON
+          cmake --build build
+          ctest --test-dir build --output-on-failure
+      - name: Test Windows kcp-go interoperability
+        shell: msys2 {0}
+        env:
+          MSYS2_PATH_TYPE: inherit
+        working-directory: kcp-go-src
+        run: go run ../tests/interop.go ../build/tests/kcp_test.exe
